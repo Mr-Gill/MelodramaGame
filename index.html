@@ -635,36 +635,36 @@
 
   <script>
     const CHARACTERS = [
-      { id: 1, name: "The Evil Mastermind", team: "evil", type: "villain", short: "Leads the villains, breaks ties.", nightOrder: 1 },
-      { id: 2, name: "The Assassin", team: "evil", type: "villain", short: "Once per game, add a second victim.", nightOrder: 1, limited: 1 },
-      { id: 3, name: "The Pretender", team: "evil", type: "villain", short: "Appears good to Elder checks.", nightOrder: 1 },
-      { id: 4, name: "Corrupted Authority", team: "evil", type: "villain", short: "Day vote counts as two.", nightOrder: 1 },
-      { id: 5, name: "The Stalker", team: "evil", type: "villain", short: "Backup elimination if target survives.", nightOrder: 1 },
-      { id: 6, name: "The Right Hand", team: "evil", type: "accomplice", short: "Block one player's night ability.", nightOrder: 2, limited: 1 },
-      { id: 7, name: "The Spy", team: "evil", type: "accomplice", short: "Learn if a player has a night action.", nightOrder: 2 },
-      { id: 8, name: "The Manipulator", team: "evil", type: "accomplice", short: "Silence one player's vote next day.", nightOrder: 2 },
-      { id: 9, name: "The Traitor", team: "evil", type: "accomplice", short: "Force revote if marked player is eliminated.", nightOrder: 2 },
-      { id: 10, name: "The Informant", team: "evil", type: "accomplice", short: "Reveal exact role of a player to evil team.", nightOrder: 2 },
-      { id: 11, name: "The Sage", team: "good", type: "elder", short: "Check two players; learn if at least one is evil.", nightOrder: 3 },
-      { id: 12, name: "The Oracle", team: "good", type: "elder", short: "Check one player; good or evil.", nightOrder: 3 },
-      { id: 13, name: "The Sensitive", team: "good", type: "elder", short: "Learn if a player has a night action.", nightOrder: 3 },
-      { id: 14, name: "The Dreamer", team: "good", type: "elder", short: "Learn how many evil sit beside them.", nightOrder: 3 },
-      { id: 15, name: "The Witness", team: "good", type: "elder", short: "Narrator gives a clue about the night.", nightOrder: 3 },
-      { id: 16, name: "The Champion", team: "good", type: "hero", short: "Protects nightly. First success reveals a villain but ends power.", nightOrder: 4 },
-      { id: 17, name: "The Healer", team: "good", type: "hero", short: "Save one player, can't repeat.", nightOrder: 4 },
-      { id: 18, name: "The Guardian", team: "good", type: "hero", short: "Sacrifice self to save another.", nightOrder: 4 },
-      { id: 19, name: "The Survivor", team: "good", type: "hero", short: "Survives first night attack until after next vote.", nightOrder: 4 },
-      { id: 20, name: "The Defender", team: "good", type: "hero", short: "Traps a player; if they die, a villain dies too.", nightOrder: 4 },
-      { id: 21, name: "The Loyal Companion", team: "good", type: "sidekick", short: "Knows Champion; can boost their vote (dice).", nightOrder: 5 },
-      { id: 22, name: "The Voice", team: "good", type: "sidekick", short: "Double elimination after vote (dice).", nightOrder: 5 },
-      { id: 23, name: "The Fool", team: "good", type: "sidekick", short: "Wild accusation with dramatic blowback (dice).", nightOrder: 5 },
-      { id: 24, name: "The Trickster", team: "good", type: "sidekick", short: "Creates a false claim (dice).", nightOrder: 5 },
-      { id: 25, name: "The Imitator", team: "good", type: "sidekick", short: "Copies another day power (dice).", nightOrder: 5 },
-      { id: 26, name: "The Marked", team: "good", type: "damsel", short: "If voted out, demand a dramatic revote.", nightOrder: 0 },
-      { id: 27, name: "The Innocent", team: "good", type: "damsel", short: "Can reveal once to confirm they are good.", nightOrder: 0 },
-      { id: 28, name: "Twin A", team: "good", type: "damsel", short: "Linked to Twin B. If one dies, both do.", nightOrder: 0 },
-      { id: 29, name: "Twin B", team: "good", type: "damsel", short: "Linked to Twin A. If one dies, both do.", nightOrder: 0 },
-      { id: 30, name: "The Cursed", team: "good", type: "damsel", short: "If eliminated, neighbors on both sides also fall.", nightOrder: 0 }
+      { id: 1, name: "The Evil Mastermind", team: "evil", type: "villain", short: "Leads the villains, breaks ties.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
+      { id: 2, name: "The Assassin", team: "evil", type: "villain", short: "Once per game, add a second victim.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false, limited: 1 },
+      { id: 3, name: "The Pretender", team: "evil", type: "villain", short: "Appears good to Elder checks.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
+      { id: 4, name: "Corrupted Authority", team: "evil", type: "villain", short: "Day vote counts as two.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
+      { id: 5, name: "The Stalker", team: "evil", type: "villain", short: "Backup elimination if target survives.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
+      { id: 6, name: "The Right Hand", team: "evil", type: "accomplice", short: "Block one player's night ability.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false, limited: 1 },
+      { id: 7, name: "The Spy", team: "evil", type: "accomplice", short: "Learn if a player has a night action.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
+      { id: 8, name: "The Manipulator", team: "evil", type: "accomplice", short: "Silence one player's vote next day.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
+      { id: 9, name: "The Traitor", team: "evil", type: "accomplice", short: "Force revote if marked player is eliminated.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
+      { id: 10, name: "The Informant", team: "evil", type: "accomplice", short: "Reveal exact role of a player to evil team.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
+      { id: 11, name: "The Sage", team: "good", type: "elder", short: "Check two players; learn if at least one is evil.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+      { id: 12, name: "The Oracle", team: "good", type: "elder", short: "Check one player; good or evil.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+      { id: 13, name: "The Sensitive", team: "good", type: "elder", short: "Learn if a player has a night action.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+      { id: 14, name: "The Dreamer", team: "good", type: "elder", short: "Learn how many evil sit beside them.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+      { id: 15, name: "The Witness", team: "good", type: "elder", short: "Narrator gives a clue about the night.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+      { id: 16, name: "The Champion", team: "good", type: "hero", short: "Protects nightly. First success reveals a villain but ends power.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false, firstNightSetup: true },
+      { id: 17, name: "The Healer", team: "good", type: "hero", short: "Save one player, can't repeat.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false },
+      { id: 18, name: "The Guardian", team: "good", type: "hero", short: "Sacrifice self to save another.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false },
+      { id: 19, name: "The Survivor", team: "good", type: "hero", short: "Survives first night attack until after next vote.", nightOrder: 4, hasNightAction: false, oneTimeOnly: false, passive: true },
+      { id: 20, name: "The Defender", team: "good", type: "hero", short: "Traps a player; if they die, a villain dies too.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false },
+      { id: 21, name: "The Loyal Companion", team: "good", type: "sidekick", short: "Knows Champion; can boost their vote (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true },
+      { id: 22, name: "The Voice", team: "good", type: "sidekick", short: "Double elimination after vote (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
+      { id: 23, name: "The Fool", team: "good", type: "sidekick", short: "Wild accusation with dramatic blowback (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
+      { id: 24, name: "The Trickster", team: "good", type: "sidekick", short: "Creates a false claim (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
+      { id: 25, name: "The Imitator", team: "good", type: "sidekick", short: "Copies another day power (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
+      { id: 26, name: "The Marked", team: "good", type: "damsel", short: "If voted out, demand a dramatic revote.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false },
+      { id: 27, name: "The Innocent", team: "good", type: "damsel", short: "Can reveal once to confirm they are good.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false },
+      { id: 28, name: "Twin A", team: "good", type: "damsel", short: "Linked to Twin B. If one dies, both do.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true, linkedTo: 29 },
+      { id: 29, name: "Twin B", team: "good", type: "damsel", short: "Linked to Twin A. If one dies, both do.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true, linkedTo: 28 },
+      { id: 30, name: "The Cursed", team: "good", type: "damsel", short: "If eliminated, neighbors on both sides also fall.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true }
     ];
 
     const TYPE_DETAILS = {
@@ -685,29 +685,113 @@
           dayIntro: "The sun rises on the village square. Open your eyes and gasp dramatically!",
           noDeaths: "Against all odds, everyone survived the night. Whisper relief... for now.",
           deaths: victim => `Tragedy strikes! Last night we lost ${victim}. Prepare a spectacular exit.`,
-          vote: "The village must choose. On three, point boldly to your suspect!"
+          vote: "The village must choose. On three, point boldly to your suspect!",
+          deathScene: "Give us your most melodramatic village collapse!",
+          evilCall: "Ask for evil smirks and villainous grins."
+        }
+      },
+      mansion: {
+        name: "Millionaire's Mansion",
+        description: "Champagne towers, hidden wills, and backstabbing at the gala.",
+        script: {
+          nightIntro: "The lights dim in the grand estate. Guests, close your eyes as the mystery deepens...",
+          dayIntro: "Morning breaks over the mansion. Who's missing from breakfast?",
+          noDeaths: "Everyone made it through the night... but the tension remains.",
+          deaths: victim => `${victim} won't be inheriting anything now. Exit with grace!`,
+          vote: "The family gathers. At three, point to the one you suspect!",
+          deathScene: "A dramatic fall worthy of a soap opera!",
+          evilCall: "Ask for scheming whispers and calculating glances."
         }
       },
       haunted: {
-        name: "Haunted Mansion",
+        name: "Haunted House",
         description: "Thunder cracks, portraits watch, and secrets lurk in every corridor.",
         script: {
           nightIntro: "Storm clouds swallow the manor. Spirits, close your eyes...",
           dayIntro: "Dawn forces its way in. Awake! Whose scream echoes today?",
           noDeaths: "The mansion groaned but spared you. Celebrate in whispers.",
           deaths: victim => `${victim} vanished into the walls overnight. Only echoes remain...`,
-          vote: "Gather in the ballroom. At three, accuse with operatic flair!"
+          vote: "Gather in the ballroom. At three, accuse with operatic flair!",
+          deathScene: "Vanish with a ghostly wail!",
+          evilCall: "Ask for haunting stares and spectral grins."
+        }
+      },
+      castle: {
+        name: "Castle Tower",
+        description: "Medieval intrigue, throne room conspiracies, and royal betrayals.",
+        script: {
+          nightIntro: "The castle sleeps under moonlight. Knights and nobles, close your eyes...",
+          dayIntro: "The court assembles at dawn. Who has fallen?",
+          noDeaths: "The kingdom stands... for now.",
+          deaths: victim => `${victim} has been vanquished! Exit with medieval flair.`,
+          vote: "The court must decide. On three, point to the traitor!",
+          deathScene: "A noble collapse, worthy of a knight!",
+          evilCall: "Ask for treacherous sneers and courtly plots."
+        }
+      },
+      theatre: {
+        name: "Magic Show / Theatre",
+        description: "Spotlights, trapdoors, and illusions gone deadly.",
+        script: {
+          nightIntro: "The curtain falls on another act. Performers, close your eyes...",
+          dayIntro: "The spotlight rises! Who missed their cue?",
+          noDeaths: "All performers survived the night. The show must go on!",
+          deaths: victim => `${victim} vanished in the final trick. Take your final bow!`,
+          vote: "Center stage, everyone. At three, point to your suspect!",
+          deathScene: "Exit through the trapdoor with dramatic flair!",
+          evilCall: "Ask for villainous stage presence and dramatic glares."
         }
       },
       space: {
-        name: "Starship Melodrama",
+        name: "Space Station",
         description: "Red alerts, mysterious airlocks, and dramatic zero-g reveals.",
         script: {
           nightIntro: "Artificial night engages. Crew, helmets down and eyes closed...",
           dayIntro: "Lights to full! Bridge crew, report your status with gusto!",
           noDeaths: "Sensors show no casualties. Someone rerouted the danger...",
           deaths: victim => `${victim} was jettisoned into the void. Cue the space dirge...`,
-          vote: "Assemble in the hangar. At three, point to the saboteur!"
+          vote: "Assemble in the hangar. At three, point to the saboteur!",
+          deathScene: "Float away into the cosmic void!",
+          evilCall: "Ask for calculating computer-like stares."
+        }
+      },
+      western: {
+        name: "Wild West Town",
+        description: "Dusty saloons, high noon showdowns, and outlaws in the shadows.",
+        script: {
+          nightIntro: "Night falls on the frontier. Cowboys and outlaws, close your eyes...",
+          dayIntro: "The sun rises over the dusty town. Who didn't make it to dawn?",
+          noDeaths: "Everyone's still standing at the saloon.",
+          deaths: victim => `${victim} bit the dust last night. Give us a dusty collapse!`,
+          vote: "High noon has arrived. At three, point to the outlaw!",
+          deathScene: "A dusty Wild West collapse!",
+          evilCall: "Ask for outlaw sneers and bandit grins."
+        }
+      },
+      pirate: {
+        name: "Pirate Harbour",
+        description: "Treasure maps, plank-walking, and mutiny on the high seas.",
+        script: {
+          nightIntro: "The ship rocks in darkness. Pirates, close your eyes and plot...",
+          dayIntro: "Dawn breaks over the harbor. Who walked the plank?",
+          noDeaths: "All hands on deck! Everyone survived the night.",
+          deaths: victim => `${victim} sleeps with the fishes. Man overboard!`,
+          vote: "All crew to the deck. At three, point to the mutineer!",
+          deathScene: "A dramatic pirate's 'man overboard!'",
+          evilCall: "Ask for pirate snarls and mutinous grins."
+        }
+      },
+      hospital: {
+        name: "Soap Opera Hospital",
+        description: "Medical drama, secret diagnoses, and relationship scandals.",
+        script: {
+          nightIntro: "The hospital quiets for the night shift. Medical staff, close your eyes...",
+          dayIntro: "Morning rounds begin! Who's been discharged... permanently?",
+          noDeaths: "All patients stable. For now.",
+          deaths: victim => `${victim} coded last night. Give us soap opera dramatics!`,
+          vote: "Emergency meeting in the conference room. At three, accuse!",
+          deathScene: "A melodramatic hospital flatline moment!",
+          evilCall: "Ask for scheming glances and hospital intrigue."
         }
       }
     };
@@ -933,56 +1017,77 @@
         ability: char.short,
         eliminated: false,
         protected: false,
-        notes: ""
+        notes: "",
+        abilityUsesRemaining: char.limited || -1, // -1 means unlimited
+        blocked: false,
+        linkedTo: null, // for Twins, Champion-Companion
+        hasNightAction: char.hasNightAction || false,
+        firstNightSetup: char.firstNightSetup || false,
+        passive: char.passive || false
       }));
     }
 
     function buildScriptSteps() {
       const theme = THEMES[state.theme];
-      const hasType = type => state.players.some(player => player.type === type);
-      const hasRole = id => state.players.some(player => player.charId === id);
+      const hasType = type => state.players.some(player => player.type === type && !player.eliminated);
+      const hasRole = id => state.players.some(player => player.charId === id && !player.eliminated);
+      const hasActiveRole = id => {
+        const player = state.players.find(p => p.charId === id && !p.eliminated);
+        return player && (player.abilityUsesRemaining !== 0);
+      };
 
       const nightSteps = [];
+      
+      // Night 1 Opening
       if (state.night === 1) {
         nightSteps.push({
           title: "Night 1 Opening",
           phase: "night",
           blocks: [
             { type: "say", text: theme.script.nightIntro },
-            { type: "narrator", text: "Remind students: silent acting only. Encourage over-the-top reactions when woken." }
+            { type: "narrator", text: "Remind students: silent acting only. Encourage over-the-top reactions when woken. " + theme.script.evilCall }
           ]
         });
+        
+        // First Night Setup Actions - only on Night 1
         if (hasType("accomplice")) {
           nightSteps.push({
             title: "Night 1: Accomplices Meet Villains",
             phase: "night",
             blocks: [
               { type: "say", text: "Accomplices, lift your heads and find your villain allies." },
-              { type: "narrator", text: "Have villains give a subtle nod so accomplices know them." }
+              { type: "narrator", text: "Have villains give a subtle nod so accomplices know them. " + theme.script.evilCall }
             ]
           });
         }
-        if (hasRole(16)) {
+        
+        // Champion sees Cursed (only if both are in game)
+        if (hasRole(16) && hasRole(30)) {
+          const cursedPlayer = state.players.find(p => p.charId === 30);
           nightSteps.push({
             title: "Night 1: Champion Sees the Cursed",
             phase: "night",
             blocks: [
               { type: "say", text: "Champion, open your eyes and look for the Cursed." },
-              { type: "narrator", text: "Point silently to the Cursed player's seat." }
+              { type: "narrator", text: `Point silently to ${cursedPlayer ? cursedPlayer.name : "the Cursed player"}'s seat.` }
             ]
           });
         }
+        
+        // Twins Meet (only if both twins are in game)
         if (hasRole(28) && hasRole(29)) {
           nightSteps.push({
             title: "Night 1: Twins Meet",
             phase: "night",
             blocks: [
               { type: "say", text: "Twin A and Twin B, open your eyes and find each other." },
-              { type: "narrator", text: "Remind them: if one is eliminated, the other falls immediately." }
+              { type: "narrator", text: "Remind them: if one is eliminated, the other falls immediately. Note their identities for later." }
             ]
           });
         }
-        if (hasRole(21)) {
+        
+        // Loyal Companion meets Champion (only if both are in game)
+        if (hasRole(21) && hasRole(16)) {
           nightSteps.push({
             title: "Night 1: Loyal Companion",
             phase: "night",
@@ -993,6 +1098,7 @@
           });
         }
       } else {
+        // Subsequent nights opening
         nightSteps.push({
           title: `Night ${state.night} Begins`,
           phase: "night",
@@ -1003,6 +1109,7 @@
         });
       }
 
+      // Step 1: Villain-Type (all wake together) - Skip if no villains alive
       if (hasType("villain")) {
         const villains = state.players.filter(p => p.type === "villain" && !p.eliminated).map(p => `${p.name} (${p.roleName})`).join(", ");
         nightSteps.push({
@@ -1010,45 +1117,60 @@
           phase: "night",
           blocks: [
             { type: "say", text: "Villain team, open your eyes and choose your victim." },
-            { type: "narrator", text: "Watch their silent debate. Confirm their choice before moving on." },
+            { type: "narrator", text: "Watch their silent debate. Confirm their choice before moving on. " + theme.script.evilCall },
             { type: "info", text: `Villains alive: ${villains || "None"}` }
           ]
         });
       }
 
-      if (hasType("accomplice")) {
+      // Step 2: Accomplice-Type (check for ability uses) - Skip if none have abilities remaining
+      const accomplicesWithAbilities = state.players.filter(p => 
+        p.type === "accomplice" && !p.eliminated && p.abilityUsesRemaining !== 0
+      );
+      if (accomplicesWithAbilities.length > 0) {
+        const accompliceList = accomplicesWithAbilities.map(p => `${p.name} (${p.roleName})`).join(", ");
         nightSteps.push({
           title: "Step 2: Accomplice-Type",
           phase: "night",
           blocks: [
             { type: "say", text: "Accomplices with abilities remaining, give a subtle thumbs-up." },
-            { type: "narrator", text: "If a thumb is raised, quietly confirm which ability they're using tonight." }
+            { type: "narrator", text: "If a thumb is raised, quietly confirm which ability they're using tonight." },
+            { type: "info", text: `Accomplices with abilities: ${accompliceList}` }
           ]
         });
       }
 
-      if (hasType("elder")) {
+      // Step 3: Elder-Type (each wakes individually) - Skip if none alive
+      const elders = state.players.filter(p => p.type === "elder" && !p.eliminated && !p.blocked);
+      if (elders.length > 0) {
+        const elderList = elders.map(p => `${p.name} (${p.roleName})`).join(", ");
         nightSteps.push({
           title: "Step 3: Elder-Type",
           phase: "night",
           blocks: [
             { type: "say", text: "Elders, one at a time, open your eyes when your title is called." },
-            { type: "narrator", text: "Whisper their options and hold up fingers for results." }
+            { type: "narrator", text: "Whisper their options and hold up fingers for results. Check each elder individually." },
+            { type: "info", text: `Elders alive: ${elderList}` }
           ]
         });
       }
 
-      if (hasType("hero")) {
+      // Step 4: Hero-Type (each wakes individually) - Skip if none alive  
+      const heroes = state.players.filter(p => p.type === "hero" && !p.eliminated && !p.blocked && p.hasNightAction);
+      if (heroes.length > 0) {
+        const heroList = heroes.map(p => `${p.name} (${p.roleName})`).join(", ");
         nightSteps.push({
           title: "Step 4: Hero-Type",
           phase: "night",
           blocks: [
             { type: "say", text: "Heroes, when called, lift your head and select your target." },
-            { type: "reminder", text: "Track who was protected last night so they don't repeat illegal saves." }
+            { type: "reminder", text: "Track who was protected last night so they don't repeat illegal saves." },
+            { type: "info", text: `Heroes alive: ${heroList}` }
           ]
         });
       }
 
+      // Step 5: Sidekick-Type night check (for those that signal at night) - Skip if none alive
       if (hasType("sidekick")) {
         nightSteps.push({
           title: "Step 5: Sidekick-Type",
@@ -1060,55 +1182,105 @@
         });
       }
 
+      // Night Resolution - Private calculation step
       nightSteps.push({
-        title: "Night Resolution",
+        title: "Night Resolution (Private)",
         phase: "night",
         blocks: [
-          { type: "narrator", text: "Work through any protections or clashes. Once resolved, prepare the morning reveal." }
+          { type: "narrator", text: "PRIVATE STEP: Work through protections, blocks, and eliminations in order." },
+          { type: "narrator", text: "1. Apply blocks (Right Hand blocks a player's ability)" },
+          { type: "narrator", text: "2. Process protections (Champion, Healer, Guardian, Defender)" },
+          { type: "narrator", text: "3. Determine eliminations (Villain target, Assassin second target, Stalker backup)" },
+          { type: "narrator", text: "4. Check for Survivor passive ability" },
+          { type: "narrator", text: "5. Review your notes before announcing publicly" }
         ]
       });
 
+      // Day Phase Steps
       const daySteps = [
         {
           title: `Day ${state.night} Dawn`,
           phase: "day",
           blocks: [
             { type: "say", text: theme.script.dayIntro },
-            { type: "info", text: "Let eliminated players deliver a 3–5 second death scene before sitting out." }
+            { type: "reminder", text: theme.script.deathScene }
           ]
         },
         {
-          title: "Announcements",
+          title: "Announcements & Death Scenes",
           phase: "day",
           blocks: [
             { type: "say", text: "Narrate last night's events with flair. Announce who (if anyone) was eliminated." },
-            { type: "reminder", text: "If the Innocent reveals today, confirm their goodness immediately." }
+            { type: "narrator", text: "Let each eliminated player perform their melodramatic death scene (3-5 seconds). " + theme.script.deathScene },
+            { type: "reminder", text: "Check for linked deaths: Twins eliminate each other, Cursed eliminates 2 neighbors each side." }
+          ]
+        },
+        {
+          title: "Check Win Condition",
+          phase: "day",
+          blocks: [
+            { type: "narrator", text: "COUNT REMAINING: If evil ≥ good, evil wins. If no evil remain, good wins. Otherwise, continue." }
           ]
         },
         {
           title: "Discussion",
           phase: "day",
           blocks: [
-            { type: "say", text: "The floor is yours! Accuse with melodrama. Timer is set to three minutes." },
-            { type: "action", text: "Start the timer below when the debate begins." }
+            { type: "say", text: "The floor is yours! Accuse with melodrama. You have three minutes." },
+            { type: "action", text: "Start the timer below when the debate begins." },
+            { type: "reminder", text: "The Innocent can reveal to confirm goodness. The Marked can force a revote if eliminated." }
           ]
         },
         {
           title: "Voting",
           phase: "day",
           blocks: [
-            { type: "say", text: theme.script.vote },
-            { type: "reminder", text: "Repeat Corrupted Authority's vote twice if they're alive." }
-          ]
-        },
-        {
-          title: "Resolution",
-          phase: "day",
-          blocks: [
-            { type: "narrator", text: "Record who is eliminated. Apply any dramatic twists (Marked revote, Twins, Cursed)." }
+            { type: "say", text: theme.script.vote }
           ]
         }
       ];
+      
+      // Add voting reminders dynamically based on active roles
+      const votingReminders = [];
+      if (hasRole(4)) { // Corrupted Authority
+        const corruptedPlayer = state.players.find(p => p.charId === 4 && !p.eliminated);
+        if (corruptedPlayer) {
+          votingReminders.push(`Repeat ${corruptedPlayer.name}'s (Corrupted Authority) vote twice.`);
+        }
+      }
+      if (hasRole(8)) { // Manipulator
+        votingReminders.push("Check if any player is silenced (Manipulator ability).");
+      }
+      if (votingReminders.length > 0) {
+        daySteps[4].blocks.push({ type: "reminder", text: votingReminders.join(" ") });
+      }
+      
+      daySteps.push({
+        title: "Vote Resolution",
+        phase: "day",
+        blocks: [
+          { type: "narrator", text: "Count votes. Record who is eliminated." },
+          { type: "reminder", text: "The Marked can demand a revote if eliminated. Check for this before proceeding." },
+          { type: "reminder", text: theme.script.deathScene }
+        ]
+      });
+      
+      daySteps.push({
+        title: "Apply Vote Aftermath",
+        phase: "day",
+        blocks: [
+          { type: "narrator", text: "Check for linked eliminations: Twins, Cursed neighbors." },
+          { type: "narrator", text: "Process any on-elimination triggers." }
+        ]
+      });
+      
+      daySteps.push({
+        title: "Final Win Check",
+        phase: "day",
+        blocks: [
+          { type: "narrator", text: "COUNT AGAIN: If evil ≥ good, evil wins. If no evil remain, good wins. Otherwise, proceed to next night." }
+        ]
+      });
 
       return [...nightSteps, ...daySteps];
     }
