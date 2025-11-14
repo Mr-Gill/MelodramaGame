@@ -174,6 +174,15 @@ To deploy your own version:
 2. Enable GitHub Pages (Settings → Pages → Deploy from main branch)
 3. Visit your published URL
 
+## 📊 Project Status & Development
+
+This project is actively being developed. For detailed information about the current state and future plans:
+
+- **[PROJECT_STATUS.md](PROJECT_STATUS.md)** - Executive summary of feature completion (~75%), known issues, and production readiness assessment
+- **[NEXT_STEPS.md](NEXT_STEPS.md)** - Comprehensive 6-phase development roadmap with prioritized tasks and time estimates
+
+**Current Status**: 🟡 Functional MVP with core features working. Win conditions and complete voting mechanics are the primary gaps before v1.0 release.
+
 ## 📄 License
 
 Created as a teaching aid for the **Melodrama Werewolf: Year 7** drama unit.
