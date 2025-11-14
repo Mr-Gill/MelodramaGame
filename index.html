@@ -7,6 +7,10 @@
   <meta name="description" content="Digital narrator tool for the Melodrama Werewolf classroom drama game." />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0f172a" />
+  <!-- Google Fonts for theme-specific typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cinzel:wght@400;700&family=Orbitron:wght@400;700&family=Rye&family=Pirata+One&family=Lobster&family=Creepster&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: dark;
@@ -869,7 +873,11 @@
           accentColor: "#d97706",
           textGlow: "0 0 10px rgba(217, 119, 6, 0.3)",
           cardBackground: "rgba(41, 37, 36, 0.6)",
-          animation: "flicker 3s ease-in-out infinite"
+          animation: "flicker 3s ease-in-out infinite",
+          fontFamily: "'Georgia', 'Times New Roman', serif",
+          buttonGradient: "linear-gradient(135deg, #d97706, #b45309)",
+          buttonRadius: "8px",
+          texture: "repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(217, 119, 6, 0.03) 2px, rgba(217, 119, 6, 0.03) 4px)"
         },
         audio: {
           night: null, // Placeholder for future audio URL
@@ -893,7 +901,11 @@
           accentColor: "#eab308",
           textGlow: "0 0 12px rgba(234, 179, 8, 0.4)",
           cardBackground: "rgba(68, 64, 60, 0.5)",
-          animation: "shimmer 4s ease-in-out infinite"
+          animation: "shimmer 4s ease-in-out infinite",
+          fontFamily: "'Playfair Display', 'Didot', serif",
+          buttonGradient: "linear-gradient(135deg, #eab308, #ca8a04)",
+          buttonRadius: "4px",
+          texture: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(234, 179, 8, 0.02) 10px, rgba(234, 179, 8, 0.02) 20px)"
         },
         audio: {
           night: null,
@@ -917,7 +929,11 @@
           accentColor: "#a855f7",
           textGlow: "0 0 15px rgba(168, 85, 247, 0.5)",
           cardBackground: "rgba(30, 11, 55, 0.7)",
-          animation: "pulse 2s ease-in-out infinite"
+          animation: "pulse 2s ease-in-out infinite",
+          fontFamily: "'Creepster', 'Courier New', monospace",
+          buttonGradient: "linear-gradient(135deg, #a855f7, #7c3aed)",
+          buttonRadius: "12px",
+          texture: "radial-gradient(circle at 20% 50%, transparent 0%, rgba(168, 85, 247, 0.05) 100%), radial-gradient(circle at 80% 80%, transparent 0%, rgba(168, 85, 247, 0.05) 100%)"
         },
         audio: {
           night: null,
@@ -941,7 +957,11 @@
           accentColor: "#64748b",
           textGlow: "0 0 8px rgba(100, 116, 139, 0.3)",
           cardBackground: "rgba(51, 65, 85, 0.6)",
-          animation: "none"
+          animation: "none",
+          fontFamily: "'Cinzel', 'Trajan Pro', serif",
+          buttonGradient: "linear-gradient(135deg, #64748b, #475569)",
+          buttonRadius: "0px",
+          texture: "repeating-linear-gradient(0deg, rgba(100, 116, 139, 0.03), rgba(100, 116, 139, 0.03) 1px, transparent 1px, transparent 3px), repeating-linear-gradient(90deg, rgba(100, 116, 139, 0.03), rgba(100, 116, 139, 0.03) 1px, transparent 1px, transparent 3px)"
         },
         audio: {
           night: null,
@@ -965,7 +985,11 @@
           accentColor: "#f59e0b",
           textGlow: "0 0 20px rgba(245, 158, 11, 0.6)",
           cardBackground: "rgba(39, 39, 42, 0.7)",
-          animation: "spotlight 5s ease-in-out infinite"
+          animation: "spotlight 5s ease-in-out infinite",
+          fontFamily: "'Lobster', 'Brush Script MT', cursive",
+          buttonGradient: "linear-gradient(135deg, #f59e0b, #dc2626)",
+          buttonRadius: "25px",
+          texture: "radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 50%), repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(245, 158, 11, 0.02) 15deg, transparent 30deg)"
         },
         audio: {
           night: null,
@@ -989,7 +1013,11 @@
           accentColor: "#22d3ee",
           textGlow: "0 0 18px rgba(34, 211, 238, 0.7)",
           cardBackground: "rgba(12, 74, 110, 0.5)",
-          animation: "tech-glow 3s ease-in-out infinite"
+          animation: "tech-glow 3s ease-in-out infinite",
+          fontFamily: "'Orbitron', 'Consolas', monospace",
+          buttonGradient: "linear-gradient(135deg, #22d3ee, #0891b2)",
+          buttonRadius: "2px",
+          texture: "repeating-linear-gradient(0deg, rgba(34, 211, 238, 0.02) 0px, transparent 1px, transparent 2px, rgba(34, 211, 238, 0.02) 3px), repeating-linear-gradient(90deg, rgba(34, 211, 238, 0.02) 0px, transparent 1px, transparent 2px, rgba(34, 211, 238, 0.02) 3px)"
         },
         audio: {
           night: null,
@@ -1013,7 +1041,11 @@
           accentColor: "#d97706",
           textGlow: "0 0 10px rgba(217, 119, 6, 0.4)",
           cardBackground: "rgba(68, 64, 60, 0.6)",
-          animation: "dust 6s ease-in-out infinite"
+          animation: "dust 6s ease-in-out infinite",
+          fontFamily: "'Rye', 'Rockwell', serif",
+          buttonGradient: "linear-gradient(135deg, #92400e, #78350f)",
+          buttonRadius: "6px",
+          texture: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(217, 119, 6, 0.02) 5px, rgba(217, 119, 6, 0.02) 10px), repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(217, 119, 6, 0.02) 5px, rgba(217, 119, 6, 0.02) 10px)"
         },
         audio: {
           night: null,
@@ -1037,7 +1069,11 @@
           accentColor: "#06b6d4",
           textGlow: "0 0 12px rgba(6, 182, 212, 0.5)",
           cardBackground: "rgba(22, 78, 99, 0.6)",
-          animation: "wave 4s ease-in-out infinite"
+          animation: "wave 4s ease-in-out infinite",
+          fontFamily: "'Pirata One', 'Brush Script MT', cursive",
+          buttonGradient: "linear-gradient(135deg, #06b6d4, #0e7490)",
+          buttonRadius: "18px",
+          texture: "repeating-linear-gradient(120deg, transparent 0px, rgba(6, 182, 212, 0.03) 2px, transparent 4px, transparent 8px), repeating-linear-gradient(60deg, transparent 0px, rgba(6, 182, 212, 0.03) 2px, transparent 4px, transparent 8px)"
         },
         audio: {
           night: null,
@@ -1061,7 +1097,11 @@
           accentColor: "#0ea5e9",
           textGlow: "0 0 10px rgba(14, 165, 233, 0.3)",
           cardBackground: "rgba(226, 232, 240, 0.8)",
-          animation: "heartbeat 2s ease-in-out infinite"
+          animation: "heartbeat 2s ease-in-out infinite",
+          fontFamily: "'Montserrat', 'Helvetica Neue', sans-serif",
+          buttonGradient: "linear-gradient(135deg, #0ea5e9, #0284c7)",
+          buttonRadius: "20px",
+          texture: "repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(14, 165, 233, 0.02) 10px, rgba(14, 165, 233, 0.02) 11px)"
         },
         audio: {
           night: null,
@@ -1254,6 +1294,15 @@
       document.body.style.background = visual.background;
       document.body.style.minHeight = "100vh";
       
+      // Apply theme font family
+      document.body.style.fontFamily = visual.fontFamily;
+      
+      // Apply texture overlay
+      const mainElement = document.querySelector("main");
+      if (mainElement) {
+        mainElement.style.backgroundImage = visual.texture;
+      }
+      
       // Apply accent color to CSS variable
       document.documentElement.style.setProperty("--theme-accent", visual.accentColor);
       
@@ -1276,6 +1325,14 @@
       const roleCards = document.querySelectorAll(".role-card");
       roleCards.forEach(card => {
         card.style.borderColor = `${visual.accentColor}60`;
+      });
+
+      // Apply themed button styles
+      const buttons = document.querySelectorAll("button:not(.player-actions button)");
+      buttons.forEach(button => {
+        button.style.background = visual.buttonGradient;
+        button.style.borderRadius = visual.buttonRadius;
+        button.style.boxShadow = `0 8px 18px ${visual.accentColor}40`;
       });
 
       // Apply animation to body if specified
