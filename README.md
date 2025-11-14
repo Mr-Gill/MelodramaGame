@@ -76,6 +76,14 @@ This repository hosts a single-page web application that helps drama teachers ru
 - **Dark/Light Mode**: Toggle for different lighting conditions
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
 
+### 📽️ Projector View (NEW!)
+- **Student-Facing Display**: Second screen optimized for classroom projectors
+- **Auto-Sync**: Real-time updates from narrator view via BroadcastChannel API
+- **Spoiler-Free**: Shows only public information (phase, timer, eliminated players)
+- **High Visibility**: Large fonts and high contrast for easy viewing
+- **One-Click Launch**: Open projector view with a single button click
+- See [PROJECTOR.md](PROJECTOR.md) for detailed guide
+
 ### 💾 Progressive Web App (PWA)
 - **Offline Support**: Full functionality after initial load via service worker
 - **No Installation Required**: Runs entirely in the browser
