@@ -7,6 +7,10 @@
   <meta name="description" content="Digital narrator tool for the Melodrama Werewolf classroom drama game." />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0f172a" />
+  <!-- Google Fonts for theme-specific typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cinzel:wght@400;700&family=Orbitron:wght@400;700&family=Rye&family=Pirata+One&family=Lobster&family=Creepster&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: dark;
@@ -585,12 +589,111 @@
       flex: 1;
       padding: 0.75rem;
     }
+
+    /* Theme-specific animations */
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
+    }
+
+    @keyframes shimmer {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.15); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    @keyframes spotlight {
+      0%, 100% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.3); }
+      50% { box-shadow: 0 0 50px rgba(245, 158, 11, 0.6); }
+    }
+
+    @keyframes tech-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.8); }
+    }
+
+    @keyframes dust {
+      0%, 100% { opacity: 0.95; }
+      50% { opacity: 0.85; }
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.05); }
+      50% { transform: scale(1); }
+    }
+
+    /* Audio controls styling */
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(15, 23, 42, 0.35);
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    body.light .audio-controls {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .audio-controls button {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      min-width: auto;
+    }
+
+    .audio-controls .volume-slider {
+      width: 100px;
+      accent-color: var(--accent-ui);
+    }
+
+    .audio-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .audio-indicator.playing {
+      color: var(--accent-ui);
+    }
+
+    /* Phase indicator for audio */
+    .phase-audio-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(34, 211, 238, 0.15);
+      font-size: 0.75rem;
+      margin-left: 0.5rem;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>🎭 <span>Melodrama</span> Werewolf Narrator</h1>
     <div class="actions">
+      <div class="audio-controls hidden" id="audio-controls">
+        <button id="toggle-audio" type="button" title="Toggle ambient audio">🔇</button>
+        <input id="volume-slider" type="range" class="volume-slider" min="0" max="100" value="50" title="Volume" />
+        <span class="audio-indicator" id="audio-indicator">
+          <span id="audio-phase">Night</span>
+        </span>
+      </div>
       <button id="toggle-mode" type="button" aria-pressed="false">Toggle Dark/Light</button>
       <button id="reset-game" type="button">New Game</button>
       <button id="open-projector" type="button">📽️ Open Projector View</button>
@@ -766,6 +869,21 @@
       village: {
         name: "Classic Village",
         description: "Foggy streets, flickering lanterns, and suspicious glances.",
+        visual: {
+          background: "radial-gradient(circle at top, rgba(139, 92, 46, 0.15), transparent 60%), linear-gradient(180deg, #1a1410 0%, #2d1b0e 100%)",
+          accentColor: "#d97706",
+          textGlow: "0 0 10px rgba(217, 119, 6, 0.3)",
+          cardBackground: "rgba(41, 37, 36, 0.6)",
+          animation: "flicker 3s ease-in-out infinite",
+          fontFamily: "'Georgia', 'Times New Roman', serif",
+          buttonGradient: "linear-gradient(135deg, #d97706, #b45309)",
+          buttonRadius: "8px",
+          texture: "repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(217, 119, 6, 0.03) 2px, rgba(217, 119, 6, 0.03) 4px)"
+        },
+        audio: {
+          night: null, // Placeholder for future audio URL
+          day: null
+        },
         script: {
           nightIntro: "Night descends over the village. Actors, close your eyes and fall into character...",
           dayIntro: "The sun rises on the village square. Open your eyes and gasp dramatically!",
@@ -779,6 +897,21 @@
       mansion: {
         name: "Millionaire's Mansion",
         description: "Champagne towers, hidden wills, and backstabbing at the gala.",
+        visual: {
+          background: "radial-gradient(circle at center, rgba(234, 179, 8, 0.12), transparent 70%), linear-gradient(180deg, #1c1917 0%, #292524 100%)",
+          accentColor: "#eab308",
+          textGlow: "0 0 12px rgba(234, 179, 8, 0.4)",
+          cardBackground: "rgba(68, 64, 60, 0.5)",
+          animation: "shimmer 4s ease-in-out infinite",
+          fontFamily: "'Playfair Display', 'Didot', serif",
+          buttonGradient: "linear-gradient(135deg, #eab308, #ca8a04)",
+          buttonRadius: "4px",
+          texture: "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(234, 179, 8, 0.02) 10px, rgba(234, 179, 8, 0.02) 20px)"
+        },
+        audio: {
+          night: null,
+          day: null
+        },
         script: {
           nightIntro: "The lights dim in the grand estate. Guests, close your eyes as the mystery deepens...",
           dayIntro: "Morning breaks over the mansion. Who's missing from breakfast?",
@@ -792,6 +925,21 @@
       haunted: {
         name: "Haunted House",
         description: "Thunder cracks, portraits watch, and secrets lurk in every corridor.",
+        visual: {
+          background: "radial-gradient(ellipse at bottom, rgba(124, 58, 237, 0.2), transparent 60%), linear-gradient(180deg, #0a0118 0%, #1e0b37 100%)",
+          accentColor: "#a855f7",
+          textGlow: "0 0 15px rgba(168, 85, 247, 0.5)",
+          cardBackground: "rgba(30, 11, 55, 0.7)",
+          animation: "pulse 2s ease-in-out infinite",
+          fontFamily: "'Creepster', 'Courier New', monospace",
+          buttonGradient: "linear-gradient(135deg, #a855f7, #7c3aed)",
+          buttonRadius: "12px",
+          texture: "radial-gradient(circle at 20% 50%, transparent 0%, rgba(168, 85, 247, 0.05) 100%), radial-gradient(circle at 80% 80%, transparent 0%, rgba(168, 85, 247, 0.05) 100%)"
+        },
+        audio: {
+          night: null,
+          day: null
+        },
         script: {
           nightIntro: "Storm clouds swallow the manor. Spirits, close your eyes...",
           dayIntro: "Dawn forces its way in. Awake! Whose scream echoes today?",
@@ -805,6 +953,21 @@
       castle: {
         name: "Castle Tower",
         description: "Medieval intrigue, throne room conspiracies, and royal betrayals.",
+        visual: {
+          background: "radial-gradient(circle at top, rgba(71, 85, 105, 0.2), transparent 65%), linear-gradient(180deg, #1e293b 0%, #334155 100%)",
+          accentColor: "#64748b",
+          textGlow: "0 0 8px rgba(100, 116, 139, 0.3)",
+          cardBackground: "rgba(51, 65, 85, 0.6)",
+          animation: "none",
+          fontFamily: "'Cinzel', 'Trajan Pro', serif",
+          buttonGradient: "linear-gradient(135deg, #64748b, #475569)",
+          buttonRadius: "0px",
+          texture: "repeating-linear-gradient(0deg, rgba(100, 116, 139, 0.03), rgba(100, 116, 139, 0.03) 1px, transparent 1px, transparent 3px), repeating-linear-gradient(90deg, rgba(100, 116, 139, 0.03), rgba(100, 116, 139, 0.03) 1px, transparent 1px, transparent 3px)"
+        },
+        audio: {
+          night: null,
+          day: null
+        },
         script: {
           nightIntro: "The castle sleeps under moonlight. Knights and nobles, close your eyes...",
           dayIntro: "The court assembles at dawn. Who has fallen?",
@@ -818,6 +981,21 @@
       theatre: {
         name: "Magic Show / Theatre",
         description: "Spotlights, trapdoors, and illusions gone deadly.",
+        visual: {
+          background: "radial-gradient(circle at center, rgba(239, 68, 68, 0.15), rgba(234, 179, 8, 0.1), transparent 70%), linear-gradient(180deg, #18181b 0%, #27272a 100%)",
+          accentColor: "#f59e0b",
+          textGlow: "0 0 20px rgba(245, 158, 11, 0.6)",
+          cardBackground: "rgba(39, 39, 42, 0.7)",
+          animation: "spotlight 5s ease-in-out infinite",
+          fontFamily: "'Lobster', 'Brush Script MT', cursive",
+          buttonGradient: "linear-gradient(135deg, #f59e0b, #dc2626)",
+          buttonRadius: "25px",
+          texture: "radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 50%), repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(245, 158, 11, 0.02) 15deg, transparent 30deg)"
+        },
+        audio: {
+          night: null,
+          day: null
+        },
         script: {
           nightIntro: "The curtain falls on another act. Performers, close your eyes...",
           dayIntro: "The spotlight rises! Who missed their cue?",
@@ -831,6 +1009,21 @@
       space: {
         name: "Space Station",
         description: "Red alerts, mysterious airlocks, and dramatic zero-g reveals.",
+        visual: {
+          background: "radial-gradient(circle at center, rgba(6, 182, 212, 0.2), rgba(34, 211, 238, 0.1), transparent 75%), linear-gradient(180deg, #020617 0%, #0c4a6e 100%)",
+          accentColor: "#22d3ee",
+          textGlow: "0 0 18px rgba(34, 211, 238, 0.7)",
+          cardBackground: "rgba(12, 74, 110, 0.5)",
+          animation: "tech-glow 3s ease-in-out infinite",
+          fontFamily: "'Orbitron', 'Consolas', monospace",
+          buttonGradient: "linear-gradient(135deg, #22d3ee, #0891b2)",
+          buttonRadius: "2px",
+          texture: "repeating-linear-gradient(0deg, rgba(34, 211, 238, 0.02) 0px, transparent 1px, transparent 2px, rgba(34, 211, 238, 0.02) 3px), repeating-linear-gradient(90deg, rgba(34, 211, 238, 0.02) 0px, transparent 1px, transparent 2px, rgba(34, 211, 238, 0.02) 3px)"
+        },
+        audio: {
+          night: null,
+          day: null
+        },
         script: {
           nightIntro: "Artificial night engages. Crew, helmets down and eyes closed...",
           dayIntro: "Lights to full! Bridge crew, report your status with gusto!",
@@ -844,6 +1037,21 @@
       western: {
         name: "Wild West Town",
         description: "Dusty saloons, high noon showdowns, and outlaws in the shadows.",
+        visual: {
+          background: "radial-gradient(circle at top, rgba(161, 98, 7, 0.2), transparent 60%), linear-gradient(180deg, #292524 0%, #44403c 100%)",
+          accentColor: "#d97706",
+          textGlow: "0 0 10px rgba(217, 119, 6, 0.4)",
+          cardBackground: "rgba(68, 64, 60, 0.6)",
+          animation: "dust 6s ease-in-out infinite",
+          fontFamily: "'Rye', 'Rockwell', serif",
+          buttonGradient: "linear-gradient(135deg, #92400e, #78350f)",
+          buttonRadius: "6px",
+          texture: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(217, 119, 6, 0.02) 5px, rgba(217, 119, 6, 0.02) 10px), repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(217, 119, 6, 0.02) 5px, rgba(217, 119, 6, 0.02) 10px)"
+        },
+        audio: {
+          night: null,
+          day: null
+        },
         script: {
           nightIntro: "Night falls on the frontier. Cowboys and outlaws, close your eyes...",
           dayIntro: "The sun rises over the dusty town. Who didn't make it to dawn?",
@@ -857,6 +1065,21 @@
       pirate: {
         name: "Pirate Harbour",
         description: "Treasure maps, plank-walking, and mutiny on the high seas.",
+        visual: {
+          background: "radial-gradient(circle at bottom, rgba(14, 116, 144, 0.25), transparent 65%), linear-gradient(180deg, #0c4a6e 0%, #164e63 100%)",
+          accentColor: "#06b6d4",
+          textGlow: "0 0 12px rgba(6, 182, 212, 0.5)",
+          cardBackground: "rgba(22, 78, 99, 0.6)",
+          animation: "wave 4s ease-in-out infinite",
+          fontFamily: "'Pirata One', 'Brush Script MT', cursive",
+          buttonGradient: "linear-gradient(135deg, #06b6d4, #0e7490)",
+          buttonRadius: "18px",
+          texture: "repeating-linear-gradient(120deg, transparent 0px, rgba(6, 182, 212, 0.03) 2px, transparent 4px, transparent 8px), repeating-linear-gradient(60deg, transparent 0px, rgba(6, 182, 212, 0.03) 2px, transparent 4px, transparent 8px)"
+        },
+        audio: {
+          night: null,
+          day: null
+        },
         script: {
           nightIntro: "The ship rocks in darkness. Pirates, close your eyes and plot...",
           dayIntro: "Dawn breaks over the harbor. Who walked the plank?",
@@ -870,6 +1093,21 @@
       hospital: {
         name: "Soap Opera Hospital",
         description: "Medical drama, secret diagnoses, and relationship scandals.",
+        visual: {
+          background: "radial-gradient(circle at top, rgba(56, 189, 248, 0.15), rgba(255, 255, 255, 0.05), transparent 70%), linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)",
+          accentColor: "#0ea5e9",
+          textGlow: "0 0 10px rgba(14, 165, 233, 0.3)",
+          cardBackground: "rgba(226, 232, 240, 0.8)",
+          animation: "heartbeat 2s ease-in-out infinite",
+          fontFamily: "'Montserrat', 'Helvetica Neue', sans-serif",
+          buttonGradient: "linear-gradient(135deg, #0ea5e9, #0284c7)",
+          buttonRadius: "20px",
+          texture: "repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(14, 165, 233, 0.02) 10px, rgba(14, 165, 233, 0.02) 11px)"
+        },
+        audio: {
+          night: null,
+          day: null
+        },
         script: {
           nightIntro: "The hospital quiets for the night shift. Medical staff, close your eyes...",
           dayIntro: "Morning rounds begin! Who's been discharged... permanently?",
@@ -898,6 +1136,12 @@
       nameList: "",
       notes: "",
       mode: "dark",
+      audio: {
+        enabled: false,
+        volume: 0.5,
+        currentTrack: null,
+        phase: "night"
+      },
       timer: {
         remaining: 180,
         running: false,
@@ -1052,9 +1296,147 @@
       });
     }
 
+    const audioControls = document.getElementById("audio-controls");
+    const toggleAudioButton = document.getElementById("toggle-audio");
+    const volumeSlider = document.getElementById("volume-slider");
+    const audioIndicator = document.getElementById("audio-indicator");
+    const audioPhase = document.getElementById("audio-phase");
+
+    // Audio system
+    let audioContext = null;
+    let currentAudio = null;
+
+    function initAudioSystem() {
+      // Audio context will be created on first user interaction due to browser policies
+      toggleAudioButton.addEventListener("click", toggleAudio);
+      volumeSlider.addEventListener("input", (e) => {
+        state.audio.volume = e.target.value / 100;
+        if (currentAudio) {
+          currentAudio.volume = state.audio.volume;
+        }
+        persistState();
+      });
+    }
+
+    function toggleAudio() {
+      state.audio.enabled = !state.audio.enabled;
+      toggleAudioButton.textContent = state.audio.enabled ? "🔊" : "🔇";
+      audioIndicator.classList.toggle("playing", state.audio.enabled);
+      
+      if (state.audio.enabled) {
+        playThemeAudio();
+      } else {
+        stopAudio();
+      }
+      persistState();
+    }
+
+    function playThemeAudio() {
+      // Stop any currently playing audio
+      stopAudio();
+
+      const theme = THEMES[state.theme];
+      const audioUrl = state.phase === "night" ? theme.audio.night : theme.audio.day;
+
+      // If no audio URL is set, just update indicator
+      if (!audioUrl) {
+        return;
+      }
+
+      try {
+        currentAudio = new Audio(audioUrl);
+        currentAudio.loop = true;
+        currentAudio.volume = state.audio.volume;
+        currentAudio.play().catch(err => {
+          console.warn("Audio playback failed:", err);
+          state.audio.enabled = false;
+          toggleAudioButton.textContent = "🔇";
+        });
+      } catch (err) {
+        console.warn("Audio initialization failed:", err);
+      }
+    }
+
+    function stopAudio() {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+      }
+    }
+
+    function updateAudioPhase(phase) {
+      state.audio.phase = phase;
+      audioPhase.textContent = phase === "night" ? "Night" : "Day";
+      
+      if (state.audio.enabled) {
+        playThemeAudio();
+      }
+    }
+
+    function applyThemeVisuals() {
+      const theme = THEMES[state.theme];
+      const visual = theme.visual;
+      
+      // Apply theme-specific background to body
+      document.body.style.background = visual.background;
+      document.body.style.minHeight = "100vh";
+      
+      // Apply theme font family
+      document.body.style.fontFamily = visual.fontFamily;
+      
+      // Apply texture overlay
+      const mainElement = document.querySelector("main");
+      if (mainElement) {
+        mainElement.style.backgroundImage = visual.texture;
+      }
+      
+      // Apply accent color to CSS variable
+      document.documentElement.style.setProperty("--theme-accent", visual.accentColor);
+      
+      // Apply text glow to headers and important elements
+      const headers = document.querySelectorAll("h1, h2, h3");
+      headers.forEach(header => {
+        header.style.textShadow = visual.textGlow;
+      });
+
+      // Apply semi-transparent backgrounds to sections to let theme show through
+      const sections = document.querySelectorAll("section");
+      sections.forEach(section => {
+        // Use a more transparent overlay that lets the theme background show
+        section.style.backgroundColor = "rgba(15, 23, 42, 0.4)";
+        section.style.backdropFilter = "blur(12px)";
+        section.style.border = `1px solid ${visual.accentColor}40`;
+      });
+      
+      // Apply theme accent to role cards and UI elements
+      const roleCards = document.querySelectorAll(".role-card");
+      roleCards.forEach(card => {
+        card.style.borderColor = `${visual.accentColor}60`;
+      });
+
+      // Apply themed button styles
+      const buttons = document.querySelectorAll("button:not(.player-actions button)");
+      buttons.forEach(button => {
+        button.style.background = visual.buttonGradient;
+        button.style.borderRadius = visual.buttonRadius;
+        button.style.boxShadow = `0 8px 18px ${visual.accentColor}40`;
+      });
+
+      // Apply animation to body if specified
+      if (visual.animation && visual.animation !== "none") {
+        document.body.style.animation = visual.animation;
+      } else {
+        document.body.style.animation = "none";
+      }
+    }
+
     function applyMode(mode) {
       document.body.classList.toggle("light", mode === "light");
       toggleModeButton.setAttribute("aria-pressed", String(mode === "light"));
+      
+      // Reapply theme visuals after mode change
+      applyThemeVisuals();
     }
 
     function loadState() {
@@ -1843,6 +2225,9 @@
         scriptTitle.textContent = step.title;
         phaseLabel.textContent = PHASES[step.phase] || "Script";
         
+        // Update audio phase if it changed
+        if (step.phase && step.phase !== state.audio.phase) {
+          updateAudioPhase(step.phase);
         // Broadcast phase change if it changed
         if (state.phase !== step.phase) {
           state.phase = step.phase;
@@ -2157,9 +2542,12 @@
       state.night = 1;
       state.stepIndex = 0;
       state.notes = notesArea.value;
+      state.audio.phase = "night";
       persistState();
       setupSection.classList.add("hidden");
       gameSection.classList.remove("hidden");
+      audioControls.classList.remove("hidden");
+      applyThemeVisuals();
       broadcastPhaseChange(state.phase, state.night);
       renderAll();
     }
@@ -2182,17 +2570,27 @@
 
     function renderAll() {
       applyMode(state.mode);
+      applyThemeVisuals();
       updatePlayerCountDisplays();
       updateRoleSelectionUI();
       renderThemeSelect();
       renderTimer();
       namesInput.value = state.nameList;
+      
+      // Update audio controls
+      toggleAudioButton.textContent = state.audio.enabled ? "🔊" : "🔇";
+      volumeSlider.value = state.audio.volume * 100;
+      audioPhase.textContent = state.audio.phase === "night" ? "Night" : "Day";
+      audioIndicator.classList.toggle("playing", state.audio.enabled);
+      
       if (state.phase === "setup") {
         setupSection.classList.remove("hidden");
         gameSection.classList.add("hidden");
+        audioControls.classList.add("hidden");
       } else {
         setupSection.classList.add("hidden");
         gameSection.classList.remove("hidden");
+        audioControls.classList.remove("hidden");
         renderScript();
         renderPlayers();
         updateCounts();
@@ -2210,8 +2608,14 @@
     themeSelect.addEventListener("change", event => {
       state.theme = event.target.value;
       themeDescription.textContent = THEMES[state.theme].description;
+      applyThemeVisuals();
       persistState();
-      if (state.phase !== "setup") renderScript();
+      if (state.phase !== "setup") {
+        renderScript();
+        if (state.audio.enabled) {
+          playThemeAudio();
+        }
+      }
     });
 
     namesInput.addEventListener("input", () => {
@@ -2265,6 +2669,8 @@
       });
     }
 
+    // Initialize audio system
+    initAudioSystem();
     // Initialize projector channel
     initProjectorChannel();
 
