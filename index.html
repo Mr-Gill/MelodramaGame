@@ -1250,23 +1250,32 @@
       const theme = THEMES[state.theme];
       const visual = theme.visual;
       
-      // Apply theme-specific background
+      // Apply theme-specific background to body
       document.body.style.background = visual.background;
+      document.body.style.minHeight = "100vh";
       
       // Apply accent color to CSS variable
       document.documentElement.style.setProperty("--theme-accent", visual.accentColor);
       
       // Apply text glow to headers and important elements
-      const headers = document.querySelectorAll("h1, h2");
+      const headers = document.querySelectorAll("h1, h2, h3");
       headers.forEach(header => {
         header.style.textShadow = visual.textGlow;
       });
 
-      // Apply card backgrounds
+      // Apply semi-transparent backgrounds to sections to let theme show through
       const sections = document.querySelectorAll("section");
       sections.forEach(section => {
-        section.style.background = visual.cardBackground;
-        section.style.backdropFilter = "blur(18px)";
+        // Use a more transparent overlay that lets the theme background show
+        section.style.backgroundColor = "rgba(15, 23, 42, 0.4)";
+        section.style.backdropFilter = "blur(12px)";
+        section.style.border = `1px solid ${visual.accentColor}40`;
+      });
+      
+      // Apply theme accent to role cards and UI elements
+      const roleCards = document.querySelectorAll(".role-card");
+      roleCards.forEach(card => {
+        card.style.borderColor = `${visual.accentColor}60`;
       });
 
       // Apply animation to body if specified
