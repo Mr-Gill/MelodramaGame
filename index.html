@@ -593,6 +593,7 @@
     <div class="actions">
       <button id="toggle-mode" type="button" aria-pressed="false">Toggle Dark/Light</button>
       <button id="reset-game" type="button">New Game</button>
+      <button id="open-projector" type="button">📽️ Open Projector View</button>
       <a id="download-notes" class="pill" href="#" download="melodrama-notes.txt">Export Notes</a>
     </div>
   </header>
@@ -963,6 +964,93 @@
     const toggleModeButton = document.getElementById("toggle-mode");
     const resetGameButton = document.getElementById("reset-game");
     const downloadNotesLink = document.getElementById("download-notes");
+    const openProjectorButton = document.getElementById("open-projector");
+
+    // BroadcastChannel for projector synchronization
+    let projectorChannel = null;
+    const CHANNEL_NAME = 'melodrama-narrator-projector';
+
+    function initProjectorChannel() {
+      if ('BroadcastChannel' in window) {
+        try {
+          projectorChannel = new BroadcastChannel(CHANNEL_NAME);
+          
+          projectorChannel.onmessage = (event) => {
+            // Handle requests from projector
+            if (event.data.type === 'request-state' || event.data.type === 'ping') {
+              sendFullStateToProjector();
+            }
+          };
+
+          console.log('Projector BroadcastChannel initialized');
+        } catch (error) {
+          console.error('Failed to initialize projector channel:', error);
+        }
+      }
+    }
+
+    function sendFullStateToProjector() {
+      if (!projectorChannel) return;
+      
+      const eliminatedPlayers = state.players
+        .filter(p => p.eliminated)
+        .map(p => p.name);
+
+      projectorChannel.postMessage({
+        type: 'full-state',
+        phase: state.phase,
+        night: state.night,
+        timer: {
+          remaining: state.timer.remaining,
+          running: state.timer.running
+        },
+        eliminated: eliminatedPlayers
+      });
+    }
+
+    function broadcastPhaseChange(phase, night) {
+      if (!projectorChannel) return;
+      projectorChannel.postMessage({
+        type: 'phase-change',
+        phase: phase,
+        night: night
+      });
+    }
+
+    function broadcastTimerUpdate(remaining, running) {
+      if (!projectorChannel) return;
+      projectorChannel.postMessage({
+        type: 'timer-update',
+        remaining: remaining,
+        running: running
+      });
+    }
+
+    function broadcastPlayerEliminated(playerName) {
+      if (!projectorChannel) return;
+      projectorChannel.postMessage({
+        type: 'player-eliminated',
+        playerName: playerName
+      });
+    }
+
+    function broadcastPlayersEliminated() {
+      if (!projectorChannel) return;
+      const eliminatedPlayers = state.players
+        .filter(p => p.eliminated)
+        .map(p => p.name);
+      projectorChannel.postMessage({
+        type: 'players-eliminated',
+        players: eliminatedPlayers
+      });
+    }
+
+    function broadcastGameReset() {
+      if (!projectorChannel) return;
+      projectorChannel.postMessage({
+        type: 'reset-game'
+      });
+    }
 
     function applyMode(mode) {
       document.body.classList.toggle("light", mode === "light");
@@ -994,6 +1082,7 @@
         URL.revokeObjectURL(downloadNotesLink.dataset.url);
         delete downloadNotesLink.dataset.url;
       }
+      broadcastGameReset();
       applyMode(state.mode);
       renderAll();
       setupSection.classList.remove("hidden");
@@ -1725,6 +1814,9 @@
         result.finalEliminations.push(death);
       });
 
+      // Broadcast eliminations to projector
+      broadcastPlayersEliminated();
+
       // Store result
       state.resolutionResult = result;
 
@@ -1750,6 +1842,13 @@
       } else {
         scriptTitle.textContent = step.title;
         phaseLabel.textContent = PHASES[step.phase] || "Script";
+        
+        // Broadcast phase change if it changed
+        if (state.phase !== step.phase) {
+          state.phase = step.phase;
+          broadcastPhaseChange(state.phase, state.night);
+        }
+        
         step.blocks.forEach(block => {
           const div = document.createElement("div");
           div.className = `script-block block-${block.type}`;
@@ -1972,6 +2071,7 @@
       if (action === "toggle-eliminated") {
         player.eliminated = !player.eliminated;
         if (player.eliminated) player.protected = false;
+        broadcastPlayersEliminated();
       }
       if (action === "toggle-protected") {
         player.protected = !player.protected;
@@ -2025,11 +2125,13 @@
         if (state.timer.remaining > 0) {
           state.timer.remaining -= 1;
           renderTimer();
+          broadcastTimerUpdate(state.timer.remaining, state.timer.running);
           if (state.timer.remaining === 0) {
             alert("Timer complete! Time for a dramatic decision.");
           }
         }
       }, 1000);
+      broadcastTimerUpdate(state.timer.remaining, state.timer.running);
       persistState();
     }
 
@@ -2037,6 +2139,7 @@
       state.timer.running = false;
       if (state.timer.handle) clearInterval(state.timer.handle);
       state.timer.handle = null;
+      broadcastTimerUpdate(state.timer.remaining, state.timer.running);
       persistState();
     }
 
@@ -2044,6 +2147,7 @@
       pauseTimer();
       state.timer.remaining = 180;
       renderTimer();
+      broadcastTimerUpdate(state.timer.remaining, state.timer.running);
       persistState();
     }
 
@@ -2056,6 +2160,7 @@
       persistState();
       setupSection.classList.add("hidden");
       gameSection.classList.remove("hidden");
+      broadcastPhaseChange(state.phase, state.night);
       renderAll();
     }
 
@@ -2141,11 +2246,27 @@
       }
     });
 
+    openProjectorButton.addEventListener("click", () => {
+      // Open projector view in a new window
+      const projectorWindow = window.open('projector.html', 'MelodramaProjector', 'width=1920,height=1080');
+      if (projectorWindow) {
+        // Send initial state after a brief delay to ensure the projector window is ready
+        setTimeout(() => {
+          sendFullStateToProjector();
+        }, 1000);
+      } else {
+        alert('Failed to open projector window. Please check your popup blocker settings.');
+      }
+    });
+
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("sw.js").catch(console.error);
       });
     }
+
+    // Initialize projector channel
+    initProjectorChannel();
 
     renderThemeSelect();
     renderRoleGroups();

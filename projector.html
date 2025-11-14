@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Melodrama Werewolf - Projector View</title>
+  <meta name="description" content="Student-facing display for Melodrama Werewolf game." />
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --accent-night: #7c3aed;
+      --accent-day: #f59e0b;
+      --accent-eliminated: #ef4444;
+      --accent-timer: #22d3ee;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, rgba(124, 58, 237, 0.15), transparent 60%), var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      padding: 2rem clamp(2rem, 5vw, 4rem);
+      text-align: center;
+      border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    header h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 30px rgba(124, 58, 237, 0.6);
+    }
+
+    header .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.8rem);
+      color: var(--text-secondary);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 2rem;
+      padding: 3rem clamp(2rem, 5vw, 4rem);
+      max-width: 1800px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .phase-indicator {
+      text-align: center;
+      padding: 2rem;
+      border-radius: 24px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 3px solid;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    .phase-indicator.night {
+      border-color: var(--accent-night);
+      box-shadow: 0 0 60px rgba(124, 58, 237, 0.5);
+    }
+
+    .phase-indicator.day {
+      border-color: var(--accent-day);
+      box-shadow: 0 0 60px rgba(245, 158, 11, 0.5);
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.02);
+        opacity: 0.95;
+      }
+    }
+
+    .phase-label {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .night-number {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+    }
+
+    .main-display {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .main-display {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .timer-card {
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 28px;
+      padding: 3rem;
+      text-align: center;
+      border: 2px solid rgba(34, 211, 238, 0.3);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    .timer-label {
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    .timer-display {
+      font-size: clamp(4rem, 12vw, 9rem);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent-timer);
+      text-shadow: 0 0 40px rgba(34, 211, 238, 0.6);
+      line-height: 1;
+      margin: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-display.warning {
+      color: var(--accent-day);
+      text-shadow: 0 0 40px rgba(245, 158, 11, 0.6);
+      animation: pulse-urgent 1s ease-in-out infinite;
+    }
+
+    .timer-display.critical {
+      color: var(--accent-eliminated);
+      text-shadow: 0 0 40px rgba(239, 68, 68, 0.8);
+      animation: pulse-urgent 0.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-urgent {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .eliminated-card {
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 28px;
+      padding: 3rem;
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .eliminated-title {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 0 0 1.5rem 0;
+      color: var(--accent-eliminated);
+      text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .eliminated-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .eliminated-item {
+      padding: 1.2rem 1.5rem;
+      background: rgba(239, 68, 68, 0.15);
+      border-radius: 16px;
+      border-left: 4px solid var(--accent-eliminated);
+      font-size: clamp(1.1rem, 2vw, 1.8rem);
+      letter-spacing: 0.05em;
+      animation: fade-in 0.5s ease-out;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .empty-message {
+      font-size: clamp(1.1rem, 2vw, 1.6rem);
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 2rem;
+      font-style: italic;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .connection-status {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    .connection-status.connected {
+      background: rgba(34, 197, 94, 0.2);
+      border: 2px solid #22c55e;
+      color: #86efac;
+    }
+
+    .connection-status.disconnected {
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid #ef4444;
+      color: #fca5a5;
+    }
+
+    .connection-status .indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    .connection-status.connected .indicator {
+      background: #22c55e;
+    }
+
+    .connection-status.disconnected .indicator {
+      background: #ef4444;
+    }
+
+    @keyframes blink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    /* Custom scrollbar */
+    .eliminated-card::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .eliminated-card::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 10px;
+    }
+
+    .eliminated-card::-webkit-scrollbar-thumb {
+      background: rgba(239, 68, 68, 0.4);
+      border-radius: 10px;
+    }
+
+    .eliminated-card::-webkit-scrollbar-thumb:hover {
+      background: rgba(239, 68, 68, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="connection-status disconnected">
+    <span class="indicator"></span>
+    <span class="status-text">Waiting for Narrator</span>
+  </div>
+
+  <header>
+    <h1>🎭 Melodrama Werewolf</h1>
+    <div class="subtitle">Student View</div>
+  </header>
+
+  <main>
+    <section class="phase-indicator night" id="phase-indicator">
+      <div class="phase-label" id="phase-label">Setup</div>
+      <div class="night-number" id="night-number">Preparing game...</div>
+    </section>
+
+    <div class="main-display">
+      <section class="timer-card">
+        <div class="timer-label">Discussion Timer</div>
+        <div class="timer-display" id="timer-display">03:00</div>
+      </section>
+
+      <section class="eliminated-card">
+        <h2 class="eliminated-title">💀 Eliminated Players</h2>
+        <ul class="eliminated-list" id="eliminated-list">
+          <li class="empty-message">No one yet... but the drama is coming!</li>
+        </ul>
+      </section>
+    </div>
+
+    <footer>
+      <div>Synchronized with Narrator View</div>
+    </footer>
+  </main>
+
+  <script>
+    // BroadcastChannel for communication with narrator
+    let channel = null;
+    const CHANNEL_NAME = 'melodrama-narrator-projector';
+
+    // State
+    const state = {
+      phase: 'setup',
+      night: 0,
+      timer: {
+        remaining: 180,
+        running: false
+      },
+      eliminated: [],
+      connected: false
+    };
+
+    // DOM elements
+    const connectionStatus = document.querySelector('.connection-status');
+    const statusText = document.querySelector('.status-text');
+    const phaseIndicator = document.getElementById('phase-indicator');
+    const phaseLabel = document.getElementById('phase-label');
+    const nightNumber = document.getElementById('night-number');
+    const timerDisplay = document.getElementById('timer-display');
+    const eliminatedList = document.getElementById('eliminated-list');
+
+    let timerHandle = null;
+
+    function initBroadcastChannel() {
+      if ('BroadcastChannel' in window) {
+        try {
+          channel = new BroadcastChannel(CHANNEL_NAME);
+          
+          channel.onmessage = (event) => {
+            handleMessage(event.data);
+            updateConnectionStatus(true);
+          };
+
+          channel.onmessageerror = (error) => {
+            console.error('BroadcastChannel message error:', error);
+          };
+
+          // Request initial state
+          setTimeout(() => {
+            if (channel) {
+              channel.postMessage({ type: 'request-state' });
+            }
+          }, 500);
+
+          console.log('BroadcastChannel initialized');
+        } catch (error) {
+          console.error('Failed to initialize BroadcastChannel:', error);
+          showFallbackMessage();
+        }
+      } else {
+        console.warn('BroadcastChannel not supported');
+        showFallbackMessage();
+      }
+    }
+
+    function handleMessage(data) {
+      console.log('Received message:', data);
+
+      switch (data.type) {
+        case 'phase-change':
+          updatePhase(data.phase, data.night);
+          break;
+        
+        case 'timer-update':
+          updateTimer(data.remaining, data.running);
+          break;
+        
+        case 'player-eliminated':
+          addEliminated(data.playerName);
+          break;
+        
+        case 'players-eliminated':
+          setEliminated(data.players);
+          break;
+        
+        case 'full-state':
+          updateFullState(data);
+          break;
+        
+        case 'reset-game':
+          resetDisplay();
+          break;
+      }
+    }
+
+    function updatePhase(phase, night) {
+      state.phase = phase;
+      state.night = night;
+      
+      phaseIndicator.className = `phase-indicator ${phase}`;
+      
+      if (phase === 'night') {
+        phaseLabel.textContent = `🌙 Night ${night}`;
+        nightNumber.textContent = 'The village sleeps...';
+      } else if (phase === 'day') {
+        phaseLabel.textContent = `☀️ Day ${night}`;
+        nightNumber.textContent = 'Time to discuss and vote!';
+      } else {
+        phaseLabel.textContent = 'Setup';
+        nightNumber.textContent = 'Preparing game...';
+      }
+    }
+
+    function updateTimer(remaining, running) {
+      state.timer.remaining = remaining;
+      state.timer.running = running;
+      
+      renderTimer();
+      
+      if (running && !timerHandle) {
+        startTimerDisplay();
+      } else if (!running && timerHandle) {
+        stopTimerDisplay();
+      }
+    }
+
+    function startTimerDisplay() {
+      if (timerHandle) clearInterval(timerHandle);
+      
+      timerHandle = setInterval(() => {
+        if (state.timer.remaining > 0) {
+          state.timer.remaining -= 1;
+          renderTimer();
+        } else {
+          stopTimerDisplay();
+        }
+      }, 1000);
+    }
+
+    function stopTimerDisplay() {
+      if (timerHandle) {
+        clearInterval(timerHandle);
+        timerHandle = null;
+      }
+    }
+
+    function renderTimer() {
+      const minutes = String(Math.floor(state.timer.remaining / 60)).padStart(2, '0');
+      const seconds = String(state.timer.remaining % 60).padStart(2, '0');
+      timerDisplay.textContent = `${minutes}:${seconds}`;
+      
+      // Update styling based on time remaining
+      timerDisplay.classList.remove('warning', 'critical');
+      if (state.timer.remaining <= 10) {
+        timerDisplay.classList.add('critical');
+      } else if (state.timer.remaining <= 30) {
+        timerDisplay.classList.add('warning');
+      }
+    }
+
+    function addEliminated(playerName) {
+      if (!state.eliminated.includes(playerName)) {
+        state.eliminated.push(playerName);
+        renderEliminated();
+      }
+    }
+
+    function setEliminated(players) {
+      state.eliminated = [...players];
+      renderEliminated();
+    }
+
+    function renderEliminated() {
+      eliminatedList.innerHTML = '';
+      
+      if (state.eliminated.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'empty-message';
+        empty.textContent = 'No one yet... but the drama is coming!';
+        eliminatedList.appendChild(empty);
+      } else {
+        state.eliminated.forEach(name => {
+          const item = document.createElement('li');
+          item.className = 'eliminated-item';
+          item.textContent = name;
+          eliminatedList.appendChild(item);
+        });
+      }
+    }
+
+    function updateFullState(data) {
+      console.log('Received full state:', data);
+      
+      if (data.phase) {
+        updatePhase(data.phase, data.night || 0);
+      }
+      
+      if (data.timer) {
+        updateTimer(data.timer.remaining, data.timer.running);
+      }
+      
+      if (data.eliminated) {
+        setEliminated(data.eliminated);
+      }
+      
+      updateConnectionStatus(true);
+    }
+
+    function resetDisplay() {
+      state.phase = 'setup';
+      state.night = 0;
+      state.timer = { remaining: 180, running: false };
+      state.eliminated = [];
+      
+      stopTimerDisplay();
+      updatePhase('setup', 0);
+      renderTimer();
+      renderEliminated();
+    }
+
+    function updateConnectionStatus(connected) {
+      state.connected = connected;
+      
+      if (connected) {
+        connectionStatus.classList.remove('disconnected');
+        connectionStatus.classList.add('connected');
+        statusText.textContent = 'Connected';
+      } else {
+        connectionStatus.classList.remove('connected');
+        connectionStatus.classList.add('disconnected');
+        statusText.textContent = 'Waiting for Narrator';
+      }
+    }
+
+    function showFallbackMessage() {
+      nightNumber.textContent = 'Open this page from the Narrator View to sync automatically';
+    }
+
+    // Periodic connection check
+    setInterval(() => {
+      if (channel && state.connected) {
+        // Keep connection alive by requesting state periodically
+        channel.postMessage({ type: 'ping' });
+      }
+    }, 30000); // Every 30 seconds
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initBroadcastChannel();
+      renderTimer();
+      renderEliminated();
+    });
+
+    // Cleanup on unload
+    window.addEventListener('beforeunload', () => {
+      if (channel) {
+        channel.close();
+      }
+      if (timerHandle) {
+        clearInterval(timerHandle);
+      }
+    });
+  </script>
+</body>
+</html>
