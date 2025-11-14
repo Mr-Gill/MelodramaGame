@@ -500,6 +500,91 @@
         flex: 1 1 45%;
       }
     }
+
+    .resolution-summary {
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid var(--accent-ui);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      box-shadow: 0 8px 24px rgba(34, 211, 238, 0.25);
+    }
+
+    .resolution-summary h3 {
+      margin: 0 0 1rem 0;
+      color: var(--accent-ui);
+      font-size: 1.4rem;
+    }
+
+    .resolution-summary h4 {
+      margin: 1rem 0 0.5rem 0;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .resolution-section {
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 8px;
+      border-left: 3px solid var(--accent-good);
+    }
+
+    .resolution-section p {
+      margin: 0.25rem 0;
+      font-size: 0.95rem;
+    }
+
+    .special-event {
+      color: var(--accent-neutral);
+      font-weight: 600;
+    }
+
+    .elimination {
+      color: var(--accent-evil);
+      font-weight: 600;
+    }
+
+    .action-tracker {
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .action-tracker label {
+      display: block;
+      margin: 0.5rem 0 0.25rem 0;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .action-tracker select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.6);
+      color: inherit;
+      font-size: 0.95rem;
+    }
+
+    .action-tracker button {
+      margin-top: 0.75rem;
+      width: 100%;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .action-buttons button {
+      flex: 1;
+      padding: 0.75rem;
+    }
   </style>
 </head>
 <body>
@@ -816,6 +901,24 @@
         remaining: 180,
         running: false,
         handle: null
+      },
+      nightActions: {
+        villainTarget: null,
+        assassinTarget: null,
+        stalkerActive: false,
+        championProtect: null,
+        healerProtect: null,
+        guardianProtect: null,
+        defenderTrap: null,
+        rightHandBlock: null,
+        healerLastProtected: null
+      },
+      resolutionResult: null,
+      specialTrackers: {
+        championPowerActive: true,
+        championIdentifiedVillain: null,
+        assassinUsed: false,
+        rightHandUsed: false
       }
     };
 
@@ -1192,8 +1295,11 @@
           { type: "narrator", text: "2. Process protections (Champion, Healer, Guardian, Defender)" },
           { type: "narrator", text: "3. Determine eliminations (Villain target, Assassin second target, Stalker backup)" },
           { type: "narrator", text: "4. Check for Survivor passive ability" },
-          { type: "narrator", text: "5. Review your notes before announcing publicly" }
-        ]
+          { type: "narrator", text: "5. Review your notes before announcing publicly" },
+          { type: "action", text: "Use the Action Tracker panel below to record night actions, then click 'Calculate Resolution' to see the automated summary." }
+        ],
+        showActionTracker: true,
+        showResolutionButton: true
       });
 
       // Day Phase Steps
@@ -1285,6 +1391,354 @@
       return [...nightSteps, ...daySteps];
     }
 
+    // Resolution Calculator Functions
+    function calculateNightResolution() {
+      const actions = state.nightActions;
+      const result = {
+        actions: [],
+        protections: [],
+        preDoctorEliminations: [],
+        finalEliminations: [],
+        specialEvents: [],
+        stateChanges: {}
+      };
+
+      // Step 1: Record all actions
+      if (actions.villainTarget !== null) {
+        result.actions.push({
+          type: 'target',
+          actor: 'Villain Team',
+          target: actions.villainTarget
+        });
+      }
+
+      if (actions.assassinTarget !== null) {
+        result.actions.push({
+          type: 'target',
+          actor: 'Assassin',
+          target: actions.assassinTarget
+        });
+      }
+
+      if (actions.rightHandBlock !== null) {
+        result.actions.push({
+          type: 'block',
+          actor: 'Right Hand',
+          target: actions.rightHandBlock
+        });
+      }
+
+      // Step 2: Apply blocks (prevent blocked players' actions)
+      const blockedPlayer = actions.rightHandBlock;
+      let championBlocked = false;
+      let healerBlocked = false;
+      let guardianBlocked = false;
+      let defenderBlocked = false;
+
+      if (blockedPlayer !== null) {
+        const blocked = state.players.find(p => p.id === blockedPlayer);
+        if (blocked) {
+          if (blocked.charId === 16) championBlocked = true; // Champion
+          if (blocked.charId === 17) healerBlocked = true; // Healer
+          if (blocked.charId === 18) guardianBlocked = true; // Guardian
+          if (blocked.charId === 20) defenderBlocked = true; // Defender
+        }
+      }
+
+      // Step 3: Collect targets
+      const targets = [];
+      if (actions.villainTarget !== null) {
+        targets.push({ playerId: actions.villainTarget, source: 'villain' });
+      }
+      if (actions.assassinTarget !== null) {
+        targets.push({ playerId: actions.assassinTarget, source: 'assassin' });
+      }
+
+      // Step 4: Apply protections
+      const protectedPlayers = new Set();
+
+      // Champion protection
+      if (!championBlocked && actions.championProtect !== null && state.specialTrackers.championPowerActive) {
+        protectedPlayers.add(actions.championProtect);
+        result.protections.push({
+          player: actions.championProtect,
+          protectedBy: 'Champion',
+          triggered: false
+        });
+      }
+
+      // Healer protection (can't repeat last target)
+      if (!healerBlocked && actions.healerProtect !== null && actions.healerProtect !== actions.healerLastProtected) {
+        protectedPlayers.add(actions.healerProtect);
+        result.protections.push({
+          player: actions.healerProtect,
+          protectedBy: 'Healer',
+          triggered: false
+        });
+      }
+
+      // Guardian protection
+      if (!guardianBlocked && actions.guardianProtect !== null) {
+        protectedPlayers.add(actions.guardianProtect);
+        result.protections.push({
+          player: actions.guardianProtect,
+          protectedBy: 'Guardian',
+          triggered: false
+        });
+      }
+
+      // Step 5: Check which protections were triggered
+      targets.forEach(target => {
+        if (protectedPlayers.has(target.playerId)) {
+          const protection = result.protections.find(p => p.player === target.playerId);
+          if (protection) {
+            protection.triggered = true;
+
+            // Special Champion logic
+            if (protection.protectedBy === 'Champion' && state.specialTrackers.championPowerActive) {
+              // Both survive, Champion identifies a villain
+              const villains = state.players.filter(p => 
+                (p.type === 'villain' || p.type === 'accomplice') && 
+                p.team === 'evil' && 
+                !p.eliminated
+              );
+              if (villains.length > 0) {
+                const randomVillain = villains[Math.floor(Math.random() * villains.length)];
+                result.specialEvents.push({
+                  type: 'championIdentified',
+                  villain: randomVillain.id,
+                  villainName: `${randomVillain.name} (${randomVillain.roleName})`
+                });
+                result.stateChanges['specialTrackers.championIdentifiedVillain'] = randomVillain.id;
+              }
+              result.specialEvents.push({
+                type: 'championPowerLost',
+                champion: actions.championProtect
+              });
+              result.stateChanges['specialTrackers.championPowerActive'] = false;
+            }
+
+            // Guardian sacrifice
+            if (protection.protectedBy === 'Guardian') {
+              const guardian = state.players.find(p => p.charId === 18 && !p.eliminated);
+              if (guardian) {
+                result.preDoctorEliminations.push({
+                  player: guardian.id,
+                  playerName: `${guardian.name} (${guardian.roleName})`,
+                  cause: 'Guardian Sacrifice'
+                });
+              }
+            }
+          }
+        } else {
+          // Target not protected - add to eliminations
+          const targetPlayer = state.players.find(p => p.id === target.playerId);
+          if (targetPlayer && !targetPlayer.eliminated) {
+            // Check for Survivor passive (char ID 19)
+            if (targetPlayer.charId === 19 && !targetPlayer.survivorUsed) {
+              result.specialEvents.push({
+                type: 'survivorTriggered',
+                player: target.playerId,
+                playerName: `${targetPlayer.name} (${targetPlayer.roleName})`
+              });
+              result.stateChanges[`players.${target.playerId}.survivorUsed`] = true;
+            } else {
+              result.preDoctorEliminations.push({
+                player: target.playerId,
+                playerName: `${targetPlayer.name} (${targetPlayer.roleName})`,
+                cause: target.source === 'assassin' ? 'Assassin' : 'Villain Team'
+              });
+            }
+          }
+        }
+      });
+
+      // Step 6: Check Defender trap
+      if (!defenderBlocked && actions.defenderTrap !== null) {
+        const trapped = result.preDoctorEliminations.find(e => e.player === actions.defenderTrap);
+        if (trapped) {
+          // Defender trap triggered - random villain dies
+          const villains = state.players.filter(p => 
+            p.type === 'villain' && !p.eliminated
+          );
+          if (villains.length > 0) {
+            const randomVillain = villains[Math.floor(Math.random() * villains.length)];
+            result.preDoctorEliminations.push({
+              player: randomVillain.id,
+              playerName: `${randomVillain.name} (${randomVillain.roleName})`,
+              cause: 'Defender Trap'
+            });
+            result.specialEvents.push({
+              type: 'defenderTrapTriggered',
+              victim: actions.defenderTrap,
+              villain: randomVillain.id
+            });
+          }
+        }
+      }
+
+      // Step 7: Check Stalker backup (if primary target was protected and Stalker is in game)
+      if (actions.stalkerActive && actions.villainTarget !== null && protectedPlayers.has(actions.villainTarget)) {
+        const stalker = state.players.find(p => p.charId === 5 && !p.eliminated);
+        if (stalker) {
+          result.specialEvents.push({
+            type: 'stalkerBackupAttempt',
+            message: 'Stalker can attempt backup kill (only works on Damsel/Elder types)'
+          });
+        }
+      }
+
+      // Copy pre-doctor to final eliminations (will be modified if doctor acts)
+      result.finalEliminations = [...result.preDoctorEliminations];
+
+      return result;
+    }
+
+    function processLinkedDeaths(eliminations) {
+      const linkedDeaths = [];
+      const processedIds = new Set(eliminations.map(e => e.player));
+
+      eliminations.forEach(elim => {
+        const player = state.players.find(p => p.id === elim.player);
+        if (!player) return;
+
+        // Check for Twins (char IDs 28, 29)
+        if (player.charId === 28 || player.charId === 29) {
+          const twinCharId = player.charId === 28 ? 29 : 28;
+          const twin = state.players.find(p => p.charId === twinCharId && !p.eliminated && !processedIds.has(p.id));
+          if (twin) {
+            linkedDeaths.push({
+              player: twin.id,
+              playerName: `${twin.name} (${twin.roleName})`,
+              cause: 'Twin Link'
+            });
+            processedIds.add(twin.id);
+          }
+        }
+
+        // Check for Cursed (char ID 30) - kills 2 neighbors each side
+        if (player.charId === 30) {
+          const alivePlayers = state.players.filter(p => !p.eliminated && p.id !== player.id);
+          // In a circle, find neighbors (simplified - in real game would need seating order)
+          const playerIndex = state.players.findIndex(p => p.id === player.id);
+          const cursedNeighbors = [];
+          
+          // Get 2 neighbors each side (4 total)
+          for (let offset of [-2, -1, 1, 2]) {
+            const neighborIndex = (playerIndex + offset + state.players.length) % state.players.length;
+            const neighbor = state.players[neighborIndex];
+            if (neighbor && !neighbor.eliminated && !processedIds.has(neighbor.id)) {
+              cursedNeighbors.push(neighbor);
+            }
+          }
+
+          cursedNeighbors.forEach(neighbor => {
+            linkedDeaths.push({
+              player: neighbor.id,
+              playerName: `${neighbor.name} (${neighbor.roleName})`,
+              cause: 'Cursed Explosion'
+            });
+            processedIds.add(neighbor.id);
+          });
+        }
+      });
+
+      return linkedDeaths;
+    }
+
+    function showResolutionSummary(result) {
+      const summaryDiv = document.createElement('div');
+      summaryDiv.className = 'resolution-summary';
+      summaryDiv.innerHTML = `
+        <h3>📊 Night Resolution Summary</h3>
+        <div class="resolution-section">
+          <h4>🎯 Actions Taken:</h4>
+          ${result.actions.map(a => `<p>• ${a.actor} → Player ${a.target + 1}</p>`).join('')}
+        </div>
+        <div class="resolution-section">
+          <h4>🛡️ Protections:</h4>
+          ${result.protections.map(p => {
+            const player = state.players.find(pl => pl.id === p.player);
+            return `<p>• Player ${p.player + 1} (${player ? player.roleName : 'Unknown'}) protected by ${p.protectedBy}${p.triggered ? ' ✓ TRIGGERED' : ''}</p>`;
+          }).join('') || '<p>None</p>'}
+        </div>
+        <div class="resolution-section">
+          <h4>⚠️ Special Events:</h4>
+          ${result.specialEvents.map(e => {
+            if (e.type === 'championIdentified') {
+              return `<p class="special-event">• Champion identified villain: ${e.villainName}</p>`;
+            }
+            if (e.type === 'championPowerLost') {
+              return `<p class="special-event">• Champion loses power permanently</p>`;
+            }
+            if (e.type === 'survivorTriggered') {
+              return `<p class="special-event">• ${e.playerName} survived attack (Survivor passive)</p>`;
+            }
+            if (e.type === 'defenderTrapTriggered') {
+              return `<p class="special-event">• Defender trap killed a villain!</p>`;
+            }
+            return `<p class="special-event">• ${e.message || JSON.stringify(e)}</p>`;
+          }).join('') || '<p>None</p>'}
+        </div>
+        <div class="resolution-section">
+          <h4>💀 Pending Eliminations:</h4>
+          ${result.preDoctorEliminations.map(e => `<p class="elimination">• ${e.playerName} (${e.cause})</p>`).join('') || '<p>No eliminations</p>'}
+        </div>
+      `;
+      return summaryDiv;
+    }
+
+    function applyResolution(result) {
+      // Apply state changes
+      Object.entries(result.stateChanges).forEach(([key, value]) => {
+        if (key.startsWith('specialTrackers.')) {
+          const trackerKey = key.replace('specialTrackers.', '');
+          state.specialTrackers[trackerKey] = value;
+        } else if (key.startsWith('players.')) {
+          const match = key.match(/players\.(\d+)\.(.+)/);
+          if (match) {
+            const playerId = parseInt(match[1]);
+            const prop = match[2];
+            const player = state.players.find(p => p.id === playerId);
+            if (player) {
+              player[prop] = value;
+            }
+          }
+        }
+      });
+
+      // Apply eliminations
+      result.finalEliminations.forEach(elim => {
+        const player = state.players.find(p => p.id === elim.player);
+        if (player) {
+          player.eliminated = true;
+        }
+      });
+
+      // Process linked deaths
+      const linkedDeaths = processLinkedDeaths(result.finalEliminations);
+      linkedDeaths.forEach(death => {
+        const player = state.players.find(p => p.id === death.player);
+        if (player) {
+          player.eliminated = true;
+        }
+        result.finalEliminations.push(death);
+      });
+
+      // Store result
+      state.resolutionResult = result;
+
+      // Clear night actions for next night
+      if (result.finalEliminations.length > 0 || result.specialEvents.length > 0) {
+        // Update healer's last protected
+        if (state.nightActions.healerProtect !== null) {
+          state.nightActions.healerLastProtected = state.nightActions.healerProtect;
+        }
+      }
+
+      persistState();
+    }
+
     function renderScript() {
       const steps = buildScriptSteps();
       const step = steps[state.stepIndex];
@@ -1302,6 +1756,42 @@
           div.textContent = block.text;
           scriptStepsContainer.append(div);
         });
+
+        // Add action tracker if this step needs it
+        if (step.showActionTracker) {
+          const actionTracker = createActionTracker();
+          scriptStepsContainer.append(actionTracker);
+        }
+
+        // Add resolution button if this step needs it
+        if (step.showResolutionButton) {
+          const resolutionButton = document.createElement('button');
+          resolutionButton.textContent = '📊 Calculate Night Resolution';
+          resolutionButton.className = 'resolution-calc-btn';
+          resolutionButton.style.marginTop = '1rem';
+          resolutionButton.style.width = '100%';
+          resolutionButton.onclick = () => {
+            const result = calculateNightResolution();
+            applyResolution(result);
+            const summary = showResolutionSummary(result);
+            
+            // Insert summary before the button
+            const existingSummary = scriptStepsContainer.querySelector('.resolution-summary');
+            if (existingSummary) {
+              existingSummary.remove();
+            }
+            scriptStepsContainer.insertBefore(summary, resolutionButton);
+            renderPlayers();
+            updateCounts();
+          };
+          scriptStepsContainer.append(resolutionButton);
+        }
+
+        // Show existing resolution if available
+        if (state.resolutionResult && step.title === "Night Resolution (Private)") {
+          const summary = showResolutionSummary(state.resolutionResult);
+          scriptStepsContainer.append(summary);
+        }
       }
 
       prevStepButton.disabled = state.stepIndex === 0;
@@ -1312,6 +1802,141 @@
         timerPhase.textContent = "Discussion Timer";
       } else {
         timerPhase.textContent = "Timer";
+      }
+    }
+
+    function createActionTracker() {
+      const tracker = document.createElement('div');
+      tracker.className = 'action-tracker';
+      
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      const playerOptions = alivePlayers.map(p => 
+        `<option value="${p.id}">${p.name} (${p.roleName})</option>`
+      ).join('');
+
+      tracker.innerHTML = `
+        <h4>Action Tracker</h4>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Record the actions taken during this night phase. The resolution calculator will process them automatically.
+        </p>
+        
+        <label>Villain Target:</label>
+        <select id="action-villain-target">
+          <option value="">-- None --</option>
+          ${playerOptions}
+        </select>
+
+        <label>Assassin Target (if used):</label>
+        <select id="action-assassin-target">
+          <option value="">-- None --</option>
+          ${playerOptions}
+        </select>
+
+        <label>Champion Protected:</label>
+        <select id="action-champion-protect">
+          <option value="">-- None --</option>
+          ${playerOptions}
+        </select>
+
+        <label>Healer Protected:</label>
+        <select id="action-healer-protect">
+          <option value="">-- None --</option>
+          ${playerOptions}
+        </select>
+
+        <label>Guardian Protected:</label>
+        <select id="action-guardian-protect">
+          <option value="">-- None --</option>
+          ${playerOptions}
+        </select>
+
+        <label>Defender Trapped:</label>
+        <select id="action-defender-trap">
+          <option value="">-- None --</option>
+          ${playerOptions}
+        </select>
+
+        <label>Right Hand Blocked:</label>
+        <select id="action-right-hand-block">
+          <option value="">-- None --</option>
+          ${playerOptions}
+        </select>
+
+        <div class="action-buttons">
+          <button onclick="saveNightActions()" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.7), rgba(56, 189, 248, 0.9));">
+            💾 Save Actions
+          </button>
+          <button onclick="clearNightActions()" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.5), rgba(100, 116, 139, 0.7));">
+            🗑️ Clear All
+          </button>
+        </div>
+      `;
+
+      // Load existing actions if any
+      setTimeout(() => {
+        if (state.nightActions.villainTarget !== null) {
+          document.getElementById('action-villain-target').value = state.nightActions.villainTarget;
+        }
+        if (state.nightActions.assassinTarget !== null) {
+          document.getElementById('action-assassin-target').value = state.nightActions.assassinTarget;
+        }
+        if (state.nightActions.championProtect !== null) {
+          document.getElementById('action-champion-protect').value = state.nightActions.championProtect;
+        }
+        if (state.nightActions.healerProtect !== null) {
+          document.getElementById('action-healer-protect').value = state.nightActions.healerProtect;
+        }
+        if (state.nightActions.guardianProtect !== null) {
+          document.getElementById('action-guardian-protect').value = state.nightActions.guardianProtect;
+        }
+        if (state.nightActions.defenderTrap !== null) {
+          document.getElementById('action-defender-trap').value = state.nightActions.defenderTrap;
+        }
+        if (state.nightActions.rightHandBlock !== null) {
+          document.getElementById('action-right-hand-block').value = state.nightActions.rightHandBlock;
+        }
+      }, 0);
+
+      return tracker;
+    }
+
+    function saveNightActions() {
+      const villainTarget = document.getElementById('action-villain-target').value;
+      const assassinTarget = document.getElementById('action-assassin-target').value;
+      const championProtect = document.getElementById('action-champion-protect').value;
+      const healerProtect = document.getElementById('action-healer-protect').value;
+      const guardianProtect = document.getElementById('action-guardian-protect').value;
+      const defenderTrap = document.getElementById('action-defender-trap').value;
+      const rightHandBlock = document.getElementById('action-right-hand-block').value;
+
+      state.nightActions.villainTarget = villainTarget ? parseInt(villainTarget) : null;
+      state.nightActions.assassinTarget = assassinTarget ? parseInt(assassinTarget) : null;
+      state.nightActions.championProtect = championProtect ? parseInt(championProtect) : null;
+      state.nightActions.healerProtect = healerProtect ? parseInt(healerProtect) : null;
+      state.nightActions.guardianProtect = guardianProtect ? parseInt(guardianProtect) : null;
+      state.nightActions.defenderTrap = defenderTrap ? parseInt(defenderTrap) : null;
+      state.nightActions.rightHandBlock = rightHandBlock ? parseInt(rightHandBlock) : null;
+
+      persistState();
+      alert('✓ Night actions saved! Now click "Calculate Night Resolution" to see the results.');
+    }
+
+    function clearNightActions() {
+      if (confirm('Clear all recorded actions for this night?')) {
+        state.nightActions = {
+          villainTarget: null,
+          assassinTarget: null,
+          stalkerActive: false,
+          championProtect: null,
+          healerProtect: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          healerLastProtected: state.nightActions.healerLastProtected
+        };
+        state.resolutionResult = null;
+        persistState();
+        renderScript();
       }
     }
 
