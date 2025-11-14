@@ -1,0 +1,10 @@
+{
+  "name": "Melodrama Werewolf Narrator Tool",
+  "short_name": "Melodrama Narrator",
+  "description": "Guide night and day phases of the Melodrama Werewolf classroom game.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": []
+}
