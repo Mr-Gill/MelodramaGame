@@ -681,6 +681,147 @@
       font-size: 0.75rem;
       margin-left: 0.5rem;
     }
+
+    /* Win Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .win-modal {
+      background: var(--bg-secondary);
+      border-radius: var(--panel-radius);
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: var(--shadow);
+      border: 2px solid;
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    .win-modal.good-wins {
+      border-color: var(--accent-good);
+    }
+
+    .win-modal.evil-wins {
+      border-color: var(--accent-evil);
+    }
+
+    .win-modal h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(2rem, 5vw, 3rem);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .win-modal.good-wins h2 {
+      color: var(--accent-good);
+    }
+
+    .win-modal.evil-wins h2 {
+      color: var(--accent-evil);
+    }
+
+    .win-modal-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .win-modal-stat {
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+    }
+
+    .win-modal-stat strong {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .win-modal-stat span {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .win-modal-roles {
+      margin: 1.5rem 0;
+      max-height: 300px;
+      overflow-y: auto;
+      background: var(--bg-tertiary);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .win-modal-role {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      margin: 0.25rem 0;
+      background: var(--bg-secondary);
+      border-radius: 6px;
+    }
+
+    .win-modal-role.eliminated {
+      opacity: 0.6;
+      text-decoration: line-through;
+    }
+
+    .win-modal-role-team {
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .win-modal-role-team.good {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-good);
+    }
+
+    .win-modal-role-team.evil {
+      background: rgba(244, 114, 182, 0.2);
+      color: var(--accent-evil);
+    }
+
+    .win-modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .win-modal-actions button {
+      flex: 1;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
@@ -803,6 +944,32 @@
       </div>
     </section>
   </main>
+
+  <!-- Win Modal -->
+  <div id="win-modal-overlay" class="modal-overlay">
+    <div id="win-modal" class="win-modal">
+      <h2 id="win-title">Game Over</h2>
+      <div class="win-modal-stats">
+        <div class="win-modal-stat">
+          <strong id="win-nights">0</strong>
+          <span>Nights Played</span>
+        </div>
+        <div class="win-modal-stat">
+          <strong id="win-survivors">0</strong>
+          <span>Survivors</span>
+        </div>
+        <div class="win-modal-stat">
+          <strong id="win-eliminated">0</strong>
+          <span>Eliminated</span>
+        </div>
+      </div>
+      <div class="win-modal-roles" id="win-roles-list"></div>
+      <div class="win-modal-actions">
+        <button id="win-new-game" type="button">Start New Game</button>
+        <button id="win-close" type="button">Continue Viewing</button>
+      </div>
+    </div>
+  </div>
 
   <template id="player-card-template">
     <article class="player-card" data-status="alive">
@@ -1856,7 +2023,8 @@
         phase: "day",
         blocks: [
           { type: "narrator", text: "COUNT AGAIN: If evil ≥ good, evil wins. If no evil remain, good wins. Otherwise, proceed to next night." }
-        ]
+        ],
+        showWinCheckButton: true
       });
 
       return [...nightSteps, ...daySteps];
@@ -2211,6 +2379,9 @@
       }
 
       persistState();
+      
+      // Check win condition after eliminations
+      checkWinCondition();
     }
 
     function renderScript() {
@@ -2228,6 +2399,7 @@
         // Update audio phase if it changed
         if (step.phase && step.phase !== state.audio.phase) {
           updateAudioPhase(step.phase);
+        }
         // Broadcast phase change if it changed
         if (state.phase !== step.phase) {
           state.phase = step.phase;
@@ -2269,6 +2441,19 @@
             updateCounts();
           };
           scriptStepsContainer.append(resolutionButton);
+        }
+
+        // Add win check button if this step needs it
+        if (step.showWinCheckButton) {
+          const winCheckButton = document.createElement('button');
+          winCheckButton.textContent = '🏆 Check Win Condition';
+          winCheckButton.className = 'resolution-calc-btn';
+          winCheckButton.style.marginTop = '1rem';
+          winCheckButton.style.width = '100%';
+          winCheckButton.onclick = () => {
+            checkWinCondition();
+          };
+          scriptStepsContainer.append(winCheckButton);
         }
 
         // Show existing resolution if available
@@ -2568,6 +2753,92 @@
       downloadNotesLink.dataset.url = objectUrl;
     }
 
+    // Win Condition Functions
+    function checkWinCondition() {
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      const aliveGood = alivePlayers.filter(p => p.team === "good").length;
+      const aliveEvil = alivePlayers.filter(p => p.team === "evil").length;
+      
+      // Check if all evil eliminated → Good wins
+      if (aliveEvil === 0 && aliveGood > 0) {
+        showWinModal("good");
+        return true;
+      }
+      
+      // Check if evil ≥ good → Evil wins
+      if (aliveEvil >= aliveGood && aliveEvil > 0) {
+        showWinModal("evil");
+        return true;
+      }
+      
+      return false;
+    }
+
+    function showWinModal(winningTeam) {
+      const modal = document.getElementById("win-modal");
+      const overlay = document.getElementById("win-modal-overlay");
+      const title = document.getElementById("win-title");
+      const nightsEl = document.getElementById("win-nights");
+      const survivorsEl = document.getElementById("win-survivors");
+      const eliminatedEl = document.getElementById("win-eliminated");
+      const rolesListEl = document.getElementById("win-roles-list");
+      
+      // Set title and styling based on winner
+      if (winningTeam === "good") {
+        title.textContent = "🎭 Good Team Wins! 🎭";
+        modal.className = "win-modal good-wins";
+      } else {
+        title.textContent = "😈 Evil Team Wins! 😈";
+        modal.className = "win-modal evil-wins";
+      }
+      
+      // Set statistics
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      const eliminatedPlayers = state.players.filter(p => p.eliminated);
+      nightsEl.textContent = state.night;
+      survivorsEl.textContent = alivePlayers.length;
+      eliminatedEl.textContent = eliminatedPlayers.length;
+      
+      // Build roles list with reveal
+      rolesListEl.innerHTML = "";
+      state.players.forEach(player => {
+        const roleDiv = document.createElement("div");
+        roleDiv.className = `win-modal-role ${player.eliminated ? "eliminated" : ""}`;
+        
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = `${player.name} - ${player.roleName}`;
+        
+        const teamBadge = document.createElement("span");
+        teamBadge.className = `win-modal-role-team ${player.team}`;
+        teamBadge.textContent = player.team.toUpperCase();
+        
+        roleDiv.appendChild(nameSpan);
+        roleDiv.appendChild(teamBadge);
+        rolesListEl.appendChild(roleDiv);
+      });
+      
+      // Show the modal
+      overlay.classList.add("active");
+      
+      // Broadcast win to projector
+      broadcastWin(winningTeam);
+    }
+
+    function closeWinModal() {
+      const overlay = document.getElementById("win-modal-overlay");
+      overlay.classList.remove("active");
+    }
+
+    function broadcastWin(winningTeam) {
+      if (projectorChannel) {
+        projectorChannel.postMessage({
+          type: "WIN",
+          team: winningTeam,
+          night: state.night
+        });
+      }
+    }
+
     function renderAll() {
       applyMode(state.mode);
       applyThemeVisuals();
@@ -2662,6 +2933,14 @@
         alert('Failed to open projector window. Please check your popup blocker settings.');
       }
     });
+
+    // Win modal event listeners
+    document.getElementById("win-new-game").addEventListener("click", () => {
+      closeWinModal();
+      resetState();
+    });
+
+    document.getElementById("win-close").addEventListener("click", closeWinModal);
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
