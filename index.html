@@ -1864,50 +1864,169 @@
         });
       }
 
-      // Step 2: Accomplice-Type (check for ability uses) - Skip if none have abilities remaining
+      // Step 2: Accomplice-Type - Call each accomplice individually with specific instructions
       const accomplicesWithAbilities = state.players.filter(p => 
         p.type === "accomplice" && !p.eliminated && p.abilityUsesRemaining !== 0
       );
+      
       if (accomplicesWithAbilities.length > 0) {
-        const accompliceList = accomplicesWithAbilities.map(p => `${p.name} (${p.roleName})`).join(", ");
         nightSteps.push({
-          title: "Step 2: Accomplice-Type",
+          title: "Step 2: Accomplice-Type Introduction",
           phase: "night",
           blocks: [
-            { type: "say", text: "Accomplices with abilities remaining, give a subtle thumbs-up." },
-            { type: "narrator", text: "If a thumb is raised, quietly confirm which ability they're using tonight." },
-            { type: "info", text: `Accomplices with abilities: ${accompliceList}` }
+            { type: "narrator", text: "Now call each Accomplice individually. They wake alone, make their choice silently, then sleep." }
           ]
+        });
+        
+        // Call each accomplice with specific instructions
+        accomplicesWithAbilities.forEach(player => {
+          const blocks = [];
+          
+          if (player.charId === 6) { // The Right Hand
+            blocks.push({ type: "say", text: `${player.name}, you are the Right Hand. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone whose night ability you want to block.' Wait for their silent point." });
+            blocks.push({ type: "reminder", text: `Record who ${player.name} blocked in the Action Tracker. This player's ability will not work tonight.` });
+            if (player.abilityUsesRemaining === 1) {
+              blocks.push({ type: "info", text: `IMPORTANT: This is ${player.name}'s LAST use of this ability.` });
+            }
+          } else if (player.charId === 7) { // The Spy
+            blocks.push({ type: "say", text: `${player.name}, you are the Spy. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. I'll tell you if they have a night action.' Wait for their point." });
+            blocks.push({ type: "narrator", text: "Check the chosen player's card. If they have hasNightAction=true, show thumbs UP. Otherwise thumbs DOWN." });
+            blocks.push({ type: "info", text: "Characters with night actions: Villains, Accomplices, Elders, and most Heroes (not Survivor)." });
+          } else if (player.charId === 8) { // The Manipulator
+            blocks.push({ type: "say", text: `${player.name}, you are the Manipulator. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. They will be silenced during tomorrow's vote.' Wait for their point." });
+            blocks.push({ type: "reminder", text: `Mark ${player.name}'s target - they CANNOT vote tomorrow. Announce this before the vote.` });
+          } else if (player.charId === 9) { // The Traitor
+            blocks.push({ type: "say", text: `${player.name}, you are the Traitor. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. If they're eliminated by vote tomorrow, you can force a revote.' Wait for their point." });
+            blocks.push({ type: "reminder", text: `Track ${player.name}'s marked player. If they're voted out tomorrow, the Traitor can trigger a revote.` });
+          } else if (player.charId === 10) { // The Informant
+            blocks.push({ type: "say", text: `${player.name}, you are the Informant. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. I'll reveal their exact role to the evil team.' Wait for their point." });
+            blocks.push({ type: "narrator", text: "Wake the villains briefly. Whisper the chosen player's role name. Then send everyone back to sleep." });
+            blocks.push({ type: "reminder", text: "This is a powerful information reveal. Make sure all villains hear it clearly." });
+          }
+          
+          blocks.push({ type: "say", text: `${player.name}, close your eyes and sleep.` });
+          
+          nightSteps.push({
+            title: `Step 2: ${player.roleName}`,
+            phase: "night",
+            blocks: blocks
+          });
         });
       }
 
-      // Step 3: Elder-Type (each wakes individually) - Skip if none alive
+      // Step 3: Elder-Type - Call each elder individually with specific instructions
       const elders = state.players.filter(p => p.type === "elder" && !p.eliminated && !p.blocked);
+      
       if (elders.length > 0) {
-        const elderList = elders.map(p => `${p.name} (${p.roleName})`).join(", ");
         nightSteps.push({
-          title: "Step 3: Elder-Type",
+          title: "Step 3: Elder-Type Introduction",
           phase: "night",
           blocks: [
-            { type: "say", text: "Elders, one at a time, open your eyes when your title is called." },
-            { type: "narrator", text: "Whisper their options and hold up fingers for results. Check each elder individually." },
-            { type: "info", text: `Elders alive: ${elderList}` }
+            { type: "narrator", text: "Now call each Elder individually. They wake alone, receive information, then sleep." }
           ]
+        });
+        
+        // Call each elder with specific instructions
+        elders.forEach(player => {
+          const blocks = [];
+          
+          if (player.charId === 11) { // The Sage
+            blocks.push({ type: "say", text: `${player.name}, you are the Sage. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to TWO people you want to check.' Wait for their two points." });
+            blocks.push({ type: "narrator", text: "Check both players. If AT LEAST ONE is evil, give thumbs UP. If BOTH are good, give thumbs DOWN." });
+            blocks.push({ type: "info", text: "The Sage doesn't know which specific player is evil, only that at least one is." });
+          } else if (player.charId === 12) { // The Oracle
+            blocks.push({ type: "say", text: `${player.name}, you are the Oracle. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to ONE person you want to check.' Wait for their point." });
+            blocks.push({ type: "narrator", text: "Check the player's team. If GOOD, give thumbs UP. If EVIL, give thumbs DOWN." });
+            blocks.push({ type: "reminder", text: "The Pretender (char ID 3) shows as GOOD to the Oracle despite being evil." });
+          } else if (player.charId === 13) { // The Sensitive
+            blocks.push({ type: "say", text: `${player.name}, you are the Sensitive. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. I'll tell you if they have a night action.' Wait for their point." });
+            blocks.push({ type: "narrator", text: "Check if hasNightAction=true. If YES, give thumbs UP. If NO, give thumbs DOWN." });
+            blocks.push({ type: "info", text: "Night actions: Villains, Accomplices, Elders, and active Heroes (not passive like Survivor)." });
+          } else if (player.charId === 14) { // The Dreamer
+            blocks.push({ type: "say", text: `${player.name}, you are the Dreamer. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Count how many evil players sit immediately next to them (left and right neighbors only)." });
+            blocks.push({ type: "narrator", text: "Show that number on your fingers: 0, 1, or 2." });
+            blocks.push({ type: "info", text: "Only count the two immediate neighbors, not the entire circle." });
+          } else if (player.charId === 15) { // The Witness
+            blocks.push({ type: "say", text: `${player.name}, you are the Witness. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Give them a cryptic clue about tonight's events. Examples:" });
+            blocks.push({ type: "narrator", text: "• 'Protection was offered but declined' (Guardian didn't save anyone)" });
+            blocks.push({ type: "narrator", text: "• 'A web was spun around a player' (Defender set a trap)" });
+            blocks.push({ type: "narrator", text: "• 'An ability was silenced' (Right Hand blocked someone)" });
+            blocks.push({ type: "reminder", text: "Make it theatrical but truthful. The clue should hint at actions without revealing identities." });
+          }
+          
+          blocks.push({ type: "say", text: `${player.name}, close your eyes and sleep.` });
+          
+          nightSteps.push({
+            title: `Step 3: ${player.roleName}`,
+            phase: "night",
+            blocks: blocks
+          });
         });
       }
 
-      // Step 4: Hero-Type (each wakes individually) - Skip if none alive  
+      // Step 4: Hero-Type - Call each hero individually with specific instructions
       const heroes = state.players.filter(p => p.type === "hero" && !p.eliminated && !p.blocked && p.hasNightAction);
+      
       if (heroes.length > 0) {
-        const heroList = heroes.map(p => `${p.name} (${p.roleName})`).join(", ");
         nightSteps.push({
-          title: "Step 4: Hero-Type",
+          title: "Step 4: Hero-Type Introduction",
           phase: "night",
           blocks: [
-            { type: "say", text: "Heroes, when called, lift your head and select your target." },
-            { type: "reminder", text: "Track who was protected last night so they don't repeat illegal saves." },
-            { type: "info", text: `Heroes alive: ${heroList}` }
+            { type: "narrator", text: "Now call each Hero individually. They wake alone, choose their target, then sleep." }
           ]
+        });
+        
+        // Call each hero with specific instructions
+        heroes.forEach(player => {
+          const blocks = [];
+          
+          if (player.charId === 16) { // The Champion
+            blocks.push({ type: "say", text: `${player.name}, you are the Champion. Open your eyes.` });
+            if (state.specialTrackers.championPowerActive) {
+              blocks.push({ type: "narrator", text: "Whisper: 'Point to someone you want to protect tonight.' Wait for their point." });
+              blocks.push({ type: "reminder", text: `Record who ${player.name} is protecting in the Action Tracker.` });
+              blocks.push({ type: "info", text: "If protection triggers: Champion identifies a random villain but LOSES the power permanently." });
+            } else {
+              blocks.push({ type: "narrator", text: "Whisper: 'Your power has been used. You can no longer protect.' Show empathy." });
+              blocks.push({ type: "info", text: "The Champion's power ended after successfully blocking an attack." });
+            }
+          } else if (player.charId === 17) { // The Healer
+            blocks.push({ type: "say", text: `${player.name}, you are the Healer. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone you want to save tonight. Cannot be the same as last night.' Wait for their point." });
+            if (state.nightActions.healerLastProtected !== null) {
+              const lastProtected = state.players.find(p => p.id === state.nightActions.healerLastProtected);
+              blocks.push({ type: "reminder", text: `${player.name} protected ${lastProtected ? lastProtected.name : 'someone'} LAST night. They cannot repeat this choice.` });
+            }
+            blocks.push({ type: "reminder", text: `Record who ${player.name} is healing in the Action Tracker.` });
+          } else if (player.charId === 18) { // The Guardian
+            blocks.push({ type: "say", text: `${player.name}, you are the Guardian. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. If they're attacked, you'll die instead to save them.' Wait for their point." });
+            blocks.push({ type: "reminder", text: `Record who ${player.name} is guarding. Guardian DIES if this player is targeted.` });
+            blocks.push({ type: "info", text: "This is a sacrifice play. The Guardian takes the hit for their chosen player." });
+          } else if (player.charId === 20) { // The Defender
+            blocks.push({ type: "say", text: `${player.name}, you are the Defender. Open your eyes.` });
+            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. If they die tonight, a random villain dies too.' Wait for their point." });
+            blocks.push({ type: "reminder", text: `Record who ${player.name} is trapping. If victim dies, randomly kill one villain.` });
+            blocks.push({ type: "info", text: "This creates a trap. Villain team doesn't know until it's too late." });
+          }
+          
+          blocks.push({ type: "say", text: `${player.name}, close your eyes and sleep.` });
+          
+          nightSteps.push({
+            title: `Step 4: ${player.roleName}`,
+            phase: "night",
+            blocks: blocks
+          });
         });
       }
 
@@ -1923,18 +2042,25 @@
         });
       }
 
-      // Night Resolution - Private calculation step
+      // Night Resolution - Private calculation step with detailed order
       nightSteps.push({
         title: "Night Resolution (Private)",
         phase: "night",
         blocks: [
-          { type: "narrator", text: "PRIVATE STEP: Work through protections, blocks, and eliminations in order." },
-          { type: "narrator", text: "1. Apply blocks (Right Hand blocks a player's ability)" },
-          { type: "narrator", text: "2. Process protections (Champion, Healer, Guardian, Defender)" },
-          { type: "narrator", text: "3. Determine eliminations (Villain target, Assassin second target, Stalker backup)" },
-          { type: "narrator", text: "4. Check for Survivor passive ability" },
-          { type: "narrator", text: "5. Review your notes before announcing publicly" },
-          { type: "action", text: "Use the Action Tracker panel below to record night actions, then click 'Calculate Resolution' to see the automated summary." }
+          { type: "narrator", text: "PRIVATE CALCULATION STEP - Work through this systematically:" },
+          { type: "narrator", text: "1. BLOCKS: If Right Hand blocked someone, their ability doesn't activate (but still record it)" },
+          { type: "narrator", text: "2. VILLAIN TARGET: Confirm who the villains chose to eliminate" },
+          { type: "narrator", text: "3. ASSASSIN: If Assassin used their one-time power, note the second target" },
+          { type: "narrator", text: "4. PROTECTIONS: Check each protection in order:" },
+          { type: "narrator", text: "   • Champion: If protecting villain target AND power is active, trigger happens" },
+          { type: "narrator", text: "   • Healer: If protecting villain target AND not same as last night, save succeeds" },
+          { type: "narrator", text: "   • Guardian: If protecting villain target, Guardian DIES but target lives" },
+          { type: "narrator", text: "   • Defender: If trapped player dies, select random villain to die too" },
+          { type: "narrator", text: "5. SURVIVOR: If target is The Survivor and hasn't been hit before, they survive until after next vote" },
+          { type: "narrator", text: "6. STALKER: If villain target was saved AND Stalker is alive, Stalker can backup-kill (Elder/Damsel types only)" },
+          { type: "narrator", text: "7. FINAL TALLY: Count all eliminations including linked deaths (Twins, Cursed neighbors)" },
+          { type: "action", text: "Use the Action Tracker panel below to record all actions, then click 'Calculate Resolution' for automated results." },
+          { type: "reminder", text: "Double-check your work before announcing. Mistakes can ruin the dramatic tension!" }
         ],
         showActionTracker: true,
         showResolutionButton: true
@@ -1954,16 +2080,29 @@
           title: "Announcements & Death Scenes",
           phase: "day",
           blocks: [
-            { type: "say", text: "Narrate last night's events with flair. Announce who (if anyone) was eliminated." },
-            { type: "narrator", text: "Let each eliminated player perform their melodramatic death scene (3-5 seconds). " + theme.script.deathScene },
-            { type: "reminder", text: "Check for linked deaths: Twins eliminate each other, Cursed eliminates 2 neighbors each side." }
+            { type: "narrator", text: "ANNOUNCEMENT SEQUENCE:" },
+            { type: "narrator", text: "1. Look at your night resolution notes" },
+            { type: "narrator", text: "2. Build suspense: 'Last night was... eventful' or similar" },
+            { type: "say", text: "If anyone was eliminated, announce: 'Tragically, we lost [Name(s)] last night.'" },
+            { type: "say", text: "If no one died: " + (theme.script.noDeaths || "Miraculously, everyone survived the night!") },
+            { type: "narrator", text: "3. Give each eliminated player 5-10 seconds for their melodramatic death scene" },
+            { type: "reminder", text: theme.script.deathScene },
+            { type: "narrator", text: "4. After death scenes, remind eliminated players they're now 'ghosts' - silent observers only" },
+            { type: "info", text: "Check for linked deaths: If Twins died, both perform death scenes. If Cursed died, neighbors die too." }
           ]
         },
         {
           title: "Check Win Condition",
           phase: "day",
           blocks: [
-            { type: "narrator", text: "COUNT REMAINING: If evil ≥ good, evil wins. If no evil remain, good wins. Otherwise, continue." }
+            { type: "narrator", text: "COUNT REMAINING PLAYERS:" },
+            { type: "narrator", text: "1. Count alive GOOD team members (check Player Management panel)" },
+            { type: "narrator", text: "2. Count alive EVIL team members" },
+            { type: "narrator", text: "3. Check win conditions:" },
+            { type: "info", text: "• If NO evil players remain → GOOD WINS (announce immediately)" },
+            { type: "info", text: "• If evil ≥ good → EVIL WINS (announce immediately)" },
+            { type: "info", text: "• Otherwise → Game continues to discussion" },
+            { type: "action", text: "Use the 'Check Win Condition' button below for automated checking" }
           ]
         },
         {
@@ -1971,40 +2110,59 @@
           phase: "day",
           blocks: [
             { type: "say", text: "The floor is yours! Accuse with melodrama. You have three minutes." },
+            { type: "narrator", text: "DISCUSSION MANAGEMENT:" },
+            { type: "narrator", text: "1. Start the 3-minute timer (or 1 minute for shorter games)" },
+            { type: "narrator", text: "2. Encourage dramatic accusations and defenses" },
+            { type: "narrator", text: "3. Watch for The Innocent - they can reveal their role ONCE to prove they're good" },
+            { type: "narrator", text: "4. Keep energy high - this is the drama phase!" },
+            { type: "narrator", text: "5. At 30 seconds, announce 'Final accusations!' to build urgency" },
             { type: "action", text: "Start the timer below when the debate begins." },
-            { type: "reminder", text: "The Innocent can reveal to confirm goodness. The Marked can force a revote if eliminated." }
+            { type: "reminder", text: "The Innocent can reveal once to confirm goodness. The Marked can force a revote if eliminated." }
           ]
         },
         {
           title: "Voting",
           phase: "day",
           blocks: [
-            { type: "say", text: theme.script.vote }
+            { type: "say", text: theme.script.vote },
+            { type: "narrator", text: "VOTING PROCESS:" },
+            { type: "narrator", text: "1. Announce: 'On three, everyone point to who you think should be eliminated.'" },
+            { type: "narrator", text: "2. Count: '1... 2... 3... POINT!'" },
+            { type: "narrator", text: "3. Quickly tally votes while students hold their points" },
+            { type: "narrator", text: "4. Announce the person with the most votes" }
           ]
         }
       ];
       
       // Add voting reminders dynamically based on active roles
       const votingReminders = [];
+      const votingStep = daySteps[daySteps.length - 1]; // The Voting step we just added
+      
       if (hasRole(4)) { // Corrupted Authority
         const corruptedPlayer = state.players.find(p => p.charId === 4 && !p.eliminated);
         if (corruptedPlayer) {
-          votingReminders.push(`Repeat ${corruptedPlayer.name}'s (Corrupted Authority) vote twice.`);
+          votingStep.blocks.push({ 
+            type: "reminder", 
+            text: `⚠️ ${corruptedPlayer.name} (Corrupted Authority): Count their vote TWICE. Their vote = 2 votes.` 
+          });
         }
       }
       if (hasRole(8)) { // Manipulator
-        votingReminders.push("Check if any player is silenced (Manipulator ability).");
-      }
-      if (votingReminders.length > 0) {
-        daySteps[4].blocks.push({ type: "reminder", text: votingReminders.join(" ") });
+        votingStep.blocks.push({ 
+          type: "reminder", 
+          text: "⚠️ Check Action Tracker: If Manipulator silenced someone, announce they cannot vote this round." 
+        });
       }
       
       daySteps.push({
         title: "Vote Resolution",
         phase: "day",
         blocks: [
-          { type: "narrator", text: "Count votes. Record who is eliminated." },
-          { type: "reminder", text: "The Marked can demand a revote if eliminated. Check for this before proceeding." },
+          { type: "narrator", text: "1. Announce who received the most votes" },
+          { type: "narrator", text: "2. Check for The Marked: If eliminated player is The Marked, they can demand ONE revote" },
+          { type: "narrator", text: "3. Check for The Traitor: If Traitor's marked player was eliminated, Traitor can force revote" },
+          { type: "narrator", text: "4. If revote happens: Repeat voting process (same rules apply)" },
+          { type: "narrator", text: "5. Final: Announce the eliminated player and prepare for death scene" },
           { type: "reminder", text: theme.script.deathScene }
         ]
       });
@@ -2013,8 +2171,13 @@
         title: "Apply Vote Aftermath",
         phase: "day",
         blocks: [
-          { type: "narrator", text: "Check for linked eliminations: Twins, Cursed neighbors." },
-          { type: "narrator", text: "Process any on-elimination triggers." }
+          { type: "narrator", text: "AFTER VOTE ELIMINATION - Check these in order:" },
+          { type: "narrator", text: "1. TWINS: If Twin A or Twin B was eliminated, the other twin IMMEDIATELY dies too" },
+          { type: "narrator", text: "2. CURSED: If The Cursed was eliminated, their TWO neighbors on EACH SIDE (4 total) also die" },
+          { type: "narrator", text: "3. THE INNOCENT: Did The Innocent reveal during discussion? If yes, note it" },
+          { type: "narrator", text: "4. SURVIVOR: If The Survivor was hit last night and survived, they can now be eliminated normally" },
+          { type: "reminder", text: "Announce all linked deaths dramatically. Let each eliminated player perform their death scene." },
+          { type: "action", text: "Mark all eliminated players in the Player Management panel below." }
         ]
       });
       
@@ -2022,7 +2185,14 @@
         title: "Final Win Check",
         phase: "day",
         blocks: [
-          { type: "narrator", text: "COUNT AGAIN: If evil ≥ good, evil wins. If no evil remain, good wins. Otherwise, proceed to next night." }
+          { type: "narrator", text: "FINAL WIN CONDITION CHECK:" },
+          { type: "narrator", text: "1. Count alive players again (after vote eliminations and linked deaths)" },
+          { type: "narrator", text: "2. Check win conditions:" },
+          { type: "info", text: "• If NO evil players remain → GOOD WINS!" },
+          { type: "info", text: "• If evil players ≥ good players → EVIL WINS!" },
+          { type: "info", text: "• Otherwise → Proceed to next night" },
+          { type: "narrator", text: "3. If no win: Prepare for next night by advancing to Night " + (state.night + 1) },
+          { type: "action", text: "Use 'Check Win Condition' button below or click 'Next Night' to continue" }
         ],
         showWinCheckButton: true
       });
