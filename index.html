@@ -607,6 +607,25 @@
       background: rgba(255, 255, 255, 0.95);
     }
 
+    /* Phase-aware layout adjustments */
+    .game-grid[data-phase="night"] .timer-card {
+      order: 2;
+    }
+
+    .game-grid[data-phase="night"] .status-panel > .stat-grid,
+    .game-grid[data-phase="night"] .status-panel > .stat {
+      order: 1;
+    }
+
+    .game-grid[data-phase="day"] .timer-card {
+      order: -1;
+      padding: 1.25rem;
+    }
+
+    .game-grid[data-phase="day"] .timer-display {
+      font-size: clamp(2.8rem, 7vw, 3.8rem);
+    }
+
     @media (min-width: 1024px) and (max-height: 900px) {
       /* Landscape tablet/laptop optimization */
       #game-section .game-grid {
@@ -3235,6 +3254,11 @@
         if (state.phase !== step.phase) {
           state.phase = step.phase;
           broadcastPhaseChange(state.phase, state.night);
+          // Update layout based on phase
+          const gameGrid = document.querySelector("#game-section .game-grid");
+          if (gameGrid) {
+            gameGrid.setAttribute('data-phase', state.phase);
+          }
         }
         
         step.blocks.forEach(block => {
@@ -3743,6 +3767,11 @@
       audioControls.classList.remove("hidden");
       applyThemeVisuals();
       broadcastPhaseChange(state.phase, state.night);
+      // Set initial phase on game-grid
+      const gameGrid = document.querySelector("#game-section .game-grid");
+      if (gameGrid) {
+        gameGrid.setAttribute('data-phase', state.phase);
+      }
       renderAll();
     }
 
