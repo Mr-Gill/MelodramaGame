@@ -1436,7 +1436,9 @@
         championIdentifiedVillain: null,
         assassinUsed: false,
         rightHandUsed: false
-      }
+      },
+      silencedPlayer: null, // Manipulator silence effect
+      markedPlayer: null // Traitor's marked player
     };
 
     let state = loadState();
@@ -2140,7 +2142,8 @@
           { type: "narrator", text: "Count votes. Record who is eliminated." },
           { type: "reminder", text: "The Marked can demand a revote if eliminated. Check for this before proceeding." },
           { type: "reminder", text: theme.script.deathScene }
-        ]
+        ],
+        showVoteTracker: true
       });
       
       daySteps.push({
@@ -2568,6 +2571,12 @@
           scriptStepsContainer.append(actionTracker);
         }
 
+        // Add vote tracker if this step needs it
+        if (step.showVoteTracker) {
+          const voteTracker = createVoteTracker();
+          scriptStepsContainer.append(voteTracker);
+        }
+
         // Add resolution button if this step needs it
         if (step.showResolutionButton) {
           const resolutionButton = document.createElement('button');
@@ -2756,6 +2765,157 @@
         persistState();
         renderScript();
       }
+    }
+
+    function createVoteTracker() {
+      const tracker = document.createElement('div');
+      tracker.className = 'action-tracker';
+      
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      
+      // Build vote inputs for each player
+      const voteInputs = alivePlayers.map(p => {
+        const isCorrupted = p.charId === 4; // Corrupted Authority
+        const isSilenced = state.silencedPlayer === p.id; // Manipulator effect
+        
+        return `
+          <div style="display: flex; gap: 0.5rem; align-items: center; margin: 0.5rem 0;">
+            <label style="flex: 1;">${p.name} (${p.roleName}):</label>
+            <input 
+              type="number" 
+              id="vote-${p.id}" 
+              min="0" 
+              max="50" 
+              value="0" 
+              style="width: 60px; padding: 0.25rem;"
+              ${isSilenced ? 'disabled title="Silenced by Manipulator"' : ''}
+            />
+            ${isCorrupted ? '<span style="color: var(--accent-evil); font-size: 0.85rem;">×2</span>' : ''}
+            ${isSilenced ? '<span style="color: var(--accent-evil); font-size: 0.85rem;">🔇</span>' : ''}
+          </div>
+        `;
+      }).join('');
+
+      tracker.innerHTML = `
+        <h4>Vote Tracker</h4>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Enter the vote count for each player. Corrupted Authority votes count double (×2).
+        </p>
+        
+        ${voteInputs}
+        
+        <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;">
+          <h5 style="margin: 0 0 0.5rem;">Vote Tally</h5>
+          <div id="vote-tally" style="font-family: monospace; font-size: 0.9rem;"></div>
+        </div>
+        
+        <div class="action-buttons">
+          <button onclick="calculateVotes()" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.7), rgba(56, 189, 248, 0.9));">
+            🗳️ Calculate Votes
+          </button>
+          <button onclick="clearVotes()" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.5), rgba(100, 116, 139, 0.7));">
+            🗑️ Clear Votes
+          </button>
+        </div>
+      `;
+
+      // Add event listeners to auto-calculate on input
+      setTimeout(() => {
+        alivePlayers.forEach(p => {
+          const input = document.getElementById(`vote-${p.id}`);
+          if (input) {
+            input.addEventListener('input', calculateVotes);
+          }
+        });
+      }, 0);
+
+      return tracker;
+    }
+
+    function calculateVotes() {
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      const voteTally = {};
+      
+      // Collect votes
+      alivePlayers.forEach(p => {
+        const input = document.getElementById(`vote-${p.id}`);
+        if (input) {
+          let votes = parseInt(input.value) || 0;
+          
+          // Apply Corrupted Authority double vote
+          if (p.charId === 4) {
+            votes = votes * 2;
+          }
+          
+          voteTally[p.id] = {
+            name: p.name,
+            role: p.roleName,
+            votes: votes,
+            player: p
+          };
+        }
+      });
+      
+      // Sort by votes
+      const sorted = Object.values(voteTally).sort((a, b) => b.votes - a.votes);
+      
+      // Display tally
+      const tallyEl = document.getElementById('vote-tally');
+      if (tallyEl && sorted.length > 0) {
+        let tallyHTML = '';
+        sorted.forEach((entry, index) => {
+          if (entry.votes > 0) {
+            const isFirst = index === 0 && entry.votes > 0;
+            const isSecond = index === 1 && entry.votes > 0;
+            const style = isFirst ? 'color: var(--accent-evil); font-weight: bold;' : 
+                         isSecond ? 'color: var(--accent-good);' : '';
+            tallyHTML += `<div style="${style}">${index + 1}. ${entry.name}: ${entry.votes} votes</div>`;
+          }
+        });
+        
+        if (tallyHTML === '') {
+          tallyHTML = '<div style="color: var(--text-secondary);">No votes recorded yet</div>';
+        } else {
+          // Add elimination indicators
+          const firstPlace = sorted[0];
+          const secondPlace = sorted[1];
+          
+          tallyHTML += '<hr style="margin: 0.5rem 0; opacity: 0.3;">';
+          tallyHTML += `<div style="margin-top: 0.5rem;">`;
+          
+          if (firstPlace && firstPlace.votes > 0) {
+            tallyHTML += `<div style="color: var(--accent-evil);">→ ${firstPlace.name} is ELIMINATED</div>`;
+            
+            // Check for Marked revote
+            if (firstPlace.player.charId === 26) {
+              tallyHTML += `<div style="color: var(--accent-good); margin-top: 0.25rem;">⚠️ The Marked demands a REVOTE!</div>`;
+            }
+            
+            // Check for Traitor revote trigger
+            const traitor = state.players.find(p => p.charId === 9 && !p.eliminated);
+            if (traitor && state.markedPlayer === firstPlace.player.id) {
+              tallyHTML += `<div style="color: var(--accent-evil); margin-top: 0.25rem;">⚠️ Traitor triggers REVOTE!</div>`;
+            }
+          }
+          
+          tallyHTML += `</div>`;
+        }
+        
+        tallyEl.innerHTML = tallyHTML;
+      }
+      
+      return sorted;
+    }
+
+    function clearVotes() {
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      alivePlayers.forEach(p => {
+        const input = document.getElementById(`vote-${p.id}`);
+        if (input) {
+          input.value = '0';
+        }
+      });
+      calculateVotes();
     }
 
     function renderPlayers() {
