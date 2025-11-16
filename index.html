@@ -110,6 +110,30 @@
       cursor: not-allowed;
     }
 
+    .preset-button {
+      border-radius: 12px !important;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.8), rgba(56, 189, 248, 0.9)) !important;
+      padding: 0.75rem 1rem !important;
+      box-shadow: 0 6px 16px rgba(34, 211, 238, 0.3) !important;
+      text-align: left;
+    }
+
+    .preset-button:hover:not(:disabled) {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 10px 24px rgba(34, 211, 238, 0.4) !important;
+    }
+
+    .preset-button strong {
+      display: block;
+      font-size: 1.05rem;
+    }
+
+    .preset-button small {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
     main {
       flex: 1;
       padding: 0 clamp(1rem, 4vw, 3rem) 4rem;
@@ -1178,6 +1202,35 @@
       <h2>Game Setup</h2>
       <p>Build tonight's cast, assign names, and choose a theme. The tool will auto-balance good and evil roles and guide you through every beat of the drama.</p>
 
+      <!-- Quick Start Presets -->
+      <div style="background: var(--bg-secondary); padding: 1.25rem; border-radius: var(--panel-radius); margin-bottom: 1.5rem; border: 2px solid var(--accent-good);">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+          <span style="font-size: 1.5rem;">⚡</span>
+          <div>
+            <strong style="font-size: 1.1rem; color: var(--accent-good);">Quick Start Presets</strong>
+            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">Choose a balanced setup for common class sizes</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button id="preset-15" type="button" class="preset-button" style="flex: 1; min-width: 150px; padding: 0.75rem 1rem; font-size: 0.95rem;">
+            <strong>15 Players</strong>
+            <small style="display: block; opacity: 0.8; margin-top: 0.25rem;">~25 min • Beginner Friendly</small>
+          </button>
+          <button id="preset-18" type="button" class="preset-button" style="flex: 1; min-width: 150px; padding: 0.75rem 1rem; font-size: 0.95rem;">
+            <strong>18 Players</strong>
+            <small style="display: block; opacity: 0.8; margin-top: 0.25rem;">~30 min • Most Popular</small>
+          </button>
+          <button id="preset-21" type="button" class="preset-button" style="flex: 1; min-width: 150px; padding: 0.75rem 1rem; font-size: 0.95rem;">
+            <strong>21 Players</strong>
+            <small style="display: block; opacity: 0.8; margin-top: 0.25rem;">~35 min • Full Class</small>
+          </button>
+        </div>
+        <div id="preset-info" style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px; font-size: 0.9rem; display: none;">
+          <span style="color: var(--accent-good);">✓</span> <strong>Preset Loaded!</strong> 
+          <span id="preset-details"></span>
+        </div>
+      </div>
+
       <div class="setup-grid">
         <div class="stat">
           <span>Total Players</span>
@@ -1192,6 +1245,10 @@
               <div>
                 <small>Suggested Evil</small>
                 <div class="pill" id="suggested-evil">6</div>
+              </div>
+              <div>
+                <small>Est. Time</small>
+                <div class="pill" id="estimated-time">~30 min</div>
               </div>
             </div>
           </div>
@@ -1331,6 +1388,7 @@
         <button class="help-tab active" data-tab="current">Current Game</button>
         <button class="help-tab" data-tab="all">All Characters</button>
         <button class="help-tab" data-tab="guide">Quick Guide</button>
+        <button class="help-tab" data-tab="beginners">Year 7 Tips</button>
         <button class="help-tab" data-tab="shortcuts">Shortcuts</button>
       </div>
 
@@ -1388,6 +1446,60 @@
           <li><strong>Hero-Type (GOOD):</strong> Defensive powers to protect players</li>
           <li><strong>Sidekick-Type (GOOD):</strong> Risky day powers with dice rolls</li>
           <li><strong>Damsel-Type (GOOD):</strong> Day phase twists and dramatic reveals</li>
+        </ul>
+      </div>
+
+      <div id="help-beginners" class="help-content help-guide">
+        <h3>🎭 Tips for Year 7 Students</h3>
+        
+        <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid var(--accent-good);">
+          <strong>✨ Quick Start:</strong> Use the Quick Start Presets on the setup screen! Choose "15 Players - Beginner Friendly" for your first game. It takes ~25 minutes and uses simpler characters.
+        </div>
+
+        <h3>🎬 Making It Fun & Engaging</h3>
+        <ul>
+          <li><strong>Encourage Big Acting:</strong> Remind students to be dramatic! Over-the-top reactions make the game memorable</li>
+          <li><strong>Use Themes:</strong> Try different themes (Haunted House, Space Station) to keep it fresh</li>
+          <li><strong>Practice Rounds:</strong> Run a quick 12-player game first so students learn the flow</li>
+          <li><strong>Death Scenes:</strong> Let eliminated players do a 10-second dramatic exit</li>
+        </ul>
+
+        <h3>⏱️ Keeping It Quick</h3>
+        <ul>
+          <li><strong>Set Time Limits:</strong> Use the 3-minute timer for discussion - it keeps momentum</li>
+          <li><strong>Skip Complex Characters:</strong> First game? Avoid: Stalker, Guardian, Defender, Cursed, Twins</li>
+          <li><strong>Simplified Script:</strong> You don't need to read everything - paraphrase the SAY blocks</li>
+          <li><strong>Pre-assign Seats:</strong> Have students sit in a circle before starting</li>
+        </ul>
+
+        <h3>🎯 Common Challenges & Solutions</h3>
+        <ul>
+          <li><strong>"Students are confused":</strong> Remind them their character card tells them everything - they just follow instructions</li>
+          <li><strong>"Too chaotic during voting":</strong> Use "Point on 3!" and count quickly - don't let debates drag on</li>
+          <li><strong>"Evil is winning too much":</strong> Add one more Hero-type (like Healer or Champion)</li>
+          <li><strong>"Game is too long":</strong> Start with 15 players maximum, use simpler characters</li>
+          <li><strong>"Students peeking":</strong> Emphasize the drama depends on everyone playing fair</li>
+        </ul>
+
+        <h3>✅ Best Practices</h3>
+        <ul>
+          <li><strong>First 5 Minutes:</strong> Explain win conditions clearly (Good = eliminate all evil, Evil = equal numbers)</li>
+          <li><strong>Visual Reminders:</strong> Use the projector view so students can see the phase and timer</li>
+          <li><strong>Celebrate Wins:</strong> Make a big deal of the winning team - applause and dramatic bows!</li>
+          <li><strong>Debrief:</strong> Spend 3 minutes at the end discussing best moments and performances</li>
+        </ul>
+
+        <h3>🌟 Recommended Character Sets</h3>
+        <p><strong>15 Players - Safest Bet:</strong></p>
+        <ul style="list-style-type: none; padding-left: 0;">
+          <li>👿 Evil: Evil Mastermind, Assassin, Pretender, Right Hand, Spy</li>
+          <li>😇 Good: Sage, Oracle, Champion, Healer, Loyal Companion, Voice, Marked, Innocent, Twin A, Twin B</li>
+        </ul>
+
+        <p><strong>18 Players - More Variety:</strong></p>
+        <ul style="list-style-type: none; padding-left: 0;">
+          <li>👿 Evil: Evil Mastermind, Assassin, Pretender, Corrupted Authority, Right Hand, Manipulator</li>
+          <li>😇 Good: Sage, Oracle, Sensitive, Champion, Healer, Loyal Companion, Voice, Marked, Innocent, Twin A, Twin B, Cursed</li>
         </ul>
       </div>
 
@@ -1738,6 +1850,28 @@
           deathScene: "A melodramatic hospital flatline moment!",
           evilCall: "Ask for scheming glances and hospital intrigue."
         }
+      }
+    };
+
+    // Quick Start Presets - Balanced character selections for common class sizes
+    const PRESETS = {
+      15: {
+        name: "15 Players - Beginner Friendly",
+        roles: [1, 2, 3, 6, 7, 11, 12, 16, 17, 21, 22, 26, 27, 28, 29], // Simple, clear abilities
+        description: "Simplified roles perfect for first-time players",
+        timeEstimate: "~25 min"
+      },
+      18: {
+        name: "18 Players - Most Popular",
+        roles: [1, 2, 3, 4, 6, 7, 8, 11, 12, 13, 16, 17, 21, 22, 26, 27, 28, 29], // Balanced mix
+        description: "Great balance of roles for a full class experience",
+        timeEstimate: "~30 min"
+      },
+      21: {
+        name: "21 Players - Full Class",
+        roles: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 16, 17, 18, 21, 22, 23, 26, 28, 29], // More complex
+        description: "Full roster with advanced mechanics",
+        timeEstimate: "~35 min"
       }
     };
 
@@ -2114,15 +2248,6 @@
       });
       themeSelect.value = state.theme;
       themeDescription.textContent = THEMES[state.theme].description;
-    }
-
-    function updatePlayerCountDisplays() {
-      const count = Number(playerCountInput.value);
-      playerCountDisplay.textContent = count;
-      const evil = Math.max(3, Math.round(count * 0.33));
-      const good = count - evil;
-      suggestedGoodDisplay.textContent = good;
-      suggestedEvilDisplay.textContent = evil;
     }
 
     function renderRoleGroups() {
@@ -3534,8 +3659,14 @@
           state.timer.remaining -= 1;
           renderTimer();
           broadcastTimerUpdate(state.timer.remaining, state.timer.running);
+          // Play warning sound at 30 seconds and when timer completes
+          if (state.timer.remaining === 30) {
+            playTimerWarningSound();
+          }
           if (state.timer.remaining === 0) {
-            alert("Timer complete! Time for a dramatic decision.");
+            playTimerWarningSound();
+            setTimeout(() => playTimerWarningSound(), 300); // Double ding
+            alert("⏰ Timer complete! Time for a dramatic decision.");
           }
         }
       }, 1000);
@@ -3711,6 +3842,43 @@
       });
     }
 
+    // Simple Sound Effects using Web Audio API
+    function playSound(frequency, duration, type = 'sine') {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        // Silently fail if Web Audio API not supported
+        console.log('Audio not supported');
+      }
+    }
+
+    function playCelebrationSound() {
+      // Play a cheerful ascending melody
+      playSound(523, 0.15); // C
+      setTimeout(() => playSound(659, 0.15), 150); // E
+      setTimeout(() => playSound(784, 0.15), 300); // G
+      setTimeout(() => playSound(1047, 0.3), 450); // High C
+    }
+
+    function playTimerWarningSound() {
+      // Play a gentle "ding" sound
+      playSound(800, 0.2, 'sine');
+    }
+
     // Win Condition Functions
     function checkWinCondition() {
       const alivePlayers = state.players.filter(p => !p.eliminated);
@@ -3740,6 +3908,9 @@
       const survivorsEl = document.getElementById("win-survivors");
       const eliminatedEl = document.getElementById("win-eliminated");
       const rolesListEl = document.getElementById("win-roles-list");
+      
+      // Play celebration sound
+      playCelebrationSound();
       
       // Set title and styling based on winner
       if (winningTeam === "good") {
@@ -3960,6 +4131,55 @@
       }
     }
 
+    // Preset loading function
+    function loadPreset(playerCount) {
+      const preset = PRESETS[playerCount];
+      if (!preset) return;
+      
+      // Update player count
+      playerCountInput.value = playerCount;
+      state.selectedRoles = [...preset.roles];
+      
+      // Update UI
+      updatePlayerCountDisplays();
+      updateRoleSelectionUI();
+      
+      // Show preset info
+      const presetInfo = document.getElementById("preset-info");
+      const presetDetails = document.getElementById("preset-details");
+      presetInfo.style.display = "block";
+      presetDetails.textContent = `${preset.description} • ${preset.timeEstimate}`;
+      
+      // Hide after 5 seconds
+      setTimeout(() => {
+        presetInfo.style.display = "none";
+      }, 5000);
+      
+      persistState();
+    }
+
+    // Calculate estimated game time based on player count
+    function calculateEstimatedTime(playerCount) {
+      // Base time: 20 minutes + 1 minute per player above 12
+      const baseTime = 20;
+      const perPlayerTime = 1;
+      const totalMinutes = baseTime + ((playerCount - 12) * perPlayerTime);
+      return `~${totalMinutes} min`;
+    }
+
+    function updatePlayerCountDisplays() {
+      const count = Number(playerCountInput.value);
+      playerCountDisplay.textContent = count;
+      
+      // Calculate good/evil split (roughly 2:1 ratio)
+      const good = Math.round(count * 0.67);
+      const evil = count - good;
+      
+      suggestedGoodDisplay.textContent = good;
+      suggestedEvilDisplay.textContent = evil;
+      document.getElementById("estimated-time").textContent = calculateEstimatedTime(count);
+    }
+
     playerCountInput.addEventListener("input", () => {
       updatePlayerCountDisplays();
       updateRoleSelectionUI();
@@ -4007,6 +4227,11 @@
     });
 
     helpButton.addEventListener("click", showHelpModal);
+
+    // Preset button event listeners
+    document.getElementById("preset-15").addEventListener("click", () => loadPreset(15));
+    document.getElementById("preset-18").addEventListener("click", () => loadPreset(18));
+    document.getElementById("preset-21").addEventListener("click", () => loadPreset(21));
 
     resetGameButton.addEventListener("click", () => {
       if (confirm("Start a new game? Current progress will be cleared.")) {
