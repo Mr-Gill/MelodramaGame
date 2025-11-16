@@ -822,6 +822,249 @@
         transform: translateY(0);
       }
     }
+
+    /* Dice Roll Modal */
+    .dice-modal {
+      background: var(--bg-secondary);
+      border-radius: var(--panel-radius);
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--accent-good);
+      animation: modalSlideIn 0.3s ease-out;
+      text-align: center;
+    }
+
+    .dice-modal h2 {
+      margin: 0 0 1rem;
+      font-size: 2rem;
+      color: var(--accent-good);
+    }
+
+    .dice-modal-character {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+    }
+
+    .dice-modal-roll {
+      margin: 2rem 0;
+    }
+
+    .dice-modal-result {
+      font-size: 4rem;
+      margin: 1rem 0;
+      animation: diceRoll 0.5s ease-out;
+    }
+
+    .dice-modal-outcome {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .dice-modal-outcome.success {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-good);
+    }
+
+    .dice-modal-outcome.failure {
+      background: rgba(244, 114, 182, 0.2);
+      color: var(--accent-evil);
+    }
+
+    .dice-modal-description {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      line-height: 1.6;
+    }
+
+    .dice-modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .dice-modal-actions button {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+    }
+
+    @keyframes diceRoll {
+      0%, 20%, 40%, 60%, 80% {
+        transform: rotate(0deg) scale(1);
+      }
+      10%, 30%, 50%, 70%, 90% {
+        transform: rotate(180deg) scale(1.2);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+    /* Help Modal */
+    .help-modal {
+      background: var(--bg-secondary);
+      border-radius: var(--panel-radius);
+      padding: 2rem;
+      max-width: 800px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--accent-good);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    .help-modal h2 {
+      margin: 0 0 1rem;
+      font-size: 2rem;
+      color: var(--accent-good);
+    }
+
+    .help-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--bg-tertiary);
+    }
+
+    .help-tab {
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+      border-bottom: 3px solid transparent;
+    }
+
+    .help-tab.active {
+      color: var(--accent-good);
+      border-bottom-color: var(--accent-good);
+    }
+
+    .help-tab:hover {
+      color: var(--text-primary);
+    }
+
+    .help-content {
+      display: none;
+    }
+
+    .help-content.active {
+      display: block;
+    }
+
+    .help-search {
+      margin-bottom: 1rem;
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--bg-primary);
+      border-radius: 8px;
+      color: var(--text-primary);
+    }
+
+    .character-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .character-help-item {
+      background: var(--bg-tertiary);
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--accent-good);
+    }
+
+    .character-help-item.evil {
+      border-left-color: var(--accent-evil);
+    }
+
+    .character-help-item h4 {
+      margin: 0 0 0.5rem;
+      color: var(--accent-good);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .character-help-item.evil h4 {
+      color: var(--accent-evil);
+    }
+
+    .character-help-item .type-badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .character-help-item p {
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+
+    .help-guide {
+      line-height: 1.8;
+    }
+
+    .help-guide h3 {
+      color: var(--accent-good);
+      margin: 1.5rem 0 1rem;
+    }
+
+    .help-guide ol, .help-guide ul {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .help-guide li {
+      margin: 0.5rem 0;
+    }
+
+    .keyboard-shortcuts {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .shortcut-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+    }
+
+    .shortcut-key {
+      font-family: monospace;
+      background: var(--bg-primary);
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      color: var(--accent-good);
+    }
+
+    .help-modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .help-modal-actions button {
+      flex: 1;
+    }
   </style>
 </head>
 <body>
@@ -836,6 +1079,7 @@
         </span>
       </div>
       <button id="toggle-mode" type="button" aria-pressed="false">Toggle Dark/Light</button>
+      <button id="help-button" type="button">❓ Help</button>
       <button id="reset-game" type="button">New Game</button>
       <button id="open-projector" type="button">📽️ Open Projector View</button>
       <a id="download-notes" class="pill" href="#" download="melodrama-notes.txt">Export Notes</a>
@@ -967,6 +1211,129 @@
       <div class="win-modal-actions">
         <button id="win-new-game" type="button">Start New Game</button>
         <button id="win-close" type="button">Continue Viewing</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dice Roll Modal -->
+  <div id="dice-modal-overlay" class="modal-overlay">
+    <div id="dice-modal" class="dice-modal">
+      <h2>🎲 DICE ROLL</h2>
+      <div class="dice-modal-character" id="dice-character-name"></div>
+      <div class="dice-modal-roll">
+        <button id="dice-roll-button" type="button" class="pill">Roll d6</button>
+      </div>
+      <div id="dice-result-container" style="display: none;">
+        <div class="dice-modal-result" id="dice-result">?</div>
+        <div class="dice-modal-outcome" id="dice-outcome"></div>
+        <div class="dice-modal-description" id="dice-description"></div>
+      </div>
+      <div class="dice-modal-actions">
+        <button id="dice-confirm" type="button" style="display: none;">Confirm</button>
+        <button id="dice-cancel" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div id="help-modal-overlay" class="modal-overlay">
+    <div id="help-modal" class="help-modal">
+      <h2>❓ Help & Reference</h2>
+      
+      <div class="help-tabs">
+        <button class="help-tab active" data-tab="current">Current Game</button>
+        <button class="help-tab" data-tab="all">All Characters</button>
+        <button class="help-tab" data-tab="guide">Quick Guide</button>
+        <button class="help-tab" data-tab="shortcuts">Shortcuts</button>
+      </div>
+
+      <div id="help-current" class="help-content active">
+        <input type="text" class="help-search" id="help-search-current" placeholder="Search current characters..." />
+        <div id="current-characters-list" class="character-list"></div>
+      </div>
+
+      <div id="help-all" class="help-content">
+        <input type="text" class="help-search" id="help-search-all" placeholder="Search all 30 characters..." />
+        <div id="all-characters-list" class="character-list"></div>
+      </div>
+
+      <div id="help-guide" class="help-content help-guide">
+        <h3>Getting Started</h3>
+        <ol>
+          <li><strong>Setup Phase:</strong> Select characters from each type group (Villain, Accomplice, Elder, Hero, Sidekick, Damsel)</li>
+          <li><strong>Balance Check:</strong> Ensure good/evil ratio is appropriate (typically 2:1 good to evil)</li>
+          <li><strong>Optional Names:</strong> Enter student names (one per line) to personalize the game</li>
+          <li><strong>Choose Theme:</strong> Select narrative flavor for dramatic flair</li>
+          <li><strong>Enter Narrator View:</strong> Begin the game!</li>
+        </ol>
+
+        <h3>Night Phase</h3>
+        <ol>
+          <li>Follow script prompts step by step</li>
+          <li>Call each character type in order (Villains → Accomplices → Elders → Heroes → Sidekicks)</li>
+          <li>Use Action Tracker to record night actions</li>
+          <li>Click "Calculate Night Resolution" to see results</li>
+          <li>Update player status (eliminate, protect) as needed</li>
+        </ol>
+
+        <h3>Day Phase</h3>
+        <ol>
+          <li>Announce night eliminations dramatically</li>
+          <li>Sidekicks may use day powers (dice roll required: 4-6 = success)</li>
+          <li>Start discussion timer (3 minutes recommended)</li>
+          <li>Facilitate voting (use Vote Tracker for counting)</li>
+          <li>Handle special mechanics (Corrupted Authority ×2, Manipulator silence, revotes)</li>
+          <li>Check for win conditions</li>
+        </ol>
+
+        <h3>Win Conditions</h3>
+        <ul>
+          <li><strong>Good Wins:</strong> All evil players eliminated</li>
+          <li><strong>Evil Wins:</strong> Evil ≥ Good (e.g., 6 evil + 6 good = evil wins)</li>
+          <li>Check after every elimination (night and day)</li>
+        </ul>
+
+        <h3>Character Types</h3>
+        <ul>
+          <li><strong>Villain-Type (EVIL):</strong> Wake together in Step 1 to choose target</li>
+          <li><strong>Accomplice-Type (EVIL):</strong> One-off tricks to help villains</li>
+          <li><strong>Elder-Type (GOOD):</strong> Information gathering (never kill/save)</li>
+          <li><strong>Hero-Type (GOOD):</strong> Defensive powers to protect players</li>
+          <li><strong>Sidekick-Type (GOOD):</strong> Risky day powers with dice rolls</li>
+          <li><strong>Damsel-Type (GOOD):</strong> Day phase twists and dramatic reveals</li>
+        </ul>
+      </div>
+
+      <div id="help-shortcuts" class="help-content">
+        <div class="keyboard-shortcuts">
+          <div class="shortcut-item">
+            <span>Show this help</span>
+            <span class="shortcut-key">?</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Start 3-minute timer</span>
+            <span class="shortcut-key">T</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Reset timer</span>
+            <span class="shortcut-key">R</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Next script step</span>
+            <span class="shortcut-key">Space</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Close modal</span>
+            <span class="shortcut-key">Esc</span>
+          </div>
+        </div>
+        <p style="margin-top: 1.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+          Note: Some keyboard shortcuts are planned but not yet fully implemented.
+        </p>
+      </div>
+
+      <div class="help-modal-actions">
+        <button id="help-close" type="button">Close</button>
       </div>
     </div>
   </div>
@@ -1331,7 +1698,9 @@
         championIdentifiedVillain: null,
         assassinUsed: false,
         rightHandUsed: false
-      }
+      },
+      silencedPlayer: null, // Manipulator silence effect
+      markedPlayer: null // Traitor's marked player
     };
 
     let state = loadState();
@@ -1374,6 +1743,7 @@
 
     const toggleModeButton = document.getElementById("toggle-mode");
     const resetGameButton = document.getElementById("reset-game");
+    const helpButton = document.getElementById("help-button");
     const downloadNotesLink = document.getElementById("download-notes");
     const openProjectorButton = document.getElementById("open-projector");
 
@@ -1984,6 +2354,35 @@
         }
       ];
       
+      // Add Sidekick Power step if any sidekicks are alive and may use powers
+      const aliveSidekicks = state.players.filter(p => 
+        !p.eliminated && 
+        [21, 22, 23, 24, 25].includes(p.charId)
+      );
+      
+      if (aliveSidekicks.length > 0) {
+        const sidekickStep = {
+          title: "Sidekick Day Powers",
+          phase: "day",
+          blocks: [
+            { type: "narrator", text: "Check if any Sidekicks want to use their day power (dice roll required)." },
+            { type: "info", text: "Sidekicks who signaled during Step 5 may now activate their powers." }
+          ]
+        };
+        
+        // Add button for each alive sidekick
+        aliveSidekicks.forEach(player => {
+          sidekickStep.blocks.push({
+            type: "action",
+            text: `${player.name} (${player.roleName})`,
+            buttonText: "Roll Dice",
+            buttonAction: () => triggerSidekickPower(player.id)
+          });
+        });
+        
+        daySteps.splice(2, 0, sidekickStep); // Insert after "Discussion" step
+      }
+      
       // Add voting reminders dynamically based on active roles
       const votingReminders = [];
       if (hasRole(4)) { // Corrupted Authority
@@ -2006,7 +2405,8 @@
           { type: "narrator", text: "Count votes. Record who is eliminated." },
           { type: "reminder", text: "The Marked can demand a revote if eliminated. Check for this before proceeding." },
           { type: "reminder", text: theme.script.deathScene }
-        ]
+        ],
+        showVoteTracker: true
       });
       
       daySteps.push({
@@ -2410,6 +2810,21 @@
           const div = document.createElement("div");
           div.className = `script-block block-${block.type}`;
           div.textContent = block.text;
+          
+          // If this block has a button action, add a button
+          if (block.buttonAction && block.buttonText) {
+            const button = document.createElement('button');
+            button.textContent = block.buttonText;
+            button.className = 'pill';
+            button.style.marginLeft = '1rem';
+            button.onclick = async () => {
+              await block.buttonAction();
+              renderPlayers();
+              updateCounts();
+            };
+            div.appendChild(button);
+          }
+          
           scriptStepsContainer.append(div);
         });
 
@@ -2417,6 +2832,12 @@
         if (step.showActionTracker) {
           const actionTracker = createActionTracker();
           scriptStepsContainer.append(actionTracker);
+        }
+
+        // Add vote tracker if this step needs it
+        if (step.showVoteTracker) {
+          const voteTracker = createVoteTracker();
+          scriptStepsContainer.append(voteTracker);
         }
 
         // Add resolution button if this step needs it
@@ -2609,6 +3030,157 @@
       }
     }
 
+    function createVoteTracker() {
+      const tracker = document.createElement('div');
+      tracker.className = 'action-tracker';
+      
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      
+      // Build vote inputs for each player
+      const voteInputs = alivePlayers.map(p => {
+        const isCorrupted = p.charId === 4; // Corrupted Authority
+        const isSilenced = state.silencedPlayer === p.id; // Manipulator effect
+        
+        return `
+          <div style="display: flex; gap: 0.5rem; align-items: center; margin: 0.5rem 0;">
+            <label style="flex: 1;">${p.name} (${p.roleName}):</label>
+            <input 
+              type="number" 
+              id="vote-${p.id}" 
+              min="0" 
+              max="50" 
+              value="0" 
+              style="width: 60px; padding: 0.25rem;"
+              ${isSilenced ? 'disabled title="Silenced by Manipulator"' : ''}
+            />
+            ${isCorrupted ? '<span style="color: var(--accent-evil); font-size: 0.85rem;">×2</span>' : ''}
+            ${isSilenced ? '<span style="color: var(--accent-evil); font-size: 0.85rem;">🔇</span>' : ''}
+          </div>
+        `;
+      }).join('');
+
+      tracker.innerHTML = `
+        <h4>Vote Tracker</h4>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Enter the vote count for each player. Corrupted Authority votes count double (×2).
+        </p>
+        
+        ${voteInputs}
+        
+        <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;">
+          <h5 style="margin: 0 0 0.5rem;">Vote Tally</h5>
+          <div id="vote-tally" style="font-family: monospace; font-size: 0.9rem;"></div>
+        </div>
+        
+        <div class="action-buttons">
+          <button onclick="calculateVotes()" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.7), rgba(56, 189, 248, 0.9));">
+            🗳️ Calculate Votes
+          </button>
+          <button onclick="clearVotes()" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.5), rgba(100, 116, 139, 0.7));">
+            🗑️ Clear Votes
+          </button>
+        </div>
+      `;
+
+      // Add event listeners to auto-calculate on input
+      setTimeout(() => {
+        alivePlayers.forEach(p => {
+          const input = document.getElementById(`vote-${p.id}`);
+          if (input) {
+            input.addEventListener('input', calculateVotes);
+          }
+        });
+      }, 0);
+
+      return tracker;
+    }
+
+    function calculateVotes() {
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      const voteTally = {};
+      
+      // Collect votes
+      alivePlayers.forEach(p => {
+        const input = document.getElementById(`vote-${p.id}`);
+        if (input) {
+          let votes = parseInt(input.value) || 0;
+          
+          // Apply Corrupted Authority double vote
+          if (p.charId === 4) {
+            votes = votes * 2;
+          }
+          
+          voteTally[p.id] = {
+            name: p.name,
+            role: p.roleName,
+            votes: votes,
+            player: p
+          };
+        }
+      });
+      
+      // Sort by votes
+      const sorted = Object.values(voteTally).sort((a, b) => b.votes - a.votes);
+      
+      // Display tally
+      const tallyEl = document.getElementById('vote-tally');
+      if (tallyEl && sorted.length > 0) {
+        let tallyHTML = '';
+        sorted.forEach((entry, index) => {
+          if (entry.votes > 0) {
+            const isFirst = index === 0 && entry.votes > 0;
+            const isSecond = index === 1 && entry.votes > 0;
+            const style = isFirst ? 'color: var(--accent-evil); font-weight: bold;' : 
+                         isSecond ? 'color: var(--accent-good);' : '';
+            tallyHTML += `<div style="${style}">${index + 1}. ${entry.name}: ${entry.votes} votes</div>`;
+          }
+        });
+        
+        if (tallyHTML === '') {
+          tallyHTML = '<div style="color: var(--text-secondary);">No votes recorded yet</div>';
+        } else {
+          // Add elimination indicators
+          const firstPlace = sorted[0];
+          const secondPlace = sorted[1];
+          
+          tallyHTML += '<hr style="margin: 0.5rem 0; opacity: 0.3;">';
+          tallyHTML += `<div style="margin-top: 0.5rem;">`;
+          
+          if (firstPlace && firstPlace.votes > 0) {
+            tallyHTML += `<div style="color: var(--accent-evil);">→ ${firstPlace.name} is ELIMINATED</div>`;
+            
+            // Check for Marked revote
+            if (firstPlace.player.charId === 26) {
+              tallyHTML += `<div style="color: var(--accent-good); margin-top: 0.25rem;">⚠️ The Marked demands a REVOTE!</div>`;
+            }
+            
+            // Check for Traitor revote trigger
+            const traitor = state.players.find(p => p.charId === 9 && !p.eliminated);
+            if (traitor && state.markedPlayer === firstPlace.player.id) {
+              tallyHTML += `<div style="color: var(--accent-evil); margin-top: 0.25rem;">⚠️ Traitor triggers REVOTE!</div>`;
+            }
+          }
+          
+          tallyHTML += `</div>`;
+        }
+        
+        tallyEl.innerHTML = tallyHTML;
+      }
+      
+      return sorted;
+    }
+
+    function clearVotes() {
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      alivePlayers.forEach(p => {
+        const input = document.getElementById(`vote-${p.id}`);
+        if (input) {
+          input.value = '0';
+        }
+      });
+      calculateVotes();
+    }
+
     function renderPlayers() {
       playerList.innerHTML = "";
       state.players.forEach(player => {
@@ -2753,6 +3325,126 @@
       downloadNotesLink.dataset.url = objectUrl;
     }
 
+    // Help Modal Functions
+    function showHelpModal() {
+      const overlay = document.getElementById("help-modal-overlay");
+      
+      // Populate current characters list
+      const currentList = document.getElementById("current-characters-list");
+      currentList.innerHTML = "";
+      
+      if (state.players.length > 0) {
+        state.players.forEach(player => {
+          const char = CHARACTERS.find(c => c.id === player.charId);
+          if (char) {
+            currentList.appendChild(createCharacterHelpItem(char, player));
+          }
+        });
+      } else {
+        currentList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No characters selected yet. Start a game to see current characters.</p>';
+      }
+      
+      // Populate all characters list
+      const allList = document.getElementById("all-characters-list");
+      allList.innerHTML = "";
+      CHARACTERS.forEach(char => {
+        allList.appendChild(createCharacterHelpItem(char));
+      });
+      
+      overlay.classList.add("active");
+    }
+
+    function createCharacterHelpItem(char, player = null) {
+      const div = document.createElement("div");
+      div.className = `character-help-item ${char.team}`;
+      div.dataset.name = char.name.toLowerCase();
+      div.dataset.type = char.type;
+      
+      const nameDisplay = player ? `${player.name} - ${char.name}` : char.name;
+      
+      div.innerHTML = `
+        <h4>
+          ${nameDisplay}
+          <span class="type-badge">${TYPE_DETAILS[char.type].label}</span>
+          <span class="type-badge" style="background: ${char.team === 'good' ? 'var(--accent-good)' : 'var(--accent-evil)'}; color: var(--bg-primary);">${char.team.toUpperCase()}</span>
+        </h4>
+        <p>${char.short}</p>
+        ${char.oneTimeOnly ? '<p><strong>One-time use only</strong></p>' : ''}
+        ${char.limited ? `<p><strong>Limited uses: ${char.limited}</strong></p>` : ''}
+        ${char.passive ? '<p><strong>Passive ability</strong></p>' : ''}
+        ${char.hasNightAction ? '<p><strong>Night Order: Step ${char.nightOrder}</strong></p>' : ''}
+      `;
+      
+      return div;
+    }
+
+    function closeHelpModal() {
+      const overlay = document.getElementById("help-modal-overlay");
+      overlay.classList.remove("active");
+    }
+
+    function setupHelpModal() {
+      // Tab switching
+      const tabs = document.querySelectorAll(".help-tab");
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          const targetTab = tab.dataset.tab;
+          
+          // Update active tab
+          tabs.forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          
+          // Update active content
+          document.querySelectorAll(".help-content").forEach(content => {
+            content.classList.remove("active");
+          });
+          document.getElementById(`help-${targetTab}`).classList.add("active");
+        });
+      });
+      
+      // Search functionality
+      const searchCurrent = document.getElementById("help-search-current");
+      const searchAll = document.getElementById("help-search-all");
+      
+      function filterCharacters(searchInput, listId) {
+        const query = searchInput.value.toLowerCase();
+        const items = document.querySelectorAll(`#${listId} .character-help-item`);
+        
+        items.forEach(item => {
+          const name = item.dataset.name;
+          const type = item.dataset.type;
+          const text = item.textContent.toLowerCase();
+          
+          if (name.includes(query) || type.includes(query) || text.includes(query)) {
+            item.style.display = "block";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      }
+      
+      searchCurrent.addEventListener("input", () => {
+        filterCharacters(searchCurrent, "current-characters-list");
+      });
+      
+      searchAll.addEventListener("input", () => {
+        filterCharacters(searchAll, "all-characters-list");
+      });
+      
+      // Close button
+      document.getElementById("help-close").addEventListener("click", closeHelpModal);
+      
+      // Close on Esc key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const helpOverlay = document.getElementById("help-modal-overlay");
+          if (helpOverlay.classList.contains("active")) {
+            closeHelpModal();
+          }
+        }
+      });
+    }
+
     // Win Condition Functions
     function checkWinCondition() {
       const alivePlayers = state.players.filter(p => !p.eliminated);
@@ -2839,6 +3531,138 @@
       }
     }
 
+    // Dice Roll System
+    let currentDiceRoll = null;
+
+    function showDiceRollModal(player, powerDescription) {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById("dice-modal-overlay");
+        const characterName = document.getElementById("dice-character-name");
+        const rollButton = document.getElementById("dice-roll-button");
+        const resultContainer = document.getElementById("dice-result-container");
+        const resultEl = document.getElementById("dice-result");
+        const outcomeEl = document.getElementById("dice-outcome");
+        const descriptionEl = document.getElementById("dice-description");
+        const confirmButton = document.getElementById("dice-confirm");
+        const cancelButton = document.getElementById("dice-cancel");
+
+        // Reset UI
+        characterName.textContent = `${player.name} - ${player.roleName}`;
+        resultContainer.style.display = "none";
+        rollButton.style.display = "block";
+        confirmButton.style.display = "none";
+        cancelButton.textContent = "Cancel";
+
+        currentDiceRoll = null;
+
+        // Roll button handler
+        const handleRoll = () => {
+          const roll = Math.floor(Math.random() * 6) + 1;
+          const success = roll >= 4;
+          
+          currentDiceRoll = { roll, success, player, powerDescription };
+          
+          // Show result
+          resultEl.textContent = roll;
+          outcomeEl.textContent = success ? "✅ SUCCESS!" : "❌ FAILURE!";
+          outcomeEl.className = `dice-modal-outcome ${success ? "success" : "failure"}`;
+          
+          // Show power-specific description
+          descriptionEl.textContent = powerDescription[success ? "success" : "failure"];
+          
+          resultContainer.style.display = "block";
+          rollButton.style.display = "none";
+          confirmButton.style.display = "block";
+          cancelButton.textContent = "Re-roll";
+        };
+
+        const handleConfirm = () => {
+          overlay.classList.remove("active");
+          rollButton.removeEventListener("click", handleRoll);
+          confirmButton.removeEventListener("click", handleConfirm);
+          cancelButton.removeEventListener("click", handleCancel);
+          resolve(currentDiceRoll);
+        };
+
+        const handleCancel = () => {
+          if (currentDiceRoll) {
+            // Re-roll: reset UI
+            resultContainer.style.display = "none";
+            rollButton.style.display = "block";
+            confirmButton.style.display = "none";
+            cancelButton.textContent = "Cancel";
+            currentDiceRoll = null;
+          } else {
+            // Cancel without rolling
+            overlay.classList.remove("active");
+            rollButton.removeEventListener("click", handleRoll);
+            confirmButton.removeEventListener("click", handleConfirm);
+            cancelButton.removeEventListener("click", handleCancel);
+            resolve(null);
+          }
+        };
+
+        rollButton.addEventListener("click", handleRoll);
+        confirmButton.addEventListener("click", handleConfirm);
+        cancelButton.addEventListener("click", handleCancel);
+
+        overlay.classList.add("active");
+      });
+    }
+
+    function getSidekickPowerDescription(charId) {
+      const descriptions = {
+        21: { // Loyal Companion
+          success: "The Loyal Companion adds +3 votes to the Champion's target during voting!",
+          failure: "The Loyal Companion's attempt fails. No bonus votes are added."
+        },
+        22: { // Voice
+          success: "The Voice's power activates! The second-place player is ALSO eliminated!",
+          failure: "The Voice's dramatic plea falls flat. Only the voted player is eliminated."
+        },
+        23: { // Fool
+          success: "The Fool's wild accusation lands! They may dramatically accuse someone.",
+          failure: "The Fool's accusation backfires! They become the prime suspect."
+        },
+        24: { // Trickster
+          success: "The Trickster creates a convincing false claim about another player!",
+          failure: "The Trickster is caught in their lie. Suspicion falls on them."
+        },
+        25: { // Imitator
+          success: "The Imitator successfully copies another Sidekick's day power!",
+          failure: "The Imitator's mimicry fails. No power is copied."
+        }
+      };
+      return descriptions[charId] || {
+        success: "Success!",
+        failure: "Failure!"
+      };
+    }
+
+    async function triggerSidekickPower(playerId) {
+      const player = state.players.find(p => p.id === playerId);
+      if (!player || player.eliminated) return null;
+
+      const powerDescription = getSidekickPowerDescription(player.charId);
+      const result = await showDiceRollModal(player, powerDescription);
+      
+      if (result) {
+        // Store the result in game state for tracking
+        if (!state.diceRolls) state.diceRolls = [];
+        state.diceRolls.push({
+          night: state.night,
+          playerId: player.id,
+          playerName: player.name,
+          role: player.roleName,
+          roll: result.roll,
+          success: result.success
+        });
+        saveState();
+      }
+      
+      return result;
+    }
+
     function renderAll() {
       applyMode(state.mode);
       applyThemeVisuals();
@@ -2915,6 +3739,8 @@
       persistState();
     });
 
+    helpButton.addEventListener("click", showHelpModal);
+
     resetGameButton.addEventListener("click", () => {
       if (confirm("Start a new game? Current progress will be cleared.")) {
         resetState();
@@ -2952,6 +3778,8 @@
     initAudioSystem();
     // Initialize projector channel
     initProjectorChannel();
+    // Setup help modal
+    setupHelpModal();
 
     renderThemeSelect();
     renderRoleGroups();
