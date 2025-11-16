@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Melodrama Werewolf - Character Interaction Tests</title>
+  <style>
+    :root {
+      --pass-color: #10b981;
+      --fail-color: #ef4444;
+      --pending-color: #f59e0b;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --border-color: #475569;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 2rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 {
+      margin: 0 0 1.5rem 0;
+      color: var(--text-primary);
+    }
+
+    .summary {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .summary-stats {
+      display: flex;
+      gap: 2rem;
+      font-size: 1.1rem;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat.pass { color: var(--pass-color); }
+    .stat.fail { color: var(--fail-color); }
+    .stat.pending { color: var(--pending-color); }
+
+    .test-suite {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .test-suite h2 {
+      margin: 0 0 1rem 0;
+      color: var(--text-primary);
+      font-size: 1.3rem;
+    }
+
+    .test-case {
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 6px;
+      border-left: 4px solid var(--pending-color);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    .test-case.pass {
+      border-left-color: var(--pass-color);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .test-case.fail {
+      border-left-color: var(--fail-color);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .test-case h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .test-case .status {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .test-case .message {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .test-case .error {
+      color: var(--fail-color);
+      font-family: monospace;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+
+    .test-case .details {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.75rem;
+      padding: 0.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+
+    button {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.7), rgba(244, 114, 182, 0.9));
+      color: #0f172a;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform 120ms ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <h1>🎭 Melodrama Werewolf - Character Interaction Tests</h1>
+  
+  <div class="summary">
+    <div class="summary-stats">
+      <div class="stat pass">
+        <span class="status">✓</span>
+        <span>Passed: <strong id="pass-count">0</strong></span>
+      </div>
+      <div class="stat fail">
+        <span class="status">✗</span>
+        <span>Failed: <strong id="fail-count">0</strong></span>
+      </div>
+      <div class="stat pending">
+        <span class="status">⊙</span>
+        <span>Total: <strong id="total-count">0</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="runAllTests()" style="margin-bottom: 2rem;">▶ Run All Tests</button>
+
+  <div id="test-results"></div>
+
+  <script>
+    // ===== TEST FRAMEWORK =====
+    const testSuites = [];
+    let currentSuite = null;
+
+    function describe(name, fn) {
+      const suite = { name, tests: [] };
+      currentSuite = suite;
+      testSuites.push(suite);
+      fn();
+      currentSuite = null;
+    }
+
+    function it(description, fn) {
+      if (!currentSuite) throw new Error('it() must be called within describe()');
+      currentSuite.tests.push({ description, fn, status: 'pending', error: null, details: null });
+    }
+
+    function expect(actual) {
+      return {
+        toBe(expected) {
+          if (actual !== expected) {
+            throw new Error(`Expected ${JSON.stringify(expected)}, but got ${JSON.stringify(actual)}`);
+          }
+        },
+        toEqual(expected) {
+          const actualStr = JSON.stringify(actual);
+          const expectedStr = JSON.stringify(expected);
+          if (actualStr !== expectedStr) {
+            throw new Error(`Expected ${expectedStr}, but got ${actualStr}`);
+          }
+        },
+        toBeTruthy() {
+          if (!actual) {
+            throw new Error(`Expected truthy value, but got ${JSON.stringify(actual)}`);
+          }
+        },
+        toBeFalsy() {
+          if (actual) {
+            throw new Error(`Expected falsy value, but got ${JSON.stringify(actual)}`);
+          }
+        },
+        toContain(item) {
+          if (!Array.isArray(actual)) {
+            throw new Error('toContain expects an array');
+          }
+          if (!actual.includes(item)) {
+            throw new Error(`Expected array to contain ${JSON.stringify(item)}`);
+          }
+        },
+        toHaveLength(length) {
+          if (!Array.isArray(actual) && typeof actual !== 'string') {
+            throw new Error('toHaveLength expects an array or string');
+          }
+          if (actual.length !== length) {
+            throw new Error(`Expected length ${length}, but got ${actual.length}`);
+          }
+        },
+        toBeGreaterThan(value) {
+          if (actual <= value) {
+            throw new Error(`Expected ${actual} to be greater than ${value}`);
+          }
+        }
+      };
+    }
+
+    async function runAllTests() {
+      const resultsDiv = document.getElementById('test-results');
+      resultsDiv.innerHTML = '';
+      
+      let totalPass = 0;
+      let totalFail = 0;
+      let totalTests = 0;
+
+      for (const suite of testSuites) {
+        totalTests += suite.tests.length;
+        
+        const suiteDiv = document.createElement('div');
+        suiteDiv.className = 'test-suite';
+        suiteDiv.innerHTML = `<h2>${suite.name}</h2>`;
+        
+        for (const test of suite.tests) {
+          const testDiv = document.createElement('div');
+          testDiv.className = 'test-case pending';
+          testDiv.innerHTML = `
+            <h3>
+              <span class="status">⊙</span>
+              ${test.description}
+            </h3>
+          `;
+          suiteDiv.appendChild(testDiv);
+          
+          try {
+            await test.fn();
+            test.status = 'pass';
+            totalPass++;
+            testDiv.className = 'test-case pass';
+            testDiv.querySelector('.status').textContent = '✓';
+            if (test.details) {
+              const detailsDiv = document.createElement('div');
+              detailsDiv.className = 'details';
+              detailsDiv.textContent = test.details;
+              testDiv.appendChild(detailsDiv);
+            }
+          } catch (error) {
+            test.status = 'fail';
+            test.error = error.message;
+            totalFail++;
+            testDiv.className = 'test-case fail';
+            testDiv.querySelector('.status').textContent = '✗';
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = error.message;
+            testDiv.appendChild(errorDiv);
+          }
+        }
+        
+        resultsDiv.appendChild(suiteDiv);
+      }
+
+      document.getElementById('pass-count').textContent = totalPass;
+      document.getElementById('fail-count').textContent = totalFail;
+      document.getElementById('total-count').textContent = totalTests;
+    }
+
+    // ===== GAME LOGIC FUNCTIONS (extracted and adapted from index.html) =====
+    
+    const CHARACTERS = [
+      { id: 1, name: "The Evil Mastermind", team: "evil", type: "villain", charId: 1 },
+      { id: 2, name: "The Assassin", team: "evil", type: "villain", charId: 2 },
+      { id: 3, name: "The Pretender", team: "evil", type: "villain", charId: 3 },
+      { id: 4, name: "The Corrupted Authority", team: "evil", type: "villain", charId: 4 },
+      { id: 5, name: "The Stalker", team: "evil", type: "villain", charId: 5 },
+      { id: 6, name: "The Right Hand", team: "evil", type: "accomplice", charId: 6 },
+      { id: 7, name: "The Spy", team: "evil", type: "accomplice", charId: 7 },
+      { id: 8, name: "The Manipulator", team: "evil", type: "accomplice", charId: 8 },
+      { id: 9, name: "The Traitor", team: "evil", type: "accomplice", charId: 9 },
+      { id: 10, name: "The Informant", team: "evil", type: "accomplice", charId: 10 },
+      { id: 11, name: "The Sage", team: "good", type: "elder", charId: 11 },
+      { id: 12, name: "The Oracle", team: "good", type: "elder", charId: 12 },
+      { id: 13, name: "The Sensitive", team: "good", type: "elder", charId: 13 },
+      { id: 14, name: "The Dreamer", team: "good", type: "elder", charId: 14 },
+      { id: 15, name: "The Witness", team: "good", type: "elder", charId: 15 },
+      { id: 16, name: "The Champion", team: "good", type: "hero", charId: 16 },
+      { id: 17, name: "The Healer", team: "good", type: "hero", charId: 17 },
+      { id: 18, name: "The Guardian", team: "good", type: "hero", charId: 18 },
+      { id: 19, name: "The Survivor", team: "good", type: "hero", charId: 19 },
+      { id: 20, name: "The Defender", team: "good", type: "hero", charId: 20 },
+      { id: 21, name: "The Loyal Companion", team: "good", type: "sidekick", charId: 21 },
+      { id: 22, name: "The Voice", team: "good", type: "sidekick", charId: 22 },
+      { id: 23, name: "The Fool", team: "good", type: "sidekick", charId: 23 },
+      { id: 24, name: "The Trickster", team: "good", type: "sidekick", charId: 24 },
+      { id: 25, name: "The Imitator", team: "good", type: "sidekick", charId: 25 },
+      { id: 26, name: "The Marked", team: "good", type: "damsel", charId: 26 },
+      { id: 27, name: "The Innocent", team: "good", type: "damsel", charId: 27 },
+      { id: 28, name: "Twin A", team: "good", type: "damsel", charId: 28, linkedTo: 29 },
+      { id: 29, name: "Twin B", team: "good", type: "damsel", charId: 29, linkedTo: 28 },
+      { id: 30, name: "The Cursed", team: "good", type: "damsel", charId: 30 }
+    ];
+
+    function createMockPlayer(charId, id, name) {
+      const char = CHARACTERS.find(c => c.charId === charId);
+      return {
+        id: id,
+        charId: charId,
+        name: name || `Player${id}`,
+        roleName: char.name,
+        team: char.team,
+        type: char.type,
+        eliminated: false,
+        protected: false,
+        survivorUsed: false
+      };
+    }
+
+    function processLinkedDeaths(eliminations, players) {
+      const linkedDeaths = [];
+      const processedIds = new Set(eliminations.map(e => e.player));
+
+      eliminations.forEach(elim => {
+        const player = players.find(p => p.id === elim.player);
+        if (!player) return;
+
+        // Check for Twins (char IDs 28, 29)
+        if (player.charId === 28 || player.charId === 29) {
+          const twinCharId = player.charId === 28 ? 29 : 28;
+          const twin = players.find(p => p.charId === twinCharId && !p.eliminated && !processedIds.has(p.id));
+          if (twin) {
+            linkedDeaths.push({
+              player: twin.id,
+              playerName: `${twin.name} (${twin.roleName})`,
+              cause: 'Twin Link'
+            });
+            processedIds.add(twin.id);
+          }
+        }
+
+        // Check for Cursed (char ID 30) - kills 2 neighbors each side
+        if (player.charId === 30) {
+          const playerIndex = players.findIndex(p => p.id === player.id);
+          const cursedNeighbors = [];
+          
+          // Get 2 neighbors each side (4 total)
+          for (let offset of [-2, -1, 1, 2]) {
+            const neighborIndex = (playerIndex + offset + players.length) % players.length;
+            const neighbor = players[neighborIndex];
+            if (neighbor && !neighbor.eliminated && !processedIds.has(neighbor.id)) {
+              cursedNeighbors.push(neighbor);
+            }
+          }
+
+          cursedNeighbors.forEach(neighbor => {
+            linkedDeaths.push({
+              player: neighbor.id,
+              playerName: `${neighbor.name} (${neighbor.roleName})`,
+              cause: 'Cursed Explosion'
+            });
+            processedIds.add(neighbor.id);
+          });
+        }
+      });
+
+      return linkedDeaths;
+    }
+
+    function resolveNightActions(state, actions) {
+      const result = {
+        actions: [],
+        protections: [],
+        preDoctorEliminations: [],
+        finalEliminations: [],
+        specialEvents: [],
+        stateChanges: {}
+      };
+
+      // Check blocks
+      let championBlocked = false;
+      let healerBlocked = false;
+      let guardianBlocked = false;
+      let defenderBlocked = false;
+
+      if (actions.rightHandBlock !== null) {
+        const blocked = state.players.find(p => p.id === actions.rightHandBlock);
+        if (blocked) {
+          if (blocked.charId === 16) championBlocked = true;
+          if (blocked.charId === 17) healerBlocked = true;
+          if (blocked.charId === 18) guardianBlocked = true;
+          if (blocked.charId === 20) defenderBlocked = true;
+        }
+      }
+
+      // Collect targets
+      const targets = [];
+      if (actions.villainTarget !== null) {
+        targets.push({ playerId: actions.villainTarget, source: 'villain' });
+      }
+      if (actions.assassinTarget !== null) {
+        targets.push({ playerId: actions.assassinTarget, source: 'assassin' });
+      }
+
+      // Apply protections
+      const protectedPlayers = new Set();
+
+      // Champion protection
+      if (!championBlocked && actions.championProtect !== null && state.specialTrackers.championPowerActive) {
+        protectedPlayers.add(actions.championProtect);
+        result.protections.push({
+          player: actions.championProtect,
+          protectedBy: 'Champion',
+          triggered: false
+        });
+      }
+
+      // Healer protection
+      if (!healerBlocked && actions.healerProtect !== null && actions.healerProtect !== actions.healerLastProtected) {
+        protectedPlayers.add(actions.healerProtect);
+        result.protections.push({
+          player: actions.healerProtect,
+          protectedBy: 'Healer',
+          triggered: false
+        });
+      }
+
+      // Guardian protection
+      if (!guardianBlocked && actions.guardianProtect !== null) {
+        protectedPlayers.add(actions.guardianProtect);
+        result.protections.push({
+          player: actions.guardianProtect,
+          protectedBy: 'Guardian',
+          triggered: false
+        });
+      }
+
+      // Check which protections were triggered
+      targets.forEach(target => {
+        if (protectedPlayers.has(target.playerId)) {
+          const protection = result.protections.find(p => p.player === target.playerId);
+          if (protection) {
+            protection.triggered = true;
+
+            // Special Champion logic
+            if (protection.protectedBy === 'Champion' && state.specialTrackers.championPowerActive) {
+              // Both survive, Champion identifies a villain
+              const villains = state.players.filter(p => 
+                (p.type === 'villain' || p.type === 'accomplice') && 
+                p.team === 'evil' && 
+                !p.eliminated
+              );
+              if (villains.length > 0) {
+                const randomVillain = villains[Math.floor(Math.random() * villains.length)];
+                result.specialEvents.push({
+                  type: 'championIdentified',
+                  villain: randomVillain.id,
+                  villainName: `${randomVillain.name} (${randomVillain.roleName})`
+                });
+                result.stateChanges['specialTrackers.championIdentifiedVillain'] = randomVillain.id;
+              }
+              result.specialEvents.push({
+                type: 'championPowerLost',
+                champion: actions.championProtect
+              });
+              result.stateChanges['specialTrackers.championPowerActive'] = false;
+            }
+
+            // Guardian sacrifice
+            if (protection.protectedBy === 'Guardian') {
+              const guardian = state.players.find(p => p.charId === 18 && !p.eliminated);
+              if (guardian) {
+                result.preDoctorEliminations.push({
+                  player: guardian.id,
+                  playerName: `${guardian.name} (${guardian.roleName})`,
+                  cause: 'Guardian Sacrifice'
+                });
+              }
+            }
+          }
+        } else {
+          // Target not protected - add to eliminations
+          const targetPlayer = state.players.find(p => p.id === target.playerId);
+          if (targetPlayer && !targetPlayer.eliminated) {
+            // Check for Survivor passive (char ID 19)
+            if (targetPlayer.charId === 19 && !targetPlayer.survivorUsed) {
+              result.specialEvents.push({
+                type: 'survivorTriggered',
+                player: target.playerId,
+                playerName: `${targetPlayer.name} (${targetPlayer.roleName})`
+              });
+              result.stateChanges[`players.${target.playerId}.survivorUsed`] = true;
+            } else {
+              result.preDoctorEliminations.push({
+                player: target.playerId,
+                playerName: `${targetPlayer.name} (${targetPlayer.roleName})`,
+                cause: target.source === 'assassin' ? 'Assassin' : 'Villain Team'
+              });
+            }
+          }
+        }
+      });
+
+      // Check Defender trap
+      if (!defenderBlocked && actions.defenderTrap !== null) {
+        const trapped = result.preDoctorEliminations.find(e => e.player === actions.defenderTrap);
+        if (trapped) {
+          // Defender trap triggered - random villain dies
+          const villains = state.players.filter(p => 
+            p.type === 'villain' && !p.eliminated
+          );
+          if (villains.length > 0) {
+            const randomVillain = villains[Math.floor(Math.random() * villains.length)];
+            result.preDoctorEliminations.push({
+              player: randomVillain.id,
+              playerName: `${randomVillain.name} (${randomVillain.roleName})`,
+              cause: 'Defender Trap'
+            });
+            result.specialEvents.push({
+              type: 'defenderTrapTriggered',
+              victim: actions.defenderTrap,
+              villain: randomVillain.id
+            });
+          }
+        }
+      }
+
+      // Check Stalker backup
+      if (actions.stalkerActive && actions.villainTarget !== null && protectedPlayers.has(actions.villainTarget)) {
+        const stalker = state.players.find(p => p.charId === 5 && !p.eliminated);
+        if (stalker) {
+          result.specialEvents.push({
+            type: 'stalkerBackupAttempt',
+            message: 'Stalker can attempt backup kill (only works on Damsel/Elder types)'
+          });
+        }
+      }
+
+      // Copy pre-doctor to final eliminations
+      result.finalEliminations = [...result.preDoctorEliminations];
+
+      return result;
+    }
+
+    // ===== TEST SUITES =====
+
+    describe('Twins Linked Deaths', () => {
+      it('should eliminate both twins when Twin A dies at night', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(28, 1, 'TwinA'),  // Twin A
+          createMockPlayer(29, 2, 'TwinB'),  // Twin B
+          createMockPlayer(12, 3, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 1, // Target Twin A
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        expect(result.finalEliminations).toHaveLength(1);
+        expect(result.finalEliminations[0].player).toBe(1);
+
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        expect(linkedDeaths).toHaveLength(1);
+        expect(linkedDeaths[0].player).toBe(2); // Twin B dies
+        expect(linkedDeaths[0].cause).toBe('Twin Link');
+      });
+
+      it('should eliminate both twins when Twin B dies at night', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(28, 1, 'TwinA'),  // Twin A
+          createMockPlayer(29, 2, 'TwinB'),  // Twin B
+          createMockPlayer(12, 3, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Twin B
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        
+        expect(linkedDeaths).toHaveLength(1);
+        expect(linkedDeaths[0].player).toBe(1); // Twin A dies
+        expect(linkedDeaths[0].cause).toBe('Twin Link');
+      });
+
+      it('should not eliminate Twin B if Twin A is already eliminated', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(28, 1, 'TwinA'),  // Twin A (already dead)
+          createMockPlayer(29, 2, 'TwinB'),  // Twin B
+          createMockPlayer(12, 3, 'Oracle')
+        ];
+        players[1].eliminated = true; // Twin A already dead
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Twin B
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        
+        expect(linkedDeaths).toHaveLength(0); // No linked death since Twin A is already dead
+      });
+    });
+
+    describe('Cursed Death Explosion', () => {
+      it('should eliminate 4 neighbors (2 each side) when Cursed dies', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),    // Index 0
+          createMockPlayer(12, 1, 'Oracle'),    // Index 1 (neighbor -2)
+          createMockPlayer(13, 2, 'Sensitive'), // Index 2 (neighbor -1)
+          createMockPlayer(30, 3, 'Cursed'),    // Index 3 (THE CURSED)
+          createMockPlayer(14, 4, 'Dreamer'),   // Index 4 (neighbor +1)
+          createMockPlayer(15, 5, 'Witness'),   // Index 5 (neighbor +2)
+          createMockPlayer(16, 6, 'Champion'),  // Index 6
+          createMockPlayer(17, 7, 'Healer')     // Index 7
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 3, // Target the Cursed
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        expect(result.finalEliminations).toHaveLength(1);
+        
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        expect(linkedDeaths).toHaveLength(4);
+        
+        const deadPlayerIds = linkedDeaths.map(d => d.player);
+        expect(deadPlayerIds).toContain(1); // Index 1 (neighbor at offset -2)
+        expect(deadPlayerIds).toContain(2); // Index 2 (neighbor at offset -1)
+        expect(deadPlayerIds).toContain(4); // Index 4 (neighbor at offset +1)
+        expect(deadPlayerIds).toContain(5); // Index 5 (neighbor at offset +2)
+        
+        linkedDeaths.forEach(death => {
+          expect(death.cause).toBe('Cursed Explosion');
+        });
+      });
+
+      it('should not kill already eliminated neighbors when Cursed dies', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),    // Index 0
+          createMockPlayer(12, 1, 'Oracle'),    // Index 1 (already dead)
+          createMockPlayer(13, 2, 'Sensitive'), // Index 2
+          createMockPlayer(30, 3, 'Cursed'),    // Index 3 (THE CURSED)
+          createMockPlayer(14, 4, 'Dreamer'),   // Index 4
+          createMockPlayer(15, 5, 'Witness'),   // Index 5 (already dead)
+          createMockPlayer(16, 6, 'Champion'),  // Index 6
+          createMockPlayer(17, 7, 'Healer')     // Index 7
+        ];
+        players[1].eliminated = true;
+        players[5].eliminated = true;
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 3, // Target the Cursed
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        
+        // Should only kill living neighbors (2 and 4)
+        expect(linkedDeaths).toHaveLength(2);
+        const deadPlayerIds = linkedDeaths.map(d => d.player);
+        expect(deadPlayerIds).toContain(2);
+        expect(deadPlayerIds).toContain(4);
+      });
+    });
+
+    describe('Champion Protection and Power Loss', () => {
+      it('should protect target and lose power on first successful protection', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(16, 1, 'Champion'),
+          createMockPlayer(12, 2, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Oracle
+          assassinTarget: null,
+          championProtect: 2, // Champion protects Oracle
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Target should be protected (not in eliminations)
+        expect(result.finalEliminations).toHaveLength(0);
+        
+        // Champion should have triggered protection
+        const championProtection = result.protections.find(p => p.protectedBy === 'Champion');
+        expect(championProtection).toBeTruthy();
+        expect(championProtection.triggered).toBe(true);
+        
+        // Champion should lose power
+        const powerLostEvent = result.specialEvents.find(e => e.type === 'championPowerLost');
+        expect(powerLostEvent).toBeTruthy();
+        expect(result.stateChanges['specialTrackers.championPowerActive']).toBe(false);
+      });
+
+      it('should identify a villain when Champion successfully protects', () => {
+        const players = [
+          createMockPlayer(1, 0, 'EvilMastermind'),
+          createMockPlayer(2, 1, 'Assassin'),
+          createMockPlayer(16, 2, 'Champion'),
+          createMockPlayer(12, 3, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 3, // Target Oracle
+          assassinTarget: null,
+          championProtect: 3, // Champion protects Oracle
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Champion should identify a villain
+        const identifiedEvent = result.specialEvents.find(e => e.type === 'championIdentified');
+        expect(identifiedEvent).toBeTruthy();
+        expect(identifiedEvent.villain).toBeTruthy();
+        
+        // Identified villain should be evil
+        const identifiedVillain = players.find(p => p.id === identifiedEvent.villain);
+        expect(identifiedVillain.team).toBe('evil');
+      });
+
+      it('should not protect if Champion is blocked by Right Hand', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(6, 1, 'RightHand'),
+          createMockPlayer(16, 2, 'Champion'),
+          createMockPlayer(12, 3, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 3, // Target Oracle
+          assassinTarget: null,
+          championProtect: 3, // Champion tries to protect Oracle
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: 2, // Right Hand blocks Champion
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Target should NOT be protected (should be in eliminations)
+        expect(result.finalEliminations).toHaveLength(1);
+        expect(result.finalEliminations[0].player).toBe(3);
+        
+        // Champion protection should not be in the list
+        const championProtection = result.protections.find(p => p.protectedBy === 'Champion');
+        expect(championProtection).toBeFalsy();
+      });
+
+      it('should not protect if Champion power is already lost', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(16, 1, 'Champion'),
+          createMockPlayer(12, 2, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: false } // Power already lost
+        };
+
+        const actions = {
+          villainTarget: 2,
+          assassinTarget: null,
+          championProtect: 2,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Target should NOT be protected
+        expect(result.finalEliminations).toHaveLength(1);
+        expect(result.finalEliminations[0].player).toBe(2);
+        
+        // No champion protection in the list
+        const championProtection = result.protections.find(p => p.protectedBy === 'Champion');
+        expect(championProtection).toBeFalsy();
+      });
+    });
+
+    describe('Guardian Sacrifice', () => {
+      it('should sacrifice Guardian when protection triggers', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(18, 1, 'Guardian'),
+          createMockPlayer(12, 2, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Oracle
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: 2, // Guardian protects Oracle
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Oracle should be protected (not in eliminations)
+        const oracleElim = result.finalEliminations.find(e => e.player === 2);
+        expect(oracleElim).toBeFalsy();
+        
+        // Guardian should be eliminated
+        const guardianElim = result.finalEliminations.find(e => e.player === 1);
+        expect(guardianElim).toBeTruthy();
+        expect(guardianElim.cause).toBe('Guardian Sacrifice');
+      });
+
+      it('should not sacrifice Guardian if protection is not triggered', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(18, 1, 'Guardian'),
+          createMockPlayer(12, 2, 'Oracle'),
+          createMockPlayer(13, 3, 'Sensitive')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Oracle
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: 3, // Guardian protects Sensitive (not the target)
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Oracle should be eliminated
+        expect(result.finalEliminations.find(e => e.player === 2)).toBeTruthy();
+        
+        // Guardian should NOT be eliminated
+        expect(result.finalEliminations.find(e => e.player === 1)).toBeFalsy();
+      });
+    });
+
+    describe('Defender Trap', () => {
+      it('should kill a random villain when trap is triggered', () => {
+        const players = [
+          createMockPlayer(1, 0, 'EvilMastermind'),
+          createMockPlayer(2, 1, 'Assassin'),
+          createMockPlayer(20, 2, 'Defender'),
+          createMockPlayer(12, 3, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 3, // Target Oracle
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: 3, // Defender traps Oracle
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Oracle should be eliminated
+        expect(result.finalEliminations.find(e => e.player === 3)).toBeTruthy();
+        
+        // A villain should be eliminated
+        const villainElims = result.finalEliminations.filter(e => 
+          (e.player === 0 || e.player === 1) && e.cause === 'Defender Trap'
+        );
+        expect(villainElims).toHaveLength(1);
+        
+        // Trap triggered event should be present
+        const trapEvent = result.specialEvents.find(e => e.type === 'defenderTrapTriggered');
+        expect(trapEvent).toBeTruthy();
+        expect(trapEvent.victim).toBe(3);
+      });
+
+      it('should not trigger trap if trapped player is not eliminated', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(20, 1, 'Defender'),
+          createMockPlayer(12, 2, 'Oracle'),
+          createMockPlayer(13, 3, 'Sensitive')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Oracle
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: 3, // Defender traps Sensitive (not the target)
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Oracle should be eliminated
+        expect(result.finalEliminations.find(e => e.player === 2)).toBeTruthy();
+        
+        // No villain should be eliminated
+        const villainElim = result.finalEliminations.find(e => e.player === 0);
+        expect(villainElim).toBeFalsy();
+        
+        // Trap should not trigger
+        const trapEvent = result.specialEvents.find(e => e.type === 'defenderTrapTriggered');
+        expect(trapEvent).toBeFalsy();
+      });
+    });
+
+    describe('Survivor First-Hit Immunity', () => {
+      it('should survive first attack and mark survivorUsed', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(19, 1, 'Survivor')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 1, // Target Survivor
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Survivor should NOT be eliminated
+        expect(result.finalEliminations).toHaveLength(0);
+        
+        // Survivor triggered event should be present
+        const survivorEvent = result.specialEvents.find(e => e.type === 'survivorTriggered');
+        expect(survivorEvent).toBeTruthy();
+        expect(survivorEvent.player).toBe(1);
+        
+        // survivorUsed should be set to true
+        expect(result.stateChanges['players.1.survivorUsed']).toBe(true);
+      });
+
+      it('should die on second attack after immunity is used', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(19, 1, 'Survivor')
+        ];
+        players[1].survivorUsed = true; // Already used immunity
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 1, // Target Survivor
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Survivor should be eliminated this time
+        expect(result.finalEliminations).toHaveLength(1);
+        expect(result.finalEliminations[0].player).toBe(1);
+        
+        // No survivor triggered event
+        const survivorEvent = result.specialEvents.find(e => e.type === 'survivorTriggered');
+        expect(survivorEvent).toBeFalsy();
+      });
+    });
+
+    describe('Stalker Backup Kill', () => {
+      it('should trigger backup kill attempt when primary target is protected', () => {
+        const players = [
+          createMockPlayer(5, 0, 'Stalker'),
+          createMockPlayer(16, 1, 'Champion'),
+          createMockPlayer(12, 2, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Oracle
+          assassinTarget: null,
+          championProtect: 2, // Champion protects Oracle
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: true
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Oracle should be protected
+        expect(result.finalEliminations.find(e => e.player === 2)).toBeFalsy();
+        
+        // Stalker backup attempt should be triggered
+        const stalkerEvent = result.specialEvents.find(e => e.type === 'stalkerBackupAttempt');
+        expect(stalkerEvent).toBeTruthy();
+      });
+
+      it('should not trigger backup kill if primary target is not protected', () => {
+        const players = [
+          createMockPlayer(5, 0, 'Stalker'),
+          createMockPlayer(12, 1, 'Oracle')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 1, // Target Oracle
+          assassinTarget: null,
+          championProtect: null, // No protection
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: true
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Oracle should be eliminated
+        expect(result.finalEliminations.find(e => e.player === 1)).toBeTruthy();
+        
+        // Stalker backup should NOT be triggered
+        const stalkerEvent = result.specialEvents.find(e => e.type === 'stalkerBackupAttempt');
+        expect(stalkerEvent).toBeFalsy();
+      });
+    });
+
+    describe('Complex Interactions', () => {
+      it('should handle Champion protection + Cursed explosion combo', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(16, 1, 'Champion'),
+          createMockPlayer(30, 2, 'Cursed'),    // The Cursed
+          createMockPlayer(12, 3, 'Oracle'),    // Neighbor -1
+          createMockPlayer(13, 4, 'Sensitive'), // Neighbor +1
+          createMockPlayer(14, 5, 'Dreamer'),   // Neighbor +2
+          createMockPlayer(15, 6, 'Witness')    // Neighbor -2
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Cursed
+          assassinTarget: null,
+          championProtect: 2, // Champion protects Cursed
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Cursed should be protected (not eliminated)
+        expect(result.finalEliminations).toHaveLength(0);
+        
+        // No linked deaths should occur
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        expect(linkedDeaths).toHaveLength(0);
+        
+        // Champion should lose power
+        expect(result.stateChanges['specialTrackers.championPowerActive']).toBe(false);
+      });
+
+      it('should handle Defender trap + Twin death combo', () => {
+        const players = [
+          createMockPlayer(1, 0, 'EvilMastermind'),
+          createMockPlayer(20, 1, 'Defender'),
+          createMockPlayer(28, 2, 'TwinA'),
+          createMockPlayer(29, 3, 'TwinB')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Twin A
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: 2, // Defender traps Twin A
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Twin A should be eliminated
+        expect(result.finalEliminations.find(e => e.player === 2)).toBeTruthy();
+        
+        // A villain should be eliminated by trap
+        expect(result.finalEliminations.find(e => e.player === 0 && e.cause === 'Defender Trap')).toBeTruthy();
+        
+        // Twin B should die from linked death
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        expect(linkedDeaths.find(d => d.player === 3 && d.cause === 'Twin Link')).toBeTruthy();
+      });
+
+      it('should handle Guardian sacrifice + Survivor immunity combo', () => {
+        const players = [
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(18, 1, 'Guardian'),
+          createMockPlayer(19, 2, 'Survivor')
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target Survivor
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: 2, // Guardian also protects Survivor
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        
+        // Survivor should be protected by Guardian
+        expect(result.finalEliminations.find(e => e.player === 2)).toBeFalsy();
+        
+        // Guardian should sacrifice
+        expect(result.finalEliminations.find(e => e.player === 1 && e.cause === 'Guardian Sacrifice')).toBeTruthy();
+        
+        // Survivor immunity should NOT trigger (Guardian protection takes precedence)
+        const survivorEvent = result.specialEvents.find(e => e.type === 'survivorTriggered');
+        expect(survivorEvent).toBeFalsy();
+      });
+    });
+
+    // Auto-run tests on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('Test page loaded. Click "Run All Tests" to start.');
+    });
+  </script>
+</body>
+</html>
