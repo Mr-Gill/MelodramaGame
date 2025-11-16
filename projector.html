@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Melodrama Werewolf - Projector View</title>
   <meta name="description" content="Student-facing display for Melodrama Werewolf game." />
+  <!-- Google Fonts for theme-specific typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cinzel:wght@400;700&family=Orbitron:wght@400;700&family=Rye&family=Pirata+One&family=Lobster&family=Creepster&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-primary: #0f172a;
@@ -308,6 +312,43 @@
     .eliminated-card::-webkit-scrollbar-thumb:hover {
       background: rgba(239, 68, 68, 0.6);
     }
+
+    /* Theme-specific animations */
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
+    }
+
+    @keyframes shimmer {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.15); }
+    }
+
+    @keyframes spotlight {
+      0%, 100% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.3); }
+      50% { box-shadow: 0 0 50px rgba(245, 158, 11, 0.6); }
+    }
+
+    @keyframes tech-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.8); }
+    }
+
+    @keyframes dust {
+      0%, 100% { opacity: 0.95; }
+      50% { opacity: 0.85; }
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.05); }
+      50% { transform: scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -347,6 +388,109 @@
   </main>
 
   <script>
+    // Theme definitions (matching narrator view)
+    const THEMES = {
+      village: {
+        name: "Classic Village",
+        visual: {
+          background: "radial-gradient(circle at top, rgba(139, 92, 46, 0.15), transparent 60%), linear-gradient(180deg, #1a1410 0%, #2d1b0e 100%)",
+          accentColor: "#d97706",
+          textGlow: "0 0 10px rgba(217, 119, 6, 0.3)",
+          cardBackground: "rgba(41, 37, 36, 0.6)",
+          animation: "flicker 3s ease-in-out infinite",
+          fontFamily: "'Georgia', 'Times New Roman', serif"
+        }
+      },
+      mansion: {
+        name: "Millionaire's Mansion",
+        visual: {
+          background: "radial-gradient(circle at center, rgba(234, 179, 8, 0.12), transparent 70%), linear-gradient(180deg, #1c1917 0%, #292524 100%)",
+          accentColor: "#eab308",
+          textGlow: "0 0 12px rgba(234, 179, 8, 0.4)",
+          cardBackground: "rgba(68, 64, 60, 0.5)",
+          animation: "shimmer 4s ease-in-out infinite",
+          fontFamily: "'Playfair Display', 'Didot', serif"
+        }
+      },
+      haunted: {
+        name: "Haunted House",
+        visual: {
+          background: "radial-gradient(ellipse at bottom, rgba(124, 58, 237, 0.2), transparent 60%), linear-gradient(180deg, #0a0118 0%, #1e0b37 100%)",
+          accentColor: "#a855f7",
+          textGlow: "0 0 15px rgba(168, 85, 247, 0.5)",
+          cardBackground: "rgba(30, 11, 55, 0.7)",
+          animation: "pulse 2s ease-in-out infinite",
+          fontFamily: "'Creepster', 'Courier New', monospace"
+        }
+      },
+      castle: {
+        name: "Castle Tower",
+        visual: {
+          background: "radial-gradient(circle at top, rgba(71, 85, 105, 0.2), transparent 65%), linear-gradient(180deg, #1e293b 0%, #334155 100%)",
+          accentColor: "#64748b",
+          textGlow: "0 0 8px rgba(100, 116, 139, 0.3)",
+          cardBackground: "rgba(51, 65, 85, 0.6)",
+          animation: "none",
+          fontFamily: "'Cinzel', 'Trajan Pro', serif"
+        }
+      },
+      theatre: {
+        name: "Magic Show / Theatre",
+        visual: {
+          background: "radial-gradient(circle at center, rgba(239, 68, 68, 0.15), rgba(234, 179, 8, 0.1), transparent 70%), linear-gradient(180deg, #18181b 0%, #27272a 100%)",
+          accentColor: "#f59e0b",
+          textGlow: "0 0 20px rgba(245, 158, 11, 0.6)",
+          cardBackground: "rgba(39, 39, 42, 0.7)",
+          animation: "spotlight 5s ease-in-out infinite",
+          fontFamily: "'Lobster', 'Brush Script MT', cursive"
+        }
+      },
+      space: {
+        name: "Space Station",
+        visual: {
+          background: "radial-gradient(circle at center, rgba(6, 182, 212, 0.2), rgba(34, 211, 238, 0.1), transparent 75%), linear-gradient(180deg, #020617 0%, #0c4a6e 100%)",
+          accentColor: "#22d3ee",
+          textGlow: "0 0 18px rgba(34, 211, 238, 0.7)",
+          cardBackground: "rgba(12, 74, 110, 0.5)",
+          animation: "tech-glow 3s ease-in-out infinite",
+          fontFamily: "'Orbitron', 'Consolas', monospace"
+        }
+      },
+      western: {
+        name: "Wild West Town",
+        visual: {
+          background: "radial-gradient(circle at top, rgba(161, 98, 7, 0.2), transparent 60%), linear-gradient(180deg, #292524 0%, #44403c 100%)",
+          accentColor: "#d97706",
+          textGlow: "0 0 10px rgba(217, 119, 6, 0.4)",
+          cardBackground: "rgba(68, 64, 60, 0.6)",
+          animation: "dust 6s ease-in-out infinite",
+          fontFamily: "'Rye', 'Rockwell', serif"
+        }
+      },
+      pirate: {
+        name: "Pirate Harbour",
+        visual: {
+          background: "radial-gradient(circle at bottom, rgba(14, 116, 144, 0.25), transparent 65%), linear-gradient(180deg, #0c4a6e 0%, #164e63 100%)",
+          accentColor: "#06b6d4",
+          textGlow: "0 0 12px rgba(6, 182, 212, 0.5)",
+          cardBackground: "rgba(22, 78, 99, 0.6)",
+          animation: "wave 4s ease-in-out infinite",
+          fontFamily: "'Pirata One', 'Brush Script MT', cursive"
+        }
+      },
+      hospital: {
+        name: "Soap Opera Hospital",
+        visual: {
+          background: "radial-gradient(circle at top, rgba(56, 189, 248, 0.15), rgba(255, 255, 255, 0.05), transparent 70%), linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)",
+          accentColor: "#0ea5e9",
+          textGlow: "0 0 10px rgba(14, 165, 233, 0.3)",
+          cardBackground: "rgba(226, 232, 240, 0.8)",
+          animation: "heartbeat 2s ease-in-out infinite",
+          fontFamily: "'Montserrat', 'Helvetica Neue', sans-serif"
+        }
+      }
+    };
+
     // BroadcastChannel for communication with narrator
     let channel = null;
     const CHANNEL_NAME = 'melodrama-narrator-projector';
@@ -360,7 +504,8 @@
         running: false
       },
       eliminated: [],
-      connected: false
+      connected: false,
+      theme: 'village'
     };
 
     // DOM elements
@@ -432,6 +577,10 @@
         
         case 'reset-game':
           resetDisplay();
+          break;
+        
+        case 'theme-change':
+          updateTheme(data.theme);
           break;
       }
     }
@@ -546,7 +695,69 @@
         setEliminated(data.eliminated);
       }
       
+      if (data.theme) {
+        updateTheme(data.theme);
+      }
+      
       updateConnectionStatus(true);
+    }
+
+    function updateTheme(themeName) {
+      if (!THEMES[themeName]) {
+        console.warn('Unknown theme:', themeName);
+        return;
+      }
+      
+      state.theme = themeName;
+      applyThemeVisuals();
+    }
+
+    function applyThemeVisuals() {
+      const theme = THEMES[state.theme];
+      if (!theme) return;
+      
+      const visual = theme.visual;
+      
+      // Apply theme-specific background to body
+      document.body.style.background = visual.background;
+      
+      // Apply theme font family
+      document.body.style.fontFamily = visual.fontFamily;
+      
+      // Apply accent color to CSS variable
+      document.documentElement.style.setProperty("--theme-accent", visual.accentColor);
+      
+      // Apply text glow to headers
+      const headers = document.querySelectorAll("h1, h2");
+      headers.forEach(header => {
+        header.style.textShadow = visual.textGlow;
+      });
+
+      // Apply themed backgrounds to cards
+      const phaseIndicator = document.querySelector(".phase-indicator");
+      if (phaseIndicator) {
+        phaseIndicator.style.backgroundColor = visual.cardBackground;
+        phaseIndicator.style.borderColor = visual.accentColor;
+        phaseIndicator.style.boxShadow = `0 0 60px ${visual.accentColor}80`;
+      }
+
+      const timerCard = document.querySelector(".timer-card");
+      if (timerCard) {
+        timerCard.style.backgroundColor = visual.cardBackground;
+        timerCard.style.borderColor = `${visual.accentColor}40`;
+      }
+
+      const eliminatedCard = document.querySelector(".eliminated-card");
+      if (eliminatedCard) {
+        eliminatedCard.style.backgroundColor = visual.cardBackground;
+      }
+
+      // Apply animation to body if specified
+      if (visual.animation && visual.animation !== "none") {
+        document.body.style.animation = visual.animation;
+      } else {
+        document.body.style.animation = "none";
+      }
     }
 
     function resetDisplay() {
@@ -554,11 +765,13 @@
       state.night = 0;
       state.timer = { remaining: 180, running: false };
       state.eliminated = [];
+      state.theme = 'village';
       
       stopTimerDisplay();
       updatePhase('setup', 0);
       renderTimer();
       renderEliminated();
+      applyThemeVisuals();
     }
 
     function updateConnectionStatus(connected) {
@@ -592,6 +805,7 @@
       initBroadcastChannel();
       renderTimer();
       renderEliminated();
+      applyThemeVisuals();
     });
 
     // Cleanup on unload
