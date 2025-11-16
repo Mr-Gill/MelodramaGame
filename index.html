@@ -1388,6 +1388,7 @@
         <button class="help-tab active" data-tab="current">Current Game</button>
         <button class="help-tab" data-tab="all">All Characters</button>
         <button class="help-tab" data-tab="guide">Quick Guide</button>
+        <button class="help-tab" data-tab="beginners">Year 7 Tips</button>
         <button class="help-tab" data-tab="shortcuts">Shortcuts</button>
       </div>
 
@@ -1445,6 +1446,60 @@
           <li><strong>Hero-Type (GOOD):</strong> Defensive powers to protect players</li>
           <li><strong>Sidekick-Type (GOOD):</strong> Risky day powers with dice rolls</li>
           <li><strong>Damsel-Type (GOOD):</strong> Day phase twists and dramatic reveals</li>
+        </ul>
+      </div>
+
+      <div id="help-beginners" class="help-content help-guide">
+        <h3>🎭 Tips for Year 7 Students</h3>
+        
+        <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid var(--accent-good);">
+          <strong>✨ Quick Start:</strong> Use the Quick Start Presets on the setup screen! Choose "15 Players - Beginner Friendly" for your first game. It takes ~25 minutes and uses simpler characters.
+        </div>
+
+        <h3>🎬 Making It Fun & Engaging</h3>
+        <ul>
+          <li><strong>Encourage Big Acting:</strong> Remind students to be dramatic! Over-the-top reactions make the game memorable</li>
+          <li><strong>Use Themes:</strong> Try different themes (Haunted House, Space Station) to keep it fresh</li>
+          <li><strong>Practice Rounds:</strong> Run a quick 12-player game first so students learn the flow</li>
+          <li><strong>Death Scenes:</strong> Let eliminated players do a 10-second dramatic exit</li>
+        </ul>
+
+        <h3>⏱️ Keeping It Quick</h3>
+        <ul>
+          <li><strong>Set Time Limits:</strong> Use the 3-minute timer for discussion - it keeps momentum</li>
+          <li><strong>Skip Complex Characters:</strong> First game? Avoid: Stalker, Guardian, Defender, Cursed, Twins</li>
+          <li><strong>Simplified Script:</strong> You don't need to read everything - paraphrase the SAY blocks</li>
+          <li><strong>Pre-assign Seats:</strong> Have students sit in a circle before starting</li>
+        </ul>
+
+        <h3>🎯 Common Challenges & Solutions</h3>
+        <ul>
+          <li><strong>"Students are confused":</strong> Remind them their character card tells them everything - they just follow instructions</li>
+          <li><strong>"Too chaotic during voting":</strong> Use "Point on 3!" and count quickly - don't let debates drag on</li>
+          <li><strong>"Evil is winning too much":</strong> Add one more Hero-type (like Healer or Champion)</li>
+          <li><strong>"Game is too long":</strong> Start with 15 players maximum, use simpler characters</li>
+          <li><strong>"Students peeking":</strong> Emphasize the drama depends on everyone playing fair</li>
+        </ul>
+
+        <h3>✅ Best Practices</h3>
+        <ul>
+          <li><strong>First 5 Minutes:</strong> Explain win conditions clearly (Good = eliminate all evil, Evil = equal numbers)</li>
+          <li><strong>Visual Reminders:</strong> Use the projector view so students can see the phase and timer</li>
+          <li><strong>Celebrate Wins:</strong> Make a big deal of the winning team - applause and dramatic bows!</li>
+          <li><strong>Debrief:</strong> Spend 3 minutes at the end discussing best moments and performances</li>
+        </ul>
+
+        <h3>🌟 Recommended Character Sets</h3>
+        <p><strong>15 Players - Safest Bet:</strong></p>
+        <ul style="list-style-type: none; padding-left: 0;">
+          <li>👿 Evil: Evil Mastermind, Assassin, Pretender, Right Hand, Spy</li>
+          <li>😇 Good: Sage, Oracle, Champion, Healer, Loyal Companion, Voice, Marked, Innocent, Twin A, Twin B</li>
+        </ul>
+
+        <p><strong>18 Players - More Variety:</strong></p>
+        <ul style="list-style-type: none; padding-left: 0;">
+          <li>👿 Evil: Evil Mastermind, Assassin, Pretender, Corrupted Authority, Right Hand, Manipulator</li>
+          <li>😇 Good: Sage, Oracle, Sensitive, Champion, Healer, Loyal Companion, Voice, Marked, Innocent, Twin A, Twin B, Cursed</li>
         </ul>
       </div>
 
@@ -3604,8 +3659,14 @@
           state.timer.remaining -= 1;
           renderTimer();
           broadcastTimerUpdate(state.timer.remaining, state.timer.running);
+          // Play warning sound at 30 seconds and when timer completes
+          if (state.timer.remaining === 30) {
+            playTimerWarningSound();
+          }
           if (state.timer.remaining === 0) {
-            alert("Timer complete! Time for a dramatic decision.");
+            playTimerWarningSound();
+            setTimeout(() => playTimerWarningSound(), 300); // Double ding
+            alert("⏰ Timer complete! Time for a dramatic decision.");
           }
         }
       }, 1000);
@@ -3781,6 +3842,43 @@
       });
     }
 
+    // Simple Sound Effects using Web Audio API
+    function playSound(frequency, duration, type = 'sine') {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        // Silently fail if Web Audio API not supported
+        console.log('Audio not supported');
+      }
+    }
+
+    function playCelebrationSound() {
+      // Play a cheerful ascending melody
+      playSound(523, 0.15); // C
+      setTimeout(() => playSound(659, 0.15), 150); // E
+      setTimeout(() => playSound(784, 0.15), 300); // G
+      setTimeout(() => playSound(1047, 0.3), 450); // High C
+    }
+
+    function playTimerWarningSound() {
+      // Play a gentle "ding" sound
+      playSound(800, 0.2, 'sine');
+    }
+
     // Win Condition Functions
     function checkWinCondition() {
       const alivePlayers = state.players.filter(p => !p.eliminated);
@@ -3810,6 +3908,9 @@
       const survivorsEl = document.getElementById("win-survivors");
       const eliminatedEl = document.getElementById("win-eliminated");
       const rolesListEl = document.getElementById("win-roles-list");
+      
+      // Play celebration sound
+      playCelebrationSound();
       
       // Set title and styling based on winner
       if (winningTeam === "good") {
