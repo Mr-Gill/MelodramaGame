@@ -1785,7 +1785,8 @@
           remaining: state.timer.remaining,
           running: state.timer.running
         },
-        eliminated: eliminatedPlayers
+        eliminated: eliminatedPlayers,
+        theme: state.theme
       });
     }
 
@@ -1830,6 +1831,14 @@
       if (!projectorChannel) return;
       projectorChannel.postMessage({
         type: 'reset-game'
+      });
+    }
+
+    function broadcastThemeChange(theme) {
+      if (!projectorChannel) return;
+      projectorChannel.postMessage({
+        type: 'theme-change',
+        theme: theme
       });
     }
 
@@ -3874,6 +3883,7 @@
       state.theme = event.target.value;
       themeDescription.textContent = THEMES[state.theme].description;
       applyThemeVisuals();
+      broadcastThemeChange(state.theme);
       persistState();
       if (state.phase !== "setup") {
         renderScript();
