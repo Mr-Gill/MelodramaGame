@@ -46,28 +46,34 @@
       box-sizing: border-box;
     }
 
+    html, body {
+      height: 100vh;
+      max-height: 100vh;
+    }
+
     body {
       margin: 0;
       background: radial-gradient(circle at top, rgba(56, 189, 248, 0.08), transparent 55%), var(--bg-primary);
       color: var(--text-primary);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     header {
-      padding: 0.75rem clamp(1rem, 4vw, 3rem);
+      padding: 0.5rem clamp(1rem, 4vw, 3rem);
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
+      gap: 0.75rem;
+      flex-shrink: 0;
     }
 
     header h1 {
       margin: 0;
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      letter-spacing: 0.04em;
+      font-size: clamp(1.4rem, 3vw, 1.8rem);
+      letter-spacing: 0.03em;
     }
 
     header h1 span {
@@ -76,8 +82,9 @@
 
     header .actions {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.5rem;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     button,
@@ -90,14 +97,15 @@
 
     button {
       border: none;
-      padding: 0.65rem 1.1rem;
+      padding: 0.45rem 0.85rem;
       border-radius: 999px;
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.7), rgba(244, 114, 182, 0.9));
       color: #0f172a;
       font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: transform 120ms ease, box-shadow 120ms ease;
-      box-shadow: 0 8px 18px rgba(56, 189, 248, 0.25);
+      box-shadow: 0 6px 14px rgba(56, 189, 248, 0.2);
     }
 
     button:hover:not(:disabled) {
@@ -136,19 +144,35 @@
 
     main {
       flex: 1;
-      padding: 0 clamp(1rem, 4vw, 3rem) 2rem;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 1.5rem;
+      padding: 0 clamp(1rem, 4vw, 3rem) 1rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
     }
 
     section {
       background: rgba(15, 23, 42, 0.65);
       border: 1px solid rgba(148, 163, 184, 0.2);
       border-radius: var(--panel-radius);
-      padding: clamp(0.75rem, 2vw, 1.25rem);
+      padding: clamp(0.75rem, 2vw, 1rem);
       box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Setup section should allow scrolling for role selection */
+    #setup-section {
+      overflow-y: auto;
+    }
+
+    /* Game section should fill viewport without page scroll */
+    #game-section {
+      overflow: hidden;
     }
 
     body.light section {
@@ -157,27 +181,30 @@
     }
     
     small {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-secondary);
-      line-height: 1.5;
+      line-height: 1.4;
     }
 
     h2 {
       margin-top: 0;
-      font-size: clamp(1.5rem, 3vw, 2rem);
+      margin-bottom: 0.5rem;
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
       letter-spacing: 0.02em;
       font-weight: 700;
+      flex-shrink: 0;
     }
     
     p {
-      font-size: 1rem;
-      line-height: 1.6;
+      font-size: 0.9rem;
+      line-height: 1.5;
     }
     
     section > p {
-      font-size: 1.05rem;
-      line-height: 1.65;
+      font-size: 0.9rem;
+      line-height: 1.5;
       color: var(--text-secondary);
+      flex-shrink: 0;
     }
 
     .setup-grid {
@@ -395,27 +422,49 @@
 
     .game-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.75rem;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    @media (max-width: 1200px) {
+      .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .game-grid {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+      }
     }
 
     .script-panel {
-      display: grid;
-      gap: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .script-step {
       display: grid;
       gap: 0.5rem;
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
     }
 
     .script-block {
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
       border: 1px solid rgba(148, 163, 184, 0.3);
       background: rgba(15, 23, 42, 0.5);
-      line-height: 1.5;
-      font-size: 0.95rem;
+      line-height: 1.4;
+      font-size: 0.9rem;
     }
     
     body.light .script-block {
@@ -423,28 +472,28 @@
     }
 
     .block-say {
-      border-left: 4px solid var(--accent-evil);
-      font-size: 1.15rem;
+      border-left: 3px solid var(--accent-evil);
+      font-size: 1rem;
       font-style: italic;
       font-weight: 500;
     }
 
     .block-narrator {
-      border-left: 4px solid var(--accent-ui);
+      border-left: 3px solid var(--accent-ui);
     }
 
     .block-info {
-      border-left: 4px solid var(--accent-good);
+      border-left: 3px solid var(--accent-good);
       color: var(--text-secondary);
     }
 
     .block-reminder {
-      border-left: 4px solid var(--accent-neutral);
+      border-left: 3px solid var(--accent-neutral);
       font-weight: 500;
     }
 
     .block-action {
-      border-left: 4px solid #f97316;
+      border-left: 3px solid #f97316;
       font-weight: 500;
     }
 
@@ -452,64 +501,79 @@
       display: flex;
       gap: 0.75rem;
       flex-wrap: wrap;
+      flex-shrink: 0;
     }
 
     .script-nav button {
       flex: 1;
-      min-width: 140px;
+      min-width: 100px;
     }
 
     .status-panel,
     .players-panel {
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: 0.5rem;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .status-panel {
+      overflow-y: auto;
     }
 
     .player-list {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 0.5rem;
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
     }
 
     .timer-card {
       display: grid;
-      gap: 0.5rem;
-      padding: 1rem;
-      border-radius: 16px;
+      gap: 0.35rem;
+      padding: 0.75rem;
+      border-radius: 12px;
       background: radial-gradient(circle at 25% 25%, rgba(56, 189, 248, 0.22), transparent), rgba(15, 23, 42, 0.45);
       text-align: center;
       border: 1px solid rgba(148, 163, 184, 0.22);
+      flex-shrink: 0;
     }
 
     .timer-display {
-      font-size: clamp(2.4rem, 6vw, 3.4rem);
-      letter-spacing: 0.1em;
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      letter-spacing: 0.08em;
     }
 
     .timer-controls {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.4rem;
       flex-wrap: wrap;
       justify-content: center;
     }
 
     .timer-controls button {
-      flex: 1 1 100px;
+      flex: 1 1 80px;
+      padding: 0.5rem 0.6rem;
+      font-size: 0.85rem;
     }
 
     .pill {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0.45rem 1rem;
+      padding: 0.3rem 0.75rem;
       border-radius: 999px;
       background: rgba(15, 23, 42, 0.6);
       border: 1px solid rgba(148, 163, 184, 0.3);
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       font-weight: 500;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       color: var(--text-primary);
+      flex-shrink: 0;
     }
     
     body.light .pill {
@@ -518,17 +582,44 @@
 
     .stat-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 0.75rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    /* Compact stats in game view */
+    .status-panel .stat {
+      padding: 0.5rem 0.75rem;
+      gap: 0.25rem;
+    }
+
+    .status-panel .stat > span {
+      font-size: 0.75rem;
+    }
+
+    .status-panel .stat strong {
+      font-size: 1.25rem;
+    }
+
+    .status-panel .stat div {
+      font-size: 0.85rem;
+    }
+
+    /* Make notes area compact but scrollable */
+    .status-panel .name-list {
+      min-height: 50px;
+      max-height: 100px;
+      font-size: 0.85rem;
+      flex-shrink: 1;
     }
 
     .player-card {
-      border-radius: 12px;
-      padding: 0.75rem;
+      border-radius: 10px;
+      padding: 0.5rem;
       border: 1px solid rgba(148, 163, 184, 0.3);
       background: rgba(15, 23, 42, 0.5);
       display: grid;
-      gap: 0.5rem;
+      gap: 0.35rem;
     }
     
     body.light .player-card {
@@ -544,30 +635,30 @@
 
     .player-name {
       font-weight: 600;
-      letter-spacing: 0.04em;
-      font-size: 0.95rem;
+      letter-spacing: 0.03em;
+      font-size: 0.85rem;
     }
 
     .player-meta {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: var(--text-secondary);
-      margin-top: 0.15rem;
+      margin-top: 0.1rem;
     }
 
     .player-actions {
       display: flex;
-      gap: 0.4rem;
+      gap: 0.3rem;
       flex-wrap: wrap;
     }
 
     .player-actions button {
       background: rgba(148, 163, 184, 0.25);
       color: var(--text-primary);
-      padding: 0.4rem 0.7rem;
-      border-radius: 6px;
+      padding: 0.25rem 0.5rem;
+      border-radius: 5px;
       flex: 1;
-      min-width: 80px;
-      font-size: 0.85rem;
+      min-width: 60px;
+      font-size: 0.75rem;
       font-weight: 500;
     }
     
@@ -585,22 +676,22 @@
     }
 
     .player-card p {
-      font-size: 0.85rem;
-      line-height: 1.4;
+      font-size: 0.75rem;
+      line-height: 1.3;
       margin: 0;
     }
 
     .player-card textarea {
       width: 100%;
-      min-height: 40px;
-      border-radius: 8px;
-      padding: 0.5rem;
+      min-height: 30px;
+      border-radius: 6px;
+      padding: 0.35rem;
       background: rgba(15, 23, 42, 0.5);
       border: 1px solid rgba(148, 163, 184, 0.3);
       color: inherit;
       resize: vertical;
-      font-size: 0.85rem;
-      line-height: 1.4;
+      font-size: 0.75rem;
+      line-height: 1.3;
     }
     
     body.light .player-card textarea {
@@ -619,40 +710,11 @@
 
     .game-grid[data-phase="day"] .timer-card {
       order: -1;
-      padding: 1.25rem;
+      padding: 1rem;
     }
 
     .game-grid[data-phase="day"] .timer-display {
-      font-size: clamp(2.8rem, 7vw, 3.8rem);
-    }
-
-    @media (min-width: 1024px) and (max-height: 900px) {
-      /* Landscape tablet/laptop optimization */
-      #game-section .game-grid {
-        height: calc(100vh - 140px);
-        overflow: hidden;
-      }
-      
-      .players-panel {
-        max-height: calc(100vh - 160px);
-        overflow-y: auto;
-      }
-      
-      .player-list {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-      }
-      
-      .script-panel {
-        max-height: calc(100vh - 160px);
-        overflow-y: auto;
-      }
-      
-      .status-panel {
-        max-height: calc(100vh - 160px);
-        overflow-y: auto;
-      }
+      font-size: clamp(2.4rem, 6vw, 3.2rem);
     }
 
     @media (max-width: 768px) {
