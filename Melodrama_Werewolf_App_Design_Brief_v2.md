@@ -89,7 +89,7 @@ The game uses a **type-based system** with 6 character types (5 characters per t
   27. **The Innocent** - Once: Narrator confirms as good
   28. **Twin A** - N1: Sees Twin B | Linked death
   29. **Twin B** - N1: Sees Twin A | Linked death
-  30. **The Cursed** - N1: Champion sees | Death kills 2 neighbors each side (5 total deaths)
+  30. **The Cursed** - N1: Champion sees | Death kills 2 random players (3 total deaths)
 
 ### 2.2 Night Order Sequence
 
@@ -568,7 +568,7 @@ THEMES = {
 │                         │
 │ 💀 Cursed:              │
 │    Player 12            │
-│    (2 neighbors/side)   │
+│    (2 random deaths)    │
 │                         │
 │ 🛡️ Champion Power:     │
 │    [ACTIVE]             │
@@ -907,10 +907,10 @@ function* callVillainType() {
 | **Right Hand blocks Sidekick-type** | No block (Sidekicks use thumbs-up, not direct night action) |
 | **Manipulator silences Corrupted Authority** | Corrupted Authority loses their double vote that day |
 | **Twin A dies** | Twin B immediately dies (linked death) |
-| **Cursed dies** | 2 neighbors each side die (5 total deaths) |
+| **Cursed dies** | 2 random living players also die (3 total deaths) |
 | **Doctor saves + Brave Youth died** | Brave Youth is saved, doesn't take anyone with them |
-| **Doctor saves + Cursed died** | Cursed saved, neighbors DON'T die |
-| **Voice double elimination + Cursed voted out** | Cursed + 2nd place die, then Cursed triggers explosion (could be 7 deaths!) |
+| **Doctor saves + Cursed died** | Cursed saved, random players DON'T die |
+| **Voice double elimination + Cursed voted out** | Cursed + 2nd place die, then Cursed triggers explosion (could be 5 deaths!) |
 
 ### 6.3 Resolution Output Format
 
@@ -1117,28 +1117,33 @@ if (player.twinId && getPlayerById(player.twinId).isAlive) {
 
 **Implementation:**
 1. When Cursed is eliminated (night or day)
-2. Calculate seating position:
+2. Select 2 random living players:
    ```javascript
-   const victims = [
-     getPlayerAtPosition(cursed.position - 2),
-     getPlayerAtPosition(cursed.position - 1),
-     cursed,
-     getPlayerAtPosition(cursed.position + 1),
-     getPlayerAtPosition(cursed.position + 2),
-   ].filter(p => p && p.isAlive);
+   // Get all alive players excluding The Cursed
+   const eligiblePlayers = players.filter(p => 
+     !p.eliminated && p.id !== cursed.id
+   );
+   
+   // Randomly select up to 2 players
+   const numToSelect = Math.min(2, eligiblePlayers.length);
+   const selectedPlayers = [];
+   const tempEligible = [...eligiblePlayers];
+   
+   for (let i = 0; i < numToSelect; i++) {
+     const randomIndex = Math.floor(Math.random() * tempEligible.length);
+     selectedPlayers.push(tempEligible[randomIndex]);
+     tempEligible.splice(randomIndex, 1);
+   }
    ```
-3. Eliminate all 5 (or however many are actually alive)
+3. Eliminate The Cursed plus the 2 randomly selected players (3 total deaths max)
+4. Note: Villains CAN be randomly selected - this makes targeting The Cursed risky for evil team
 
-**UI Warning:**
-Before eliminating Cursed, show confirmation:
+**UI Display:**
+When The Cursed dies, the resolution summary should clearly show:
 ```
-⚠️ WARNING: Eliminating the Cursed will kill 4 additional players:
-• Player at position [N-2]
-• Player at position [N-1]
-• Player at position [N+1]
-• Player at position [N+2]
-
-Are you sure? [Confirm] [Cancel]
+💀 The Cursed has fallen! The curse spreads randomly...
+→ [Player Name 1] is taken by the curse!
+→ [Player Name 2] is taken by the curse!
 ```
 
 ---
@@ -1398,11 +1403,11 @@ self.addEventListener('fetch', (event) => {
 6. Doctor saves Brave Youth (should prevent revenge kill)
 
 **Day Phase:**
-1. Vote out Cursed (verify explosion)
+1. Vote out Cursed (verify 2 random players also die)
 2. Vote out Twin A (verify Twin B dies)
 3. Corrupted Authority votes (verify double count)
 4. Manipulator silences player (verify can't vote)
-5. Voice double elimination on Cursed (7 deaths possible!)
+5. Voice double elimination on Cursed (5 deaths possible!)
 6. Dice rolls (all success, all fail, mixed)
 
 **Win Conditions:**

@@ -371,27 +371,33 @@
           }
         }
 
-        // Check for Cursed (char ID 30) - kills 2 neighbors each side
+        // Check for Cursed (char ID 30) - kills 2 random players
         if (player.charId === 30) {
-          const playerIndex = players.findIndex(p => p.id === player.id);
-          const cursedNeighbors = [];
+          // Get all alive players excluding The Cursed and already processed players
+          const eligiblePlayers = players.filter(p => 
+            !p.eliminated && 
+            p.id !== player.id && 
+            !processedIds.has(p.id)
+          );
           
-          // Get 2 neighbors each side (4 total)
-          for (let offset of [-2, -1, 1, 2]) {
-            const neighborIndex = (playerIndex + offset + players.length) % players.length;
-            const neighbor = players[neighborIndex];
-            if (neighbor && !neighbor.eliminated && !processedIds.has(neighbor.id)) {
-              cursedNeighbors.push(neighbor);
-            }
+          // Randomly select up to 2 players
+          const numToSelect = Math.min(2, eligiblePlayers.length);
+          const selectedPlayers = [];
+          const tempEligible = [...eligiblePlayers];
+          
+          for (let i = 0; i < numToSelect; i++) {
+            const randomIndex = Math.floor(Math.random() * tempEligible.length);
+            selectedPlayers.push(tempEligible[randomIndex]);
+            tempEligible.splice(randomIndex, 1);
           }
 
-          cursedNeighbors.forEach(neighbor => {
+          selectedPlayers.forEach(victim => {
             linkedDeaths.push({
-              player: neighbor.id,
-              playerName: `${neighbor.name} (${neighbor.roleName})`,
+              player: victim.id,
+              playerName: `${victim.name} (${victim.roleName})`,
               cause: 'Cursed Explosion'
             });
-            processedIds.add(neighbor.id);
+            processedIds.add(victim.id);
           });
         }
       });
@@ -679,14 +685,14 @@
     });
 
     describe('Cursed Death Explosion', () => {
-      it('should eliminate 4 neighbors (2 each side) when Cursed dies', () => {
+      it('should eliminate exactly 2 random players when Cursed dies', () => {
         const players = [
           createMockPlayer(1, 0, 'Villain'),    // Index 0
-          createMockPlayer(12, 1, 'Oracle'),    // Index 1 (neighbor -2)
-          createMockPlayer(13, 2, 'Sensitive'), // Index 2 (neighbor -1)
+          createMockPlayer(12, 1, 'Oracle'),    // Index 1
+          createMockPlayer(13, 2, 'Sensitive'), // Index 2
           createMockPlayer(30, 3, 'Cursed'),    // Index 3 (THE CURSED)
-          createMockPlayer(14, 4, 'Dreamer'),   // Index 4 (neighbor +1)
-          createMockPlayer(15, 5, 'Witness'),   // Index 5 (neighbor +2)
+          createMockPlayer(14, 4, 'Dreamer'),   // Index 4
+          createMockPlayer(15, 5, 'Witness'),   // Index 5
           createMockPlayer(16, 6, 'Champion'),  // Index 6
           createMockPlayer(17, 7, 'Healer')     // Index 7
         ];
@@ -712,32 +718,36 @@
         expect(result.finalEliminations).toHaveLength(1);
         
         const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
-        expect(linkedDeaths).toHaveLength(4);
+        // Should kill exactly 2 random players (not 4 neighbors)
+        expect(linkedDeaths).toHaveLength(2);
         
-        const deadPlayerIds = linkedDeaths.map(d => d.player);
-        expect(deadPlayerIds).toContain(1); // Index 1 (neighbor at offset -2)
-        expect(deadPlayerIds).toContain(2); // Index 2 (neighbor at offset -1)
-        expect(deadPlayerIds).toContain(4); // Index 4 (neighbor at offset +1)
-        expect(deadPlayerIds).toContain(5); // Index 5 (neighbor at offset +2)
-        
+        // All deaths should have the correct cause
         linkedDeaths.forEach(death => {
           expect(death.cause).toBe('Cursed Explosion');
         });
+        
+        // Cursed should not be among the victims
+        const deadPlayerIds = linkedDeaths.map(d => d.player);
+        const cursedInVictims = deadPlayerIds.includes(3); // Cursed's id is 3
+        expect(cursedInVictims).toBeFalsy();
       });
 
-      it('should not kill already eliminated neighbors when Cursed dies', () => {
+      it('should not kill already eliminated players when Cursed dies', () => {
         const players = [
           createMockPlayer(1, 0, 'Villain'),    // Index 0
           createMockPlayer(12, 1, 'Oracle'),    // Index 1 (already dead)
-          createMockPlayer(13, 2, 'Sensitive'), // Index 2
+          createMockPlayer(13, 2, 'Sensitive'), // Index 2 (already dead)
           createMockPlayer(30, 3, 'Cursed'),    // Index 3 (THE CURSED)
-          createMockPlayer(14, 4, 'Dreamer'),   // Index 4
+          createMockPlayer(14, 4, 'Dreamer'),   // Index 4 (already dead)
           createMockPlayer(15, 5, 'Witness'),   // Index 5 (already dead)
-          createMockPlayer(16, 6, 'Champion'),  // Index 6
-          createMockPlayer(17, 7, 'Healer')     // Index 7
+          createMockPlayer(16, 6, 'Champion'),  // Index 6 (already dead)
+          createMockPlayer(17, 7, 'Healer')     // Index 7 - only one alive besides Cursed
         ];
         players[1].eliminated = true;
+        players[2].eliminated = true;
+        players[4].eliminated = true;
         players[5].eliminated = true;
+        players[6].eliminated = true;
 
         const state = {
           players,
@@ -759,11 +769,78 @@
         const result = resolveNightActions(state, actions);
         const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
         
-        // Should only kill living neighbors (2 and 4)
+        // Should only kill remaining alive players (max 2, but only 2 are alive: Villain at 0 and Healer at 7)
+        // Since we want 2 random but only 2 are available (excluding Cursed), should get 2
         expect(linkedDeaths).toHaveLength(2);
         const deadPlayerIds = linkedDeaths.map(d => d.player);
-        expect(deadPlayerIds).toContain(2);
-        expect(deadPlayerIds).toContain(4);
+        expect(deadPlayerIds).toContain(0); // Villain
+        expect(deadPlayerIds).toContain(7); // Healer
+      });
+
+      it('should kill fewer than 2 players if not enough are alive', () => {
+        const players = [
+          createMockPlayer(30, 0, 'Cursed'),    // THE CURSED
+          createMockPlayer(12, 1, 'Oracle'),    // Only one other alive
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 0, // Target the Cursed
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        
+        // Only 1 other player is alive, so only 1 should die
+        expect(linkedDeaths).toHaveLength(1);
+        expect(linkedDeaths[0].player).toBe(1); // Oracle
+      });
+
+      it('should be able to select villains as random victims', () => {
+        // This test verifies that villains CAN be selected (the mechanic is intentionally risky for evil team)
+        const players = [
+          createMockPlayer(1, 0, 'EvilMastermind'),  // Villain
+          createMockPlayer(2, 1, 'Assassin'),        // Villain  
+          createMockPlayer(30, 2, 'Cursed'),         // THE CURSED
+        ];
+
+        const state = {
+          players,
+          specialTrackers: { championPowerActive: true }
+        };
+
+        const actions = {
+          villainTarget: 2, // Target the Cursed
+          assassinTarget: null,
+          championProtect: null,
+          healerProtect: null,
+          healerLastProtected: null,
+          guardianProtect: null,
+          defenderTrap: null,
+          rightHandBlock: null,
+          stalkerActive: false
+        };
+
+        const result = resolveNightActions(state, actions);
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        
+        // With only 2 players besides Cursed (both villains), both should die
+        expect(linkedDeaths).toHaveLength(2);
+        const deadPlayerIds = linkedDeaths.map(d => d.player);
+        expect(deadPlayerIds).toContain(0); // EvilMastermind
+        expect(deadPlayerIds).toContain(1); // Assassin
       });
     });
 
@@ -1221,10 +1298,10 @@
           createMockPlayer(1, 0, 'Villain'),
           createMockPlayer(16, 1, 'Champion'),
           createMockPlayer(30, 2, 'Cursed'),    // The Cursed
-          createMockPlayer(12, 3, 'Oracle'),    // Neighbor -1
-          createMockPlayer(13, 4, 'Sensitive'), // Neighbor +1
-          createMockPlayer(14, 5, 'Dreamer'),   // Neighbor +2
-          createMockPlayer(15, 6, 'Witness')    // Neighbor -2
+          createMockPlayer(12, 3, 'Oracle'),
+          createMockPlayer(13, 4, 'Sensitive'),
+          createMockPlayer(14, 5, 'Dreamer'),
+          createMockPlayer(15, 6, 'Witness')
         ];
 
         const state = {
