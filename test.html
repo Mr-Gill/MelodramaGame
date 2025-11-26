@@ -769,8 +769,7 @@
         const result = resolveNightActions(state, actions);
         const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
         
-        // Should only kill remaining alive players (max 2, but only 2 are alive: Villain at 0 and Healer at 7)
-        // Since we want 2 random but only 2 are available (excluding Cursed), should get 2
+        // With exactly 2 eligible players remaining (Villain at 0 and Healer at 7), both will be selected
         expect(linkedDeaths).toHaveLength(2);
         const deadPlayerIds = linkedDeaths.map(d => d.player);
         expect(deadPlayerIds).toContain(0); // Villain
