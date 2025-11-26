@@ -1739,13 +1739,16 @@
           day: null
         },
         script: {
-          nightIntro: "Night descends over the village. Actors, close your eyes and fall into character...",
-          dayIntro: "The sun rises on the village square. Open your eyes and gasp dramatically!",
-          noDeaths: "Against all odds, everyone survived the night. Whisper relief... for now.",
-          deaths: victim => `Tragedy strikes! Last night we lost ${victim}. Prepare a spectacular exit.`,
-          vote: "The village must choose. On three, point boldly to your suspect!",
-          deathScene: "Give us your most melodramatic village collapse!",
-          evilCall: "Ask for evil smirks and villainous grins."
+          nightIntro: "The fog rolls through the cobblestone streets as the village descends into darkness. The lanterns flicker and fade... The clock tower strikes midnight. Villagers, bow your heads and close your eyes. Let your shoulders slump in peaceful slumber as shadows begin to stir...",
+          dayIntro: "A rooster crows! The morning sun pierces through the fog. Open your eyes slowly, stretching awake. Look around with weary suspicion - who among you seems... different today?",
+          noDeaths: "By some miracle, the village remains whole. Exchange looks of exhausted relief, but remember - the beast still lurks among you. No one is safe. Tomorrow may tell a different tale...",
+          deaths: victim => `A scream echoes through the village square! Gather around... we have lost ${victim}. The tragedy is immense - let your grief pour forth!`,
+          vote: "The village mob gathers! Whispered accusations grow to shouts. On the count of three, raise your arm and point with righteous fury to the one you believe must face justice! One... two... THREE!",
+          deathScene: "Clutch your heart, stagger backward, and collapse dramatically! Reach toward the sky as you fall. The village watches in horror!",
+          evilCall: "Exchange knowing glances. Let a subtle, wicked smile cross your lips. You are the wolves among sheep.",
+          discussionPrompt: "Speak in hushed, suspicious tones. Point fingers with trembling accusation. The village square rings with melodrama!",
+          protectionCue: "A guardian watches from the shadows, ready to sacrifice all for the innocent...",
+          villainVictoryTease: "The darkness grows stronger. Soon the village will fall to shadows eternal..."
         }
       },
       mansion: {
@@ -1767,13 +1770,16 @@
           day: null
         },
         script: {
-          nightIntro: "The lights dim in the grand estate. Guests, close your eyes as the mystery deepens...",
-          dayIntro: "Morning breaks over the mansion. Who's missing from breakfast?",
-          noDeaths: "Everyone made it through the night... but the tension remains.",
-          deaths: victim => `${victim} won't be inheriting anything now. Exit with grace!`,
-          vote: "The family gathers. At three, point to the one you suspect!",
-          deathScene: "A dramatic fall worthy of a soap opera!",
-          evilCall: "Ask for scheming whispers and calculating glances."
+          nightIntro: "The grandfather clock chimes eleven... The chandelier dims as servants extinguish the candelabras. Guests at the gala retire to their luxurious rooms. Silk robes rustle, champagne glasses are set aside. Close your eyes, wealthy inheritors, as the mansion falls silent... except for footsteps in the hidden passages...",
+          dayIntro: "The butler rings the breakfast bell! Wake to the smell of coffee and croissants - but wait... is someone missing from the dining table? Cast suspicious glances at the empty chair, then at each other...",
+          noDeaths: "Against all odds, every heir survived the night. Raise your crystal glasses in mock celebration, but trust no one - the will is still contested, and the fortune still up for grabs.",
+          deaths: victim => `The butler clears his throat: 'It pains me to inform you... ${victim} won't be attending breakfast. They've been... permanently removed from the will.' Gasp in exaggerated shock!`,
+          vote: "The family lawyer demands a vote! The inheritance hangs in the balance. On three, point your manicured finger at the relative you wish to... disinherit! One... two... THREE!",
+          deathScene: "Clutch your pearls! Swoon onto the nearest fainting couch. Die with your pinky extended, as befits high society!",
+          evilCall: "Raise an eyebrow of superiority. Swirl an imaginary glass of expensive wine. You will have the fortune - by any means necessary.",
+          discussionPrompt: "Speak with cut-glass accents and barely concealed venom. Money is on the line!",
+          protectionCue: "A loyal servant moves silently, ready to take a bullet for their master...",
+          villainVictoryTease: "The fortune grows closer. Soon, the entire estate will be yours..."
         }
       },
       haunted: {
@@ -1795,13 +1801,16 @@
           day: null
         },
         script: {
-          nightIntro: "Storm clouds swallow the manor. Spirits, close your eyes...",
-          dayIntro: "Dawn forces its way in. Awake! Whose scream echoes today?",
-          noDeaths: "The mansion groaned but spared you. Celebrate in whispers.",
-          deaths: victim => `${victim} vanished into the walls overnight. Only echoes remain...`,
-          vote: "Gather in the ballroom. At three, accuse with operatic flair!",
-          deathScene: "Vanish with a ghostly wail!",
-          evilCall: "Ask for haunting stares and spectral grins."
+          nightIntro: "Thunder CRASHES! The lights flicker... once... twice... and die. In the darkness, the grandfather clock strikes thirteen. Spirits trapped in this cursed mansion, close your eyes. Let your heads fall forward. Feel the cold draft creeping through the halls as spectral forces awaken...",
+          dayIntro: "Lightning illuminates the parlor! Wake with a start - gasp as if shaken from a nightmare! Look around the dusty room... The portraits on the wall seem to have moved. Someone is... missing from this séance...",
+          noDeaths: "The spirits were restless but claimed no victims tonight. Sigh with ghostly relief - but the mansion still holds its dark secrets. The next night may not be so merciful...",
+          deaths: victim => `A bloodcurdling scream echoes through the halls! The séance reveals the terrible truth... ${victim} has joined the spirits forever. Their ghost now walks these corridors!`,
+          vote: "The surviving souls must perform a banishment ritual! On three, point with trembling finger to the entity you wish to exorcise! One... two... THREE!",
+          deathScene: "Float backward as if lifted by invisible hands! Wail a ghostly lament as you fade into the spirit realm! The mansion claims another soul!",
+          evilCall: "Let your eyes gleam with otherworldly malevolence. You are the darkness that feeds on fear. Move with supernatural stillness.",
+          discussionPrompt: "Whisper fearfully, jumping at every creak. Accuse with trembling voices and point with shaking fingers!",
+          protectionCue: "A protective spirit watches over you, their ethereal form a shield against the darkness...",
+          villainVictoryTease: "The veil between worlds grows thin. Soon, all souls shall belong to the darkness..."
         }
       },
       castle: {
@@ -1823,13 +1832,16 @@
           day: null
         },
         script: {
-          nightIntro: "The castle sleeps under moonlight. Knights and nobles, close your eyes...",
-          dayIntro: "The court assembles at dawn. Who has fallen?",
-          noDeaths: "The kingdom stands... for now.",
-          deaths: victim => `${victim} has been vanquished! Exit with medieval flair.`,
-          vote: "The court must decide. On three, point to the traitor!",
-          deathScene: "A noble collapse, worthy of a knight!",
-          evilCall: "Ask for treacherous sneers and courtly plots."
+          nightIntro: "The drawbridge rises with a thunderous groan. Torches are extinguished one by one. In the stone corridors, only shadows move. Noble knights and scheming courtiers, close your eyes and bow your heads. The king sleeps... but treachery never rests within these ancient walls...",
+          dayIntro: "Trumpets sound! Arise, members of the royal court! Gather in the great hall - but count your numbers... is the throne room missing a familiar face? Look upon each other with suspicion most royal!",
+          noDeaths: "By the crown's mercy, all subjects survived the night. Exchange formal bows, but keep one hand on your sword hilt. The conspirators still lurk within the court.",
+          deaths: victim => `Hear ye, hear ye! Tragedy befalls the kingdom! ${victim} has fallen to dark treachery! Let the mourning bells toll, and prepare a funeral most grand!`,
+          vote: "The royal court demands justice! Knights, nobles, and courtiers - on three, raise thy sword-arm and point to the traitor among us! For the realm! One... two... THREE!",
+          deathScene: "Fall to your knees, clutch your royal garments, and cry 'FOR THE KINGDOM!' as you collapse! Die with honor and theatrical flourish!",
+          evilCall: "Let your lip curl with aristocratic contempt. You scheme for the throne. Exchange knowing glances with your fellow conspirators.",
+          discussionPrompt: "Speak in formal, dramatic tones! 'I accuse thee, villain!' Point with righteous medieval fury!",
+          protectionCue: "A loyal knight stands guard, sword drawn, ready to defend the innocent...",
+          villainVictoryTease: "The throne grows closer. Soon, the crown shall rest upon your treacherous brow..."
         }
       },
       theatre: {
@@ -1851,13 +1863,16 @@
           day: null
         },
         script: {
-          nightIntro: "The curtain falls on another act. Performers, close your eyes...",
-          dayIntro: "The spotlight rises! Who missed their cue?",
-          noDeaths: "All performers survived the night. The show must go on!",
-          deaths: victim => `${victim} vanished in the final trick. Take your final bow!`,
-          vote: "Center stage, everyone. At three, point to your suspect!",
-          deathScene: "Exit through the trapdoor with dramatic flair!",
-          evilCall: "Ask for villainous stage presence and dramatic glares."
+          nightIntro: "The stage lights fade to black. The orchestra plays its final note. Behind the velvet curtain, the performers take their places... Close your eyes, theatre stars. The intermission has begun... but backstage, deadly games are played in darkness...",
+          dayIntro: "The spotlight BLAZES! Strike a pose - the show must go on! But wait... scan the dressing rooms... someone missed their call! Their costume hangs empty! What drama unfolds?!",
+          noDeaths: "Miraculous! Every performer survived the night. Take a theatrical bow - but remember, in show business, the understudy is always waiting in the wings...",
+          deaths: victim => `The director speaks: 'I regret to announce... ${victim} gave their FINAL performance last night. The theatre has lost a star!' Let the mourning be DRAMATIC!`,
+          vote: "Center stage, everyone! The audience of your peers demands justice! On three, point with theatrical grandeur to the villain of this drama! Places everyone! One... two... THREE!",
+          deathScene: "This is your FINAL bow! Clutch the curtain as you fall! Reach for the spotlight! Let your last words echo through the rafters! Exit... stage FOREVER!",
+          evilCall: "You are the villain of this opera! Twirl an imaginary mustache. Let your stage presence ooze menace and theatrical evil!",
+          discussionPrompt: "Project from the diaphragm! Make accusations with operatic intensity! Gesture grandly - this is THEATRE!",
+          protectionCue: "A stagehand lurks in the shadows, ready to pull their ally through the trapdoor to safety...",
+          villainVictoryTease: "The final act approaches. Soon, you alone will take the standing ovation..."
         }
       },
       space: {
@@ -1879,13 +1894,16 @@
           day: null
         },
         script: {
-          nightIntro: "Artificial night engages. Crew, helmets down and eyes closed...",
-          dayIntro: "Lights to full! Bridge crew, report your status with gusto!",
-          noDeaths: "Sensors show no casualties. Someone rerouted the danger...",
-          deaths: victim => `${victim} was jettisoned into the void. Cue the space dirge...`,
-          vote: "Assemble in the hangar. At three, point to the saboteur!",
-          deathScene: "Float away into the cosmic void!",
-          evilCall: "Ask for calculating computer-like stares."
+          nightIntro: "ALERT: Initiating station-wide sleep cycle. The oxygen levels stabilize as the artificial lights dim to emergency blue. The hum of the life support systems fills the corridors. Crew members, close your eyes and enter stasis mode. But in the maintenance shafts, something stirs...",
+          dayIntro: "ALERT: Sleep cycle complete. Station lights activate! Stretch in your zero-gravity pods and float to the command deck. Check the life sign monitors... WARNING: Crew member offline! Someone has been... spaced!",
+          noDeaths: "ALERT: All crew vitals stable. The station survived another rotation. Exchange relieved salutes - but the saboteur still moves among you. The next cycle may not be so fortunate.",
+          deaths: victim => `CRITICAL ALERT: Life signs terminated! ${victim} has been... jettisoned into the void. A moment of silence as we watch their form drift into the infinite darkness of space...`,
+          vote: "EMERGENCY PROTOCOL: Crew must identify the imposter! On three, aim your targeting sensors - I mean, FINGERS - at the suspected saboteur! Coordinates locked! One... two... THREE!",
+          deathScene: "Clutch your helmet! Gasp for oxygen! Float in slow-motion as you drift toward the airlock! 'Tell my family... I... was a good astronaut...' WHOOOOSH into space!",
+          evilCall: "Your optical sensors glow with calculated malice. You are the virus in the system. Process your next elimination with cold, mechanical precision.",
+          discussionPrompt: "Speak in robotic, precise tones! 'Probability analysis suggests you are the saboteur!' Point with technical authority!",
+          protectionCue: "The emergency force field activates around a crew member, deflecting the saboteur's attack...",
+          villainVictoryTease: "Systems failing. Soon, you will be the only signal broadcasting from this dead station..."
         }
       },
       western: {
@@ -1907,13 +1925,16 @@
           day: null
         },
         script: {
-          nightIntro: "Night falls on the frontier. Cowboys and outlaws, close your eyes...",
-          dayIntro: "The sun rises over the dusty town. Who didn't make it to dawn?",
-          noDeaths: "Everyone's still standing at the saloon.",
-          deaths: victim => `${victim} bit the dust last night. Give us a dusty collapse!`,
-          vote: "High noon has arrived. At three, point to the outlaw!",
-          deathScene: "A dusty Wild West collapse!",
-          evilCall: "Ask for outlaw sneers and bandit grins."
+          nightIntro: "The saloon piano falls silent. Tumbleweeds roll past the empty main street as the desert sun sets in a blaze of orange. The last candle in the window flickers out. Cowboys and outlaws, tip your hats over your eyes. The frontier sleeps... but bandits ride under the cover of darkness...",
+          dayIntro: "YEEHAW! The rooster crows and the sun blazes over the dusty town! Tip back your cowboy hats, stretch those spurs, and mosey on down to the saloon. But hold on, partner... someone ain't made it to breakfast. Check the Wanted posters...",
+          noDeaths: "Well I'll be hornswoggled! Every varmint in town survived the night! Raise your sarsaparillas in celebration - but keep one hand on your holster. The outlaws are still out there...",
+          deaths: victim => `The Sheriff speaks: 'Folks, I've got some bad news... ${victim} bit the dust last night. This town ain't big enough for outlaws AND honest folk. Let's have a moment of silence... then a LOUD death scene!'`,
+          vote: "HIGH NOON! The townfolk gather in the dusty square! On three, draw your pointing finger like a six-shooter and AIM at the varmint you reckon's the outlaw! One... two... DRAW!",
+          deathScene: "Clutch your heart! Stagger backward through the saloon doors! Collapse in the dusty street! 'They... got me, partner...' *THUD*",
+          evilCall: "Squint like a desperado. Chew an imaginary piece of straw. You're the meanest outlaw this side of the Rio Grande.",
+          discussionPrompt: "Speak in your best Wild West drawl! 'I reckon you're the varmint we're lookin' fer!' Point accusingly!",
+          protectionCue: "A loyal deputy stands guard, hand on holster, ready to take a bullet for the innocent...",
+          villainVictoryTease: "The gold is almost yours. Soon, this town will belong to the outlaws..."
         }
       },
       pirate: {
@@ -1935,13 +1956,16 @@
           day: null
         },
         script: {
-          nightIntro: "The ship rocks in darkness. Pirates, close your eyes and plot...",
-          dayIntro: "Dawn breaks over the harbor. Who walked the plank?",
-          noDeaths: "All hands on deck! Everyone survived the night.",
-          deaths: victim => `${victim} sleeps with the fishes. Man overboard!`,
-          vote: "All crew to the deck. At three, point to the mutineer!",
-          deathScene: "A dramatic pirate's 'man overboard!'",
-          evilCall: "Ask for pirate snarls and mutinous grins."
+          nightIntro: "Avast, ye scallywags! The moon rises over the Caribbean as the ship rocks in the harbor. Below deck, hammocks sway in the darkness. Close yer eyes, ye sea dogs, and let the waves rock ye to sleep. But above deck, conspirators gather under the Jolly Roger...",
+          dayIntro: "ALL HANDS ON DECK! The sun blazes over the harbor! Rise from yer hammocks, ye bilge rats! Check the crew manifest... by Davy Jones' locker... someone's MISSING from the deck! Who's been fed to the sharks?!",
+          noDeaths: "Shiver me timbers! Every scurvy dog survived the night! Raise yer grog in celebration - but keep one eye on the horizon. The mutineers still sail among us...",
+          deaths: victim => `Gather 'round, ye salty sea dogs! Last night, ${victim} walked the plank! The sharks had themselves a feast! Give us one final 'ARRRRR!' before ye sink beneath the waves!`,
+          vote: "MUTINY TIME, me hearties! The crew must decide who gets fed to the fishes! On three, point yer cutlass - I mean, FINGER - at the traitor! Ready... aim... ARRR!",
+          deathScene: "Walk the plank with pirate swagger! 'Tell me mum... I found the treasure...' Then SPLASH into Davy Jones' locker! ARRRRR!",
+          evilCall: "Flash yer golden tooth! You're the mutineers, seeking to steal the treasure and maroon the crew. Exchange knowing 'arrrrs' of villainy.",
+          discussionPrompt: "Speak in yer best pirate accent! 'I accuse ye of mutiny, ye scurvy dog!' Wave yer hook hand dramatically!",
+          protectionCue: "A loyal first mate stands ready to take a cannonball for their captain...",
+          villainVictoryTease: "The treasure grows closer. Soon, the ship will sail under YOUR black flag..."
         }
       },
       hospital: {
@@ -1963,13 +1987,16 @@
           day: null
         },
         script: {
-          nightIntro: "The hospital quiets for the night shift. Medical staff, close your eyes...",
-          dayIntro: "Morning rounds begin! Who's been discharged... permanently?",
-          noDeaths: "All patients stable. For now.",
-          deaths: victim => `${victim} coded last night. Give us soap opera dramatics!`,
-          vote: "Emergency meeting in the conference room. At three, accuse!",
-          deathScene: "A melodramatic hospital flatline moment!",
-          evilCall: "Ask for scheming glances and hospital intrigue."
+          nightIntro: "The hospital PA system crackles: 'Visiting hours are over.' The fluorescent lights dim to night mode. In the corridors, only the beeping of heart monitors breaks the silence. Close your eyes, doctors, nurses, and patients. Rest now... but in the darkened wards, someone writes a FATAL prescription...",
+          dayIntro: "CODE BLUE! CODE BLUE! The hospital awakens in CHAOS! Nurses rush through the halls! Doctors sprint to the ward! Check the patient roster... someone has been... DISCHARGED PERMANENTLY! Who flatlined in the night?!",
+          noDeaths: "Miraculous! All patients stable through the night! The monitors beep with reassuring rhythm. Exchange relieved looks over your surgical masks - but the malpractice continues. Someone in scrubs is NOT who they seem...",
+          deaths: victim => `*BEEEEEEEEP* The flatline echoes through the ward! Gather 'round the bed... ${victim} has coded! Their chart reads 'DECEASED.' Give us your most melodramatic soap opera reaction! Gasp! Clutch each other! Cry out 'NOOOO!'`,
+          vote: "EMERGENCY BOARD MEETING! The medical staff must decide who's been practicing... MALPRACTICE! On three, point your stethoscope - I mean, FINGER - at the suspect! Stat! One... two... THREE!",
+          deathScene: "Reach for the call button! Gasp for air! Your heart monitor goes BEEEEEEP! 'Tell... my secret twin... I always loved them...' *flatline*",
+          evilCall: "Adjust your surgical mask to hide your smile. You're the one switching the charts, tampering with the IVs. Look clinical and cold.",
+          discussionPrompt: "Speak in urgent medical tones! 'I ACCUSE you of malpractice, Doctor!' Point dramatically across the operating table!",
+          protectionCue: "A loyal nurse prepares an emergency injection, ready to revive the innocent at any cost...",
+          villainVictoryTease: "The hospital is almost yours. Soon, you'll be the only one with a heartbeat..."
         }
       }
     };
@@ -2498,7 +2525,8 @@
           phase: "night",
           blocks: [
             { type: "say", text: theme.script.nightIntro },
-            { type: "narrator", text: "Remind students: silent acting only. Encourage over-the-top reactions when woken. " + theme.script.evilCall }
+            { type: "narrator", text: "Remind students: silent acting only. Encourage over-the-top reactions when woken." },
+            { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall }
           ]
         });
         
@@ -2509,7 +2537,8 @@
             phase: "night",
             blocks: [
               { type: "say", text: "Accomplices, lift your heads and find your villain allies." },
-              { type: "narrator", text: "Have villains give a subtle nod so accomplices know them. " + theme.script.evilCall }
+              { type: "narrator", text: "Have villains give a subtle nod so accomplices know them." },
+              { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall }
             ]
           });
         }
@@ -2557,7 +2586,8 @@
           phase: "night",
           blocks: [
             { type: "say", text: theme.script.nightIntro },
-            { type: "reminder", text: "Encourage players to hunch, clutch pearls, or otherwise act the part." }
+            { type: "narrator", text: "Encourage players to hunch, clutch pearls, or otherwise act the part." },
+            { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall }
           ]
         });
       }
@@ -2570,7 +2600,8 @@
           phase: "night",
           blocks: [
             { type: "say", text: "Villain team, open your eyes and choose your victim." },
-            { type: "narrator", text: "Watch their silent debate. Confirm their choice before moving on. " + theme.script.evilCall },
+            { type: "narrator", text: "Watch their silent debate. Confirm their choice before moving on." },
+            { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall },
             { type: "info", text: `Villains alive: ${villains || "None"}` }
           ]
         });
@@ -2694,7 +2725,8 @@
           title: "Step 4: Hero-Type Introduction",
           phase: "night",
           blocks: [
-            { type: "narrator", text: "Now call each Hero individually. They wake alone, choose their target, then sleep." }
+            { type: "narrator", text: "Now call each Hero individually. They wake alone, choose their target, then sleep." },
+            { type: "reminder", text: "PROTECTION CUE: " + (theme.script.protectionCue || "A guardian watches from the shadows, ready to sacrifice all for the innocent...") }
           ]
         });
         
@@ -2785,7 +2817,8 @@
           phase: "day",
           blocks: [
             { type: "say", text: theme.script.dayIntro },
-            { type: "reminder", text: theme.script.deathScene }
+            { type: "narrator", text: "Give students a moment to react with surprise and suspicion." },
+            { type: "reminder", text: "DEATH SCENE CUE: " + theme.script.deathScene }
           ]
         },
         {
@@ -2795,10 +2828,10 @@
             { type: "narrator", text: "ANNOUNCEMENT SEQUENCE:" },
             { type: "narrator", text: "1. Look at your night resolution notes" },
             { type: "narrator", text: "2. Build suspense: 'Last night was... eventful' or similar" },
-            { type: "say", text: "If anyone was eliminated, announce: 'Tragically, we lost [Name(s)] last night.'" },
+            { type: "say", text: "If anyone was eliminated, announce dramatically with theme-appropriate language!" },
             { type: "say", text: "If no one died: " + (theme.script.noDeaths || "Miraculously, everyone survived the night!") },
             { type: "narrator", text: "3. Give each eliminated player 5-10 seconds for their melodramatic death scene" },
-            { type: "reminder", text: theme.script.deathScene },
+            { type: "reminder", text: "DEATH SCENE CUE: " + theme.script.deathScene },
             { type: "narrator", text: "4. After death scenes, remind eliminated players they're now 'ghosts' - silent observers only" },
             { type: "info", text: "Check for linked deaths: If Twins died, both perform death scenes. If Cursed died, neighbors die too." }
           ]
@@ -2814,17 +2847,18 @@
             { type: "info", text: "• If NO evil players remain → GOOD WINS (announce immediately)" },
             { type: "info", text: "• If evil ≥ good → EVIL WINS (announce immediately)" },
             { type: "info", text: "• Otherwise → Game continues to discussion" },
-            { type: "action", text: "Use the 'Check Win Condition' button below for automated checking" }
+            { type: "action", text: "Use the 'Check Win Condition' button below for automated checking" },
+            { type: "reminder", text: theme.script.villainVictoryTease ? "EVIL TEASE: " + theme.script.villainVictoryTease : "" }
           ]
         },
         {
           title: "Discussion",
           phase: "day",
           blocks: [
-            { type: "say", text: "The floor is yours! Accuse with melodrama. You have three minutes." },
+            { type: "say", text: "The floor is yours! You have three minutes to accuse, defend, and convince!" },
             { type: "narrator", text: "DISCUSSION MANAGEMENT:" },
             { type: "narrator", text: "1. Start the 3-minute timer (or 1 minute for shorter games)" },
-            { type: "narrator", text: "2. Encourage dramatic accusations and defenses" },
+            { type: "reminder", text: "DISCUSSION CUE: " + (theme.script.discussionPrompt || "Encourage dramatic accusations and defenses!") },
             { type: "narrator", text: "3. Watch for The Innocent - they can reveal their role ONCE to prove they're good" },
             { type: "narrator", text: "4. Keep energy high - this is the drama phase!" },
             { type: "narrator", text: "5. At 30 seconds, announce 'Final accusations!' to build urgency" },
@@ -2838,10 +2872,10 @@
           blocks: [
             { type: "say", text: theme.script.vote },
             { type: "narrator", text: "VOTING PROCESS:" },
-            { type: "narrator", text: "1. Announce: 'On three, everyone point to who you think should be eliminated.'" },
-            { type: "narrator", text: "2. Count: '1... 2... 3... POINT!'" },
+            { type: "narrator", text: "1. Remind players: 'On three, everyone point to who you think should be eliminated.'" },
+            { type: "narrator", text: "2. Count with building tension: '1... 2... THREE!'" },
             { type: "narrator", text: "3. Quickly tally votes while students hold their points" },
-            { type: "narrator", text: "4. Announce the person with the most votes" }
+            { type: "narrator", text: "4. Announce the person with the most votes with appropriate drama" }
           ]
         }
       ];
@@ -2899,12 +2933,12 @@
         title: "Vote Resolution",
         phase: "day",
         blocks: [
-          { type: "narrator", text: "1. Announce who received the most votes" },
+          { type: "narrator", text: "1. Announce who received the most votes with dramatic flair" },
           { type: "narrator", text: "2. Check for The Marked: If eliminated player is The Marked, they can demand ONE revote" },
           { type: "narrator", text: "3. Check for The Traitor: If Traitor's marked player was eliminated, Traitor can force revote" },
           { type: "narrator", text: "4. If revote happens: Repeat voting process (same rules apply)" },
-          { type: "narrator", text: "5. Final: Announce the eliminated player and prepare for death scene" },
-          { type: "reminder", text: theme.script.deathScene }
+          { type: "narrator", text: "5. Final: Announce the eliminated player and prepare for their death scene" },
+          { type: "reminder", text: "DEATH SCENE CUE: " + theme.script.deathScene }
         ],
         showVoteTracker: true
       });
@@ -2918,7 +2952,8 @@
           { type: "narrator", text: "2. CURSED: If The Cursed was eliminated, their TWO neighbors on EACH SIDE (4 total) also die" },
           { type: "narrator", text: "3. THE INNOCENT: Did The Innocent reveal during discussion? If yes, note it" },
           { type: "narrator", text: "4. SURVIVOR: If The Survivor was hit last night and survived, they can now be eliminated normally" },
-          { type: "reminder", text: "Announce all linked deaths dramatically. Let each eliminated player perform their death scene." },
+          { type: "reminder", text: "DEATH SCENE CUE: " + theme.script.deathScene },
+          { type: "narrator", text: "Announce all linked deaths dramatically. Let each eliminated player perform their death scene." },
           { type: "action", text: "Mark all eliminated players in the Player Management panel below." }
         ]
       });
