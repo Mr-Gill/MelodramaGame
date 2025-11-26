@@ -16,16 +16,21 @@ Then navigate to `http://localhost:8080/test.html`
 
 ## Test Coverage
 
-The test suite includes **20 comprehensive tests** covering the following character interactions:
+The test suite includes **25 comprehensive tests** covering the following character interactions:
 
 ### 1. Twins Linked Deaths (3 tests)
 - ✓ Both twins die when Twin A is eliminated
 - ✓ Both twins die when Twin B is eliminated  
 - ✓ No linked death if twin is already eliminated
 
-### 2. Cursed Death Explosion (2 tests)
-- ✓ 4 neighbors (2 each side) die when Cursed is eliminated
-- ✓ Already eliminated neighbors are not affected
+### 2. Cursed Death Explosion (Random Weighted Selection) (7 tests)
+- ✓ Victim count scales correctly with remaining players (1 for <12, 2 for 12-17, etc.)
+- ✓ Minimum 1 victim always selected (unless no players remain)
+- ✓ Victims are removed from available pools (no duplicates)
+- ✓ Fallback works when one team is eliminated
+- ✓ Stops if no players remain in either team
+- ✓ Does not kill already eliminated players
+- ✓ Each victim has independent 1-in-3 chance to be Evil, 2-in-3 Good
 
 ### 3. Champion Protection and Power Loss (4 tests)
 - ✓ Champion protects target and loses power on first successful protection
@@ -86,6 +91,6 @@ When adding new character mechanics to the game:
 
 ## Current Status
 
-**All 20 tests passing** ✓
+**All 25 tests passing** ✓
 
 The test suite validates that complex character interactions work correctly, including edge cases and combinations of multiple special abilities.

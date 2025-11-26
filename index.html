@@ -1707,7 +1707,7 @@
       { id: 27, name: "The Innocent", team: "good", type: "damsel", short: "Can reveal once to confirm they are good.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false },
       { id: 28, name: "Twin A", team: "good", type: "damsel", short: "Linked to Twin B. If one dies, both do.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true, linkedTo: 29 },
       { id: 29, name: "Twin B", team: "good", type: "damsel", short: "Linked to Twin A. If one dies, both do.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true, linkedTo: 28 },
-      { id: 30, name: "The Cursed", team: "good", type: "damsel", short: "If eliminated, neighbors on both sides also fall.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true }
+      { id: 30, name: "The Cursed", team: "good", type: "damsel", short: "If eliminated, random players also die (scales with game size, can hit Evil!).", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true }
     ];
 
     const TYPE_DETAILS = {
@@ -2949,7 +2949,7 @@
         blocks: [
           { type: "narrator", text: "AFTER VOTE ELIMINATION - Check these in order:" },
           { type: "narrator", text: "1. TWINS: If Twin A or Twin B was eliminated, the other twin IMMEDIATELY dies too" },
-          { type: "narrator", text: "2. CURSED: If The Cursed was eliminated, their TWO neighbors on EACH SIDE (4 total) also die" },
+          { type: "narrator", text: "2. CURSED: If The Cursed was eliminated, random players also die based on game size (1-4 victims, can include Evil!). Check resolution summary for who was selected." },
           { type: "narrator", text: "3. THE INNOCENT: Did The Innocent reveal during discussion? If yes, note it" },
           { type: "narrator", text: "4. SURVIVOR: If The Survivor was hit last night and survived, they can now be eliminated normally" },
           { type: "reminder", text: "DEATH SCENE CUE: " + theme.script.deathScene },
@@ -3202,30 +3202,50 @@
           }
         }
 
-        // Check for Cursed (char ID 30) - kills 2 neighbors each side
+        // Check for Cursed (char ID 30) - random weighted elimination based on remaining players
         if (player.charId === 30) {
-          const alivePlayers = state.players.filter(p => !p.eliminated && p.id !== player.id);
-          // In a circle, find neighbors (simplified - in real game would need seating order)
-          const playerIndex = state.players.findIndex(p => p.id === player.id);
-          const cursedNeighbors = [];
+          // Calculate victim count based on remaining players (excluding The Cursed and already processed)
+          const alivePlayers = state.players.filter(p => !p.eliminated && p.id !== player.id && !processedIds.has(p.id));
+          const aliveCount = alivePlayers.length;
           
-          // Get 2 neighbors each side (4 total)
-          for (let offset of [-2, -1, 1, 2]) {
-            const neighborIndex = (playerIndex + offset + state.players.length) % state.players.length;
-            const neighbor = state.players[neighborIndex];
-            if (neighbor && !neighbor.eliminated && !processedIds.has(neighbor.id)) {
-              cursedNeighbors.push(neighbor);
+          let victimCount;
+          if (aliveCount >= 24) victimCount = 4;
+          else if (aliveCount >= 18) victimCount = 3;
+          else if (aliveCount >= 12) victimCount = 2;
+          else victimCount = 1; // Minimum 1 victim
+          
+          // Separate into Evil and Good pools
+          let aliveEvil = alivePlayers.filter(p => p.team === 'evil');
+          let aliveGood = alivePlayers.filter(p => p.team === 'good');
+          
+          // Select victims with independent weighted rolls
+          for (let i = 0; i < victimCount; i++) {
+            if (aliveEvil.length === 0 && aliveGood.length === 0) break;
+            
+            const targetEvil = Math.random() < 0.33; // Independent 1-in-3 chance
+            let victim = null;
+            
+            if (targetEvil && aliveEvil.length > 0) {
+              const randomIndex = Math.floor(Math.random() * aliveEvil.length);
+              victim = aliveEvil.splice(randomIndex, 1)[0];
+            } else if (aliveGood.length > 0) {
+              const randomIndex = Math.floor(Math.random() * aliveGood.length);
+              victim = aliveGood.splice(randomIndex, 1)[0];
+            } else if (aliveEvil.length > 0) {
+              // Fallback if no Good players left
+              const randomIndex = Math.floor(Math.random() * aliveEvil.length);
+              victim = aliveEvil.splice(randomIndex, 1)[0];
+            }
+            
+            if (victim) {
+              linkedDeaths.push({
+                player: victim.id,
+                playerName: `${victim.name} (${victim.roleName})`,
+                cause: 'Cursed Explosion'
+              });
+              processedIds.add(victim.id);
             }
           }
-
-          cursedNeighbors.forEach(neighbor => {
-            linkedDeaths.push({
-              player: neighbor.id,
-              playerName: `${neighbor.name} (${neighbor.roleName})`,
-              cause: 'Cursed Explosion'
-            });
-            processedIds.add(neighbor.id);
-          });
         }
       });
 
