@@ -371,28 +371,50 @@
           }
         }
 
-        // Check for Cursed (char ID 30) - kills 2 neighbors each side
+        // Check for Cursed (char ID 30) - random weighted elimination based on remaining players
         if (player.charId === 30) {
-          const playerIndex = players.findIndex(p => p.id === player.id);
-          const cursedNeighbors = [];
+          // Calculate victim count based on remaining players (excluding The Cursed and already processed)
+          const alivePlayers = players.filter(p => !p.eliminated && p.id !== player.id && !processedIds.has(p.id));
+          const aliveCount = alivePlayers.length;
           
-          // Get 2 neighbors each side (4 total)
-          for (let offset of [-2, -1, 1, 2]) {
-            const neighborIndex = (playerIndex + offset + players.length) % players.length;
-            const neighbor = players[neighborIndex];
-            if (neighbor && !neighbor.eliminated && !processedIds.has(neighbor.id)) {
-              cursedNeighbors.push(neighbor);
+          let victimCount;
+          if (aliveCount >= 24) victimCount = 4;
+          else if (aliveCount >= 18) victimCount = 3;
+          else if (aliveCount >= 12) victimCount = 2;
+          else victimCount = 1; // Minimum 1 victim
+          
+          // Separate into Evil and Good pools
+          let aliveEvil = alivePlayers.filter(p => p.team === 'evil');
+          let aliveGood = alivePlayers.filter(p => p.team === 'good');
+          
+          // Select victims with independent weighted rolls
+          for (let i = 0; i < victimCount; i++) {
+            if (aliveEvil.length === 0 && aliveGood.length === 0) break;
+            
+            const targetEvil = Math.random() < 0.33; // Independent 1-in-3 chance
+            let victim = null;
+            
+            if (targetEvil && aliveEvil.length > 0) {
+              const randomIndex = Math.floor(Math.random() * aliveEvil.length);
+              victim = aliveEvil.splice(randomIndex, 1)[0];
+            } else if (aliveGood.length > 0) {
+              const randomIndex = Math.floor(Math.random() * aliveGood.length);
+              victim = aliveGood.splice(randomIndex, 1)[0];
+            } else if (aliveEvil.length > 0) {
+              // Fallback if no Good players left
+              const randomIndex = Math.floor(Math.random() * aliveEvil.length);
+              victim = aliveEvil.splice(randomIndex, 1)[0];
+            }
+            
+            if (victim) {
+              linkedDeaths.push({
+                player: victim.id,
+                playerName: `${victim.name} (${victim.roleName})`,
+                cause: 'Cursed Explosion'
+              });
+              processedIds.add(victim.id);
             }
           }
-
-          cursedNeighbors.forEach(neighbor => {
-            linkedDeaths.push({
-              player: neighbor.id,
-              playerName: `${neighbor.name} (${neighbor.roleName})`,
-              cause: 'Cursed Explosion'
-            });
-            processedIds.add(neighbor.id);
-          });
         }
       });
 
@@ -678,17 +700,18 @@
       });
     });
 
-    describe('Cursed Death Explosion', () => {
-      it('should eliminate 4 neighbors (2 each side) when Cursed dies', () => {
+    describe('Cursed Death Explosion (Random Weighted Selection)', () => {
+      it('should select 1 victim when less than 12 players remain', () => {
+        // 8 players including cursed = 7 remaining when cursed dies
         const players = [
-          createMockPlayer(1, 0, 'Villain'),    // Index 0
-          createMockPlayer(12, 1, 'Oracle'),    // Index 1 (neighbor -2)
-          createMockPlayer(13, 2, 'Sensitive'), // Index 2 (neighbor -1)
-          createMockPlayer(30, 3, 'Cursed'),    // Index 3 (THE CURSED)
-          createMockPlayer(14, 4, 'Dreamer'),   // Index 4 (neighbor +1)
-          createMockPlayer(15, 5, 'Witness'),   // Index 5 (neighbor +2)
-          createMockPlayer(16, 6, 'Champion'),  // Index 6
-          createMockPlayer(17, 7, 'Healer')     // Index 7
+          createMockPlayer(1, 0, 'Villain'),
+          createMockPlayer(2, 1, 'Assassin'),
+          createMockPlayer(30, 2, 'Cursed'),    // THE CURSED
+          createMockPlayer(12, 3, 'Oracle'),
+          createMockPlayer(13, 4, 'Sensitive'),
+          createMockPlayer(14, 5, 'Dreamer'),
+          createMockPlayer(15, 6, 'Witness'),
+          createMockPlayer(16, 7, 'Champion')
         ];
 
         const state = {
@@ -697,7 +720,7 @@
         };
 
         const actions = {
-          villainTarget: 3, // Target the Cursed
+          villainTarget: 2, // Target the Cursed
           assassinTarget: null,
           championProtect: null,
           healerProtect: null,
@@ -712,32 +735,32 @@
         expect(result.finalEliminations).toHaveLength(1);
         
         const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
-        expect(linkedDeaths).toHaveLength(4);
-        
-        const deadPlayerIds = linkedDeaths.map(d => d.player);
-        expect(deadPlayerIds).toContain(1); // Index 1 (neighbor at offset -2)
-        expect(deadPlayerIds).toContain(2); // Index 2 (neighbor at offset -1)
-        expect(deadPlayerIds).toContain(4); // Index 4 (neighbor at offset +1)
-        expect(deadPlayerIds).toContain(5); // Index 5 (neighbor at offset +2)
-        
-        linkedDeaths.forEach(death => {
-          expect(death.cause).toBe('Cursed Explosion');
-        });
+        // With <12 players, should select exactly 1 victim
+        expect(linkedDeaths).toHaveLength(1);
+        expect(linkedDeaths[0].cause).toBe('Cursed Explosion');
       });
 
-      it('should not kill already eliminated neighbors when Cursed dies', () => {
-        const players = [
-          createMockPlayer(1, 0, 'Villain'),    // Index 0
-          createMockPlayer(12, 1, 'Oracle'),    // Index 1 (already dead)
-          createMockPlayer(13, 2, 'Sensitive'), // Index 2
-          createMockPlayer(30, 3, 'Cursed'),    // Index 3 (THE CURSED)
-          createMockPlayer(14, 4, 'Dreamer'),   // Index 4
-          createMockPlayer(15, 5, 'Witness'),   // Index 5 (already dead)
-          createMockPlayer(16, 6, 'Champion'),  // Index 6
-          createMockPlayer(17, 7, 'Healer')     // Index 7
-        ];
-        players[1].eliminated = true;
-        players[5].eliminated = true;
+      it('should select 2 victims when 12-17 players remain', () => {
+        // Create 15 players (14 remaining after Cursed dies)
+        const players = [];
+        // Add Cursed
+        players.push(createMockPlayer(30, 0, 'Cursed'));
+        // Add Evil players (4)
+        players.push(createMockPlayer(1, 1, 'Villain'));
+        players.push(createMockPlayer(2, 2, 'Assassin'));
+        players.push(createMockPlayer(3, 3, 'Pretender'));
+        players.push(createMockPlayer(6, 4, 'RightHand'));
+        // Add Good players (10)
+        players.push(createMockPlayer(12, 5, 'Oracle'));
+        players.push(createMockPlayer(13, 6, 'Sensitive'));
+        players.push(createMockPlayer(14, 7, 'Dreamer'));
+        players.push(createMockPlayer(15, 8, 'Witness'));
+        players.push(createMockPlayer(16, 9, 'Champion'));
+        players.push(createMockPlayer(17, 10, 'Healer'));
+        players.push(createMockPlayer(18, 11, 'Guardian'));
+        players.push(createMockPlayer(19, 12, 'Survivor'));
+        players.push(createMockPlayer(20, 13, 'Defender'));
+        players.push(createMockPlayer(21, 14, 'LoyalCompanion'));
 
         const state = {
           players,
@@ -745,7 +768,7 @@
         };
 
         const actions = {
-          villainTarget: 3, // Target the Cursed
+          villainTarget: 0, // Target the Cursed
           assassinTarget: null,
           championProtect: null,
           healerProtect: null,
@@ -757,13 +780,130 @@
         };
 
         const result = resolveNightActions(state, actions);
+        expect(result.finalEliminations).toHaveLength(1);
+        
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        // With 12-17 players remaining, should select exactly 2 victims
+        expect(linkedDeaths).toHaveLength(2);
+        linkedDeaths.forEach(death => {
+          expect(death.cause).toBe('Cursed Explosion');
+        });
+      });
+
+      it('should not produce duplicate victims', () => {
+        // Test multiple times to ensure no duplicates
+        for (let run = 0; run < 5; run++) {
+          const players = [];
+          // Add Cursed
+          players.push(createMockPlayer(30, 0, 'Cursed'));
+          // Add enough players for 2 victims (12-17 remaining)
+          for (let i = 1; i <= 14; i++) {
+            const charId = i <= 5 ? i : 10 + i; // Mix of evil and good
+            players.push(createMockPlayer(charId, i, `Player${i}`));
+          }
+
+          const result = {
+            finalEliminations: [{ player: 0, playerName: 'Cursed', cause: 'Villain' }]
+          };
+          
+          const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+          
+          // Check for duplicates
+          const victimIds = linkedDeaths.map(d => d.player);
+          const uniqueIds = new Set(victimIds);
+          expect(uniqueIds.size).toBe(victimIds.length);
+        }
+      });
+
+      it('should fallback to Evil when no Good players remain', () => {
+        // Create scenario with only Evil players remaining (besides Cursed)
+        const players = [
+          createMockPlayer(30, 0, 'Cursed'),    // THE CURSED (good)
+          createMockPlayer(1, 1, 'Villain'),     // Evil
+          createMockPlayer(2, 2, 'Assassin'),    // Evil
+          createMockPlayer(3, 3, 'Pretender'),   // Evil
+          createMockPlayer(6, 4, 'RightHand'),   // Evil
+          createMockPlayer(7, 5, 'Spy')          // Evil
+        ];
+
+        const result = {
+          finalEliminations: [{ player: 0, playerName: 'Cursed', cause: 'Villain' }]
+        };
+        
         const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
         
-        // Should only kill living neighbors (2 and 4)
-        expect(linkedDeaths).toHaveLength(2);
-        const deadPlayerIds = linkedDeaths.map(d => d.player);
-        expect(deadPlayerIds).toContain(2);
-        expect(deadPlayerIds).toContain(4);
+        // Should select 1 victim (since <12 players), and it must be Evil (only option)
+        expect(linkedDeaths).toHaveLength(1);
+        expect(linkedDeaths[0].cause).toBe('Cursed Explosion');
+        
+        // Verify victim is Evil
+        const victimId = linkedDeaths[0].player;
+        const victim = players.find(p => p.id === victimId);
+        expect(victim.team).toBe('evil');
+      });
+
+      it('should stop if no players remain in either team', () => {
+        // Scenario: Cursed is the only living player
+        const players = [
+          createMockPlayer(30, 0, 'Cursed'),    // THE CURSED
+          createMockPlayer(1, 1, 'Villain'),     // Evil - eliminated
+          createMockPlayer(12, 2, 'Oracle')      // Good - eliminated
+        ];
+        players[1].eliminated = true;
+        players[2].eliminated = true;
+
+        const result = {
+          finalEliminations: [{ player: 0, playerName: 'Cursed', cause: 'Villain' }]
+        };
+        
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        
+        // Should have 0 victims since no one else is alive
+        expect(linkedDeaths).toHaveLength(0);
+      });
+
+      it('should always have minimum 1 victim if players exist', () => {
+        // Create a small game with minimal players
+        const players = [
+          createMockPlayer(30, 0, 'Cursed'),    // THE CURSED
+          createMockPlayer(1, 1, 'Villain'),     // Evil
+          createMockPlayer(12, 2, 'Oracle')      // Good
+        ];
+
+        const result = {
+          finalEliminations: [{ player: 0, playerName: 'Cursed', cause: 'Villain' }]
+        };
+        
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        
+        // With 2 remaining players, should select at least 1 victim
+        expect(linkedDeaths.length).toBeGreaterThan(0);
+        expect(linkedDeaths[0].cause).toBe('Cursed Explosion');
+      });
+
+      it('should not kill already eliminated players', () => {
+        const players = [
+          createMockPlayer(30, 0, 'Cursed'),
+          createMockPlayer(1, 1, 'Villain'),
+          createMockPlayer(12, 2, 'Oracle'),    // Already eliminated
+          createMockPlayer(13, 3, 'Sensitive'),  // Already eliminated
+          createMockPlayer(14, 4, 'Dreamer'),
+          createMockPlayer(15, 5, 'Witness')
+        ];
+        players[2].eliminated = true;
+        players[3].eliminated = true;
+
+        const result = {
+          finalEliminations: [{ player: 0, playerName: 'Cursed', cause: 'Villain' }]
+        };
+        
+        const linkedDeaths = processLinkedDeaths(result.finalEliminations, players);
+        
+        // Verify none of the victims are already eliminated
+        linkedDeaths.forEach(death => {
+          const victim = players.find(p => p.id === death.player);
+          expect(victim.eliminated).toBe(false);
+        });
       });
     });
 
@@ -1221,10 +1361,10 @@
           createMockPlayer(1, 0, 'Villain'),
           createMockPlayer(16, 1, 'Champion'),
           createMockPlayer(30, 2, 'Cursed'),    // The Cursed
-          createMockPlayer(12, 3, 'Oracle'),    // Neighbor -1
-          createMockPlayer(13, 4, 'Sensitive'), // Neighbor +1
-          createMockPlayer(14, 5, 'Dreamer'),   // Neighbor +2
-          createMockPlayer(15, 6, 'Witness')    // Neighbor -2
+          createMockPlayer(12, 3, 'Oracle'),
+          createMockPlayer(13, 4, 'Sensitive'),
+          createMockPlayer(14, 5, 'Dreamer'),
+          createMockPlayer(15, 6, 'Witness')
         ];
 
         const state = {

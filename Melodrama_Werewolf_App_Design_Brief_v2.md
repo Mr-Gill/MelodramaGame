@@ -89,7 +89,7 @@ The game uses a **type-based system** with 6 character types (5 characters per t
   27. **The Innocent** - Once: Narrator confirms as good
   28. **Twin A** - N1: Sees Twin B | Linked death
   29. **Twin B** - N1: Sees Twin A | Linked death
-  30. **The Cursed** - N1: Champion sees | Death kills 2 neighbors each side (5 total deaths)
+  30. **The Cursed** - N1: Champion sees | Death triggers random curse explosion. Victims scale with remaining players (4 at 24+, 3 at 18+, 2 at 12+, 1 minimum). Each victim has independent 1-in-3 chance to be Evil, 2-in-3 Good.
 
 ### 2.2 Night Order Sequence
 
@@ -907,10 +907,10 @@ function* callVillainType() {
 | **Right Hand blocks Sidekick-type** | No block (Sidekicks use thumbs-up, not direct night action) |
 | **Manipulator silences Corrupted Authority** | Corrupted Authority loses their double vote that day |
 | **Twin A dies** | Twin B immediately dies (linked death) |
-| **Cursed dies** | 2 neighbors each side die (5 total deaths) |
+| **Cursed dies** | Random players die based on game size (1-4 victims). Each has 1-in-3 chance to be Evil. |
 | **Doctor saves + Brave Youth died** | Brave Youth is saved, doesn't take anyone with them |
-| **Doctor saves + Cursed died** | Cursed saved, neighbors DON'T die |
-| **Voice double elimination + Cursed voted out** | Cursed + 2nd place die, then Cursed triggers explosion (could be 7 deaths!) |
+| **Doctor saves + Cursed died** | Cursed saved, random victims DON'T die |
+| **Voice double elimination + Cursed voted out** | Cursed + 2nd place die, then Cursed triggers random explosion |
 
 ### 6.3 Resolution Output Format
 
@@ -1117,28 +1117,51 @@ if (player.twinId && getPlayerById(player.twinId).isAlive) {
 
 **Implementation:**
 1. When Cursed is eliminated (night or day)
-2. Calculate seating position:
+2. Calculate victim count based on remaining players (excluding The Cursed):
+   - 24+ players remaining → 4 victims
+   - 18-23 players remaining → 3 victims
+   - 12-17 players remaining → 2 victims
+   - 1-11 players remaining → 1 victim (minimum)
+3. For each victim slot, roll independently:
    ```javascript
-   const victims = [
-     getPlayerAtPosition(cursed.position - 2),
-     getPlayerAtPosition(cursed.position - 1),
-     cursed,
-     getPlayerAtPosition(cursed.position + 1),
-     getPlayerAtPosition(cursed.position + 2),
-   ].filter(p => p && p.isAlive);
+   // Separate remaining players by team
+   let aliveEvil = alivePlayers.filter(p => p.team === 'evil');
+   let aliveGood = alivePlayers.filter(p => p.team === 'good');
+   
+   for (let i = 0; i < victimCount; i++) {
+     if (aliveEvil.length === 0 && aliveGood.length === 0) break;
+     
+     const targetEvil = Math.random() < 0.33; // Independent 1-in-3 chance
+     let victim = null;
+     
+     if (targetEvil && aliveEvil.length > 0) {
+       // Pick random Evil player
+       const randomIndex = Math.floor(Math.random() * aliveEvil.length);
+       victim = aliveEvil.splice(randomIndex, 1)[0];
+     } else if (aliveGood.length > 0) {
+       // Pick random Good player
+       const randomIndex = Math.floor(Math.random() * aliveGood.length);
+       victim = aliveGood.splice(randomIndex, 1)[0];
+     } else if (aliveEvil.length > 0) {
+       // Fallback to Evil if no Good left
+       const randomIndex = Math.floor(Math.random() * aliveEvil.length);
+       victim = aliveEvil.splice(randomIndex, 1)[0];
+     }
+     
+     if (victim) {
+       addToLinkedDeaths(victim);
+     }
+   }
    ```
-3. Eliminate all 5 (or however many are actually alive)
 
-**UI Warning:**
-Before eliminating Cursed, show confirmation:
+**UI Display:**
+When Cursed dies, show resolution summary:
 ```
-⚠️ WARNING: Eliminating the Cursed will kill 4 additional players:
-• Player at position [N-2]
-• Player at position [N-1]
-• Player at position [N+1]
-• Player at position [N+2]
-
-Are you sure? [Confirm] [Cancel]
+💀 The Cursed has fallen! The curse spreads randomly...
+🎲 [X] victims selected from [Y] remaining players
+→ [Player Name 1] (Good) is taken by the curse!
+→ [Player Name 2] (Evil!) is taken by the curse!
+...
 ```
 
 ---
