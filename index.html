@@ -1297,6 +1297,237 @@
     .help-modal-actions button {
       flex: 1;
     }
+
+    /* Quick Reference Panel */
+    .quick-ref-toggle {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.9), rgba(244, 114, 182, 0.9));
+      border: none;
+      padding: 0.75rem 0.5rem;
+      border-radius: 8px 0 0 8px;
+      cursor: pointer;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #0f172a;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+    }
+
+    .quick-ref-toggle:hover {
+      transform: translateY(-50%) translateX(-4px);
+    }
+
+    .quick-ref-toggle.panel-open {
+      right: 320px;
+    }
+
+    .quick-ref-panel {
+      position: fixed;
+      right: -320px;
+      top: 0;
+      width: 320px;
+      height: 100vh;
+      background: var(--bg-secondary);
+      border-left: 2px solid var(--accent-good);
+      z-index: 99;
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -8px 0 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .quick-ref-panel.open {
+      right: 0;
+    }
+
+    .quick-ref-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .quick-ref-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--accent-good);
+    }
+
+    .quick-ref-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: 0.25rem;
+      line-height: 1;
+    }
+
+    .quick-ref-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .quick-ref-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .quick-ref-section h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    .quick-ref-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .quick-ref-list li {
+      padding: 0.5rem 0.75rem;
+      margin: 0.25rem 0;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .quick-ref-list li strong {
+      color: var(--accent-good);
+    }
+
+    .quick-ref-list li.evil strong {
+      color: var(--accent-evil);
+    }
+
+    .quick-ref-order {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      margin: 0.25rem 0;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .quick-ref-order .step-num {
+      background: var(--accent-ui);
+      color: var(--bg-primary);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .quick-ref-cheat {
+      background: var(--bg-tertiary);
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin: 0.5rem 0;
+      border-left: 3px solid var(--accent-neutral);
+    }
+
+    .quick-ref-cheat h5 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      color: var(--accent-neutral);
+    }
+
+    .quick-ref-cheat p {
+      margin: 0;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    /* Sound Effects Toggle in Audio Controls */
+    .sfx-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .sfx-toggle input[type="checkbox"] {
+      accent-color: var(--accent-ui);
+    }
+
+    /* Dice Roll Button Enhancement */
+    .sidekick-dice-section {
+      background: var(--bg-tertiary);
+      border: 2px solid var(--accent-good);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .sidekick-dice-section h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 1rem;
+      color: var(--accent-good);
+    }
+
+    .sidekick-dice-list {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .sidekick-dice-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+    }
+
+    .sidekick-dice-item span {
+      font-size: 0.9rem;
+    }
+
+    .sidekick-dice-item button {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      min-width: auto;
+    }
+
+    /* Animated dice face */
+    .dice-face {
+      font-size: 4rem;
+      display: inline-block;
+      animation: diceRoll 0.5s ease-out;
+    }
+
+    @keyframes diceRoll {
+      0%, 20%, 40%, 60%, 80% {
+        transform: rotate(0deg) scale(1);
+      }
+      10%, 30%, 50%, 70%, 90% {
+        transform: rotate(180deg) scale(1.2);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
   </style>
 </head>
 <body>
@@ -1309,6 +1540,10 @@
         <span class="audio-indicator" id="audio-indicator">
           <span id="audio-phase">Night</span>
         </span>
+        <label class="sfx-toggle" title="Sound effects for game events">
+          <input type="checkbox" id="sfx-toggle" checked />
+          SFX
+        </label>
       </div>
       <button id="toggle-mode" type="button" aria-pressed="false">Toggle Dark/Light</button>
       <button id="help-button" type="button">❓ Help</button>
@@ -1654,6 +1889,63 @@
 
       <div class="help-modal-actions">
         <button id="help-close" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Reference Panel -->
+  <button id="quick-ref-toggle" class="quick-ref-toggle hidden">📋 Quick Ref</button>
+  <div id="quick-ref-panel" class="quick-ref-panel">
+    <div class="quick-ref-header">
+      <h3>📋 Quick Reference</h3>
+      <button class="quick-ref-close" id="quick-ref-close" type="button">&times;</button>
+    </div>
+    <div class="quick-ref-content">
+      <div class="quick-ref-section">
+        <h4>🌙 Night Order</h4>
+        <div id="quick-ref-night-order">
+          <div class="quick-ref-order"><span class="step-num">1</span> Villains - Choose target</div>
+          <div class="quick-ref-order"><span class="step-num">2</span> Accomplices - Special actions</div>
+          <div class="quick-ref-order"><span class="step-num">3</span> Elders - Information gathering</div>
+          <div class="quick-ref-order"><span class="step-num">4</span> Heroes - Protections</div>
+          <div class="quick-ref-order"><span class="step-num">5</span> Sidekicks - Prepare day powers</div>
+        </div>
+      </div>
+      
+      <div class="quick-ref-section">
+        <h4>⚡ Active Abilities This Game</h4>
+        <ul class="quick-ref-list" id="quick-ref-abilities">
+          <li><em>Start a game to see active abilities</em></li>
+        </ul>
+      </div>
+      
+      <div class="quick-ref-section">
+        <h4>📖 Cheat Sheet</h4>
+        <div class="quick-ref-cheat">
+          <h5>🎯 Stalker Backup Kill</h5>
+          <p>If the primary villain target survives (was protected), Stalker can attempt a backup kill. Only works on Damsel or Elder types.</p>
+        </div>
+        <div class="quick-ref-cheat">
+          <h5>👯 Twin Death Link</h5>
+          <p>When one Twin dies (A or B), the other immediately dies too. Both must perform death scenes!</p>
+        </div>
+        <div class="quick-ref-cheat">
+          <h5>💀 Cursed Explosion</h5>
+          <p>When The Cursed dies, random players also die based on game size:
+          <br>• &lt;12 players: 1 victim
+          <br>• 12-17 players: 2 victims
+          <br>• 18-23 players: 3 victims
+          <br>• 24+ players: 4 victims
+          <br>Each victim has 1-in-3 chance to be Evil!</p>
+        </div>
+        <div class="quick-ref-cheat">
+          <h5>🛡️ Champion Power Loss</h5>
+          <p>Champion protects every night. First time protection triggers: both survive, Champion learns a villain's identity, but loses power permanently.</p>
+        </div>
+        <div class="quick-ref-cheat">
+          <h5>🎲 Sidekick Day Powers</h5>
+          <p>During day phase, Sidekicks can activate powers with dice roll: 4-6 = Success, 1-3 = Failure. One use per day.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -2069,7 +2361,8 @@
         rightHandUsed: false
       },
       silencedPlayer: null, // Manipulator silence effect
-      markedPlayer: null // Traitor's marked player
+      markedPlayer: null, // Traitor's marked player
+      sfxEnabled: true // Sound effects toggle
     };
 
     let state = loadState();
@@ -2381,6 +2674,10 @@
       }
       broadcastGameReset();
       applyMode(state.mode);
+      // Hide quick reference panel on reset
+      quickRefPanel.classList.remove("open");
+      quickRefToggle.classList.add("hidden");
+      quickRefToggle.classList.remove("panel-open");
       renderAll();
       setupSection.classList.remove("hidden");
       gameSection.classList.add("hidden");
@@ -3367,8 +3664,14 @@
         if (step.phase && step.phase !== state.audio.phase) {
           updateAudioPhase(step.phase);
         }
-        // Broadcast phase change if it changed
+        // Broadcast phase change if it changed and play sound effect
         if (state.phase !== step.phase) {
+          // Play phase change sound
+          if (step.phase === 'night') {
+            playNightStartSound();
+          } else if (step.phase === 'day') {
+            playDayStartSound();
+          }
           state.phase = step.phase;
           broadcastPhaseChange(state.phase, state.night);
           // Update layout based on phase
@@ -3783,13 +4086,27 @@
       const player = state.players.find(p => p.id === id);
       if (!player) return;
       if (action === "toggle-eliminated") {
+        const wasAlive = !player.eliminated;
         player.eliminated = !player.eliminated;
-        if (player.eliminated) player.protected = false;
+        if (player.eliminated) {
+          player.protected = false;
+          // Play elimination sound when player is eliminated
+          if (wasAlive) {
+            playEliminationSound();
+          }
+        }
         broadcastPlayersEliminated();
       }
       if (action === "toggle-protected") {
+        const wasUnprotected = !player.protected;
         player.protected = !player.protected;
-        if (player.protected) player.eliminated = false;
+        if (player.protected) {
+          player.eliminated = false;
+          // Play protection sound when player is protected
+          if (wasUnprotected) {
+            playProtectionSound();
+          }
+        }
       }
       updateCounts();
       renderPlayers();
@@ -3882,6 +4199,8 @@
       setupSection.classList.add("hidden");
       gameSection.classList.remove("hidden");
       audioControls.classList.remove("hidden");
+      // Show quick reference toggle during game
+      quickRefToggle.classList.remove("hidden");
       applyThemeVisuals();
       broadcastPhaseChange(state.phase, state.night);
       // Set initial phase on game-grid
@@ -3889,7 +4208,11 @@
       if (gameGrid) {
         gameGrid.setAttribute('data-phase', state.phase);
       }
+      // Play night start sound for game start
+      playNightStartSound();
       renderAll();
+      // Update quick reference abilities
+      updateQuickRefAbilities();
     }
 
     function renderDownloadLink() {
@@ -4030,6 +4353,9 @@
 
     // Simple Sound Effects using Web Audio API
     function playSound(frequency, duration, type = 'sine') {
+      // Check if SFX is enabled
+      if (!state.sfxEnabled) return;
+      
       try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
@@ -4041,7 +4367,9 @@
         oscillator.frequency.value = frequency;
         oscillator.type = type;
         
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        // Use the volume from audio controls
+        const volume = state.audio.volume * 0.3;
+        gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
         
         oscillator.start(audioContext.currentTime);
@@ -4053,6 +4381,7 @@
     }
 
     function playCelebrationSound() {
+      if (!state.sfxEnabled) return;
       // Play a cheerful ascending melody
       playSound(523, 0.15); // C
       setTimeout(() => playSound(659, 0.15), 150); // E
@@ -4063,6 +4392,68 @@
     function playTimerWarningSound() {
       // Play a gentle "ding" sound
       playSound(800, 0.2, 'sine');
+    }
+
+    // NEW: Game Event Sound Effects
+    function playNightStartSound() {
+      if (!state.sfxEnabled) return;
+      // Spooky descending melody
+      playSound(440, 0.3, 'sine');
+      setTimeout(() => playSound(392, 0.3, 'sine'), 300);
+      setTimeout(() => playSound(330, 0.4, 'sine'), 600);
+    }
+
+    function playDayStartSound() {
+      if (!state.sfxEnabled) return;
+      // Bright ascending wake-up sound
+      playSound(392, 0.15, 'sine');
+      setTimeout(() => playSound(523, 0.15, 'sine'), 150);
+      setTimeout(() => playSound(659, 0.2, 'sine'), 300);
+    }
+
+    function playEliminationSound() {
+      if (!state.sfxEnabled) return;
+      // Dramatic low tone
+      playSound(150, 0.4, 'sawtooth');
+      setTimeout(() => playSound(100, 0.6, 'sawtooth'), 300);
+    }
+
+    function playVoteSound() {
+      if (!state.sfxEnabled) return;
+      // Quick vote confirmation sound
+      playSound(600, 0.1, 'square');
+    }
+
+    function playDiceRollSound() {
+      if (!state.sfxEnabled) return;
+      // Rattling dice sound - quick succession
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          playSound(300 + Math.random() * 200, 0.05, 'square');
+        }, i * 50);
+      }
+    }
+
+    function playDiceSuccessSound() {
+      if (!state.sfxEnabled) return;
+      // Success fanfare
+      playSound(523, 0.1, 'sine');
+      setTimeout(() => playSound(659, 0.1, 'sine'), 100);
+      setTimeout(() => playSound(784, 0.2, 'sine'), 200);
+    }
+
+    function playDiceFailSound() {
+      if (!state.sfxEnabled) return;
+      // Descending failure tone
+      playSound(400, 0.2, 'sine');
+      setTimeout(() => playSound(300, 0.3, 'sine'), 200);
+    }
+
+    function playProtectionSound() {
+      if (!state.sfxEnabled) return;
+      // Shield-like chime
+      playSound(700, 0.15, 'sine');
+      setTimeout(() => playSound(880, 0.2, 'sine'), 150);
     }
 
     // Win Condition Functions
@@ -4180,23 +4571,37 @@
 
         // Roll button handler
         const handleRoll = () => {
+          // Play dice rolling sound
+          playDiceRollSound();
+          
           const roll = Math.floor(Math.random() * 6) + 1;
           const success = roll >= 4;
           
           currentDiceRoll = { roll, success, player, powerDescription };
           
-          // Show result
-          resultEl.textContent = roll;
-          outcomeEl.textContent = success ? "✅ SUCCESS!" : "❌ FAILURE!";
-          outcomeEl.className = `dice-modal-outcome ${success ? "success" : "failure"}`;
-          
-          // Show power-specific description
-          descriptionEl.textContent = powerDescription[success ? "success" : "failure"];
-          
-          resultContainer.style.display = "block";
-          rollButton.style.display = "none";
-          confirmButton.style.display = "block";
-          cancelButton.textContent = "Re-roll";
+          // Delay showing result for dramatic effect
+          setTimeout(() => {
+            // Play success or failure sound
+            if (success) {
+              playDiceSuccessSound();
+            } else {
+              playDiceFailSound();
+            }
+            
+            // Show result with dice face emoji
+            const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+            resultEl.innerHTML = `<span class="dice-face">${diceFaces[roll - 1]}</span>`;
+            outcomeEl.textContent = success ? "✅ SUCCESS!" : "❌ FAILURE!";
+            outcomeEl.className = `dice-modal-outcome ${success ? "success" : "failure"}`;
+            
+            // Show power-specific description
+            descriptionEl.textContent = powerDescription[success ? "success" : "failure"];
+            
+            resultContainer.style.display = "block";
+            rollButton.style.display = "none";
+            confirmButton.style.display = "block";
+            cancelButton.textContent = "Re-roll";
+          }, 300);
         };
 
         const handleConfirm = () => {
@@ -4301,19 +4706,34 @@
       audioPhase.textContent = state.audio.phase === "night" ? "Night" : "Day";
       audioIndicator.classList.toggle("playing", state.audio.enabled);
       
+      // Update SFX toggle
+      const sfxToggleEl = document.getElementById("sfx-toggle");
+      if (sfxToggleEl) {
+        sfxToggleEl.checked = state.sfxEnabled;
+      }
+      
       if (state.phase === "setup") {
         setupSection.classList.remove("hidden");
         gameSection.classList.add("hidden");
         audioControls.classList.add("hidden");
+        // Hide quick reference toggle during setup
+        quickRefToggle.classList.add("hidden");
+        quickRefPanel.classList.remove("open");
       } else {
         setupSection.classList.add("hidden");
         gameSection.classList.remove("hidden");
         audioControls.classList.remove("hidden");
+        // Show quick reference toggle during game
+        quickRefToggle.classList.remove("hidden");
         renderScript();
         renderPlayers();
         updateCounts();
         notesArea.value = state.notes;
         renderDownloadLink();
+        // Update quick reference abilities if panel is open
+        if (quickRefPanel.classList.contains("open")) {
+          updateQuickRefAbilities();
+        }
       }
     }
 
@@ -4446,6 +4866,51 @@
 
     document.getElementById("win-close").addEventListener("click", closeWinModal);
 
+    // Quick Reference Panel Functions
+    const quickRefToggle = document.getElementById("quick-ref-toggle");
+    const quickRefPanel = document.getElementById("quick-ref-panel");
+    const quickRefClose = document.getElementById("quick-ref-close");
+
+    function toggleQuickRefPanel() {
+      quickRefPanel.classList.toggle("open");
+      quickRefToggle.classList.toggle("panel-open");
+      
+      // Update abilities list when opening
+      if (quickRefPanel.classList.contains("open")) {
+        updateQuickRefAbilities();
+      }
+    }
+
+    function updateQuickRefAbilities() {
+      const abilitiesList = document.getElementById("quick-ref-abilities");
+      
+      if (state.players.length === 0) {
+        abilitiesList.innerHTML = '<li><em>Start a game to see active abilities</em></li>';
+        return;
+      }
+      
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      
+      // Group by type and show abilities
+      const abilities = alivePlayers.map(p => {
+        const char = CHARACTERS.find(c => c.id === p.charId);
+        const isEvil = p.team === 'evil';
+        return `<li class="${isEvil ? 'evil' : ''}"><strong>${char.name}</strong>: ${char.short}</li>`;
+      });
+      
+      abilitiesList.innerHTML = abilities.join('');
+    }
+
+    quickRefToggle.addEventListener("click", toggleQuickRefPanel);
+    quickRefClose.addEventListener("click", toggleQuickRefPanel);
+
+    // SFX Toggle Event Listener
+    const sfxToggle = document.getElementById("sfx-toggle");
+    sfxToggle.addEventListener("change", (e) => {
+      state.sfxEnabled = e.target.checked;
+      persistState();
+    });
+
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("sw.js").catch(console.error);
@@ -4464,6 +4929,9 @@
     updatePlayerCountDisplays();
     updateRoleSelectionUI();
     renderAll();
+    
+    // Initialize SFX toggle state
+    sfxToggle.checked = state.sfxEnabled;
   </script>
 </body>
 </html>
