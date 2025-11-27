@@ -4019,14 +4019,26 @@
 
     function handleTieRevote() {
       state.voting.revoteCount++;
-      alert(`Revote #${state.voting.revoteCount} called! Clear the votes and conduct a new vote.`);
       clearVotePhase();
+      // Show inline notification in the results area
+      const resultsEl = document.getElementById('vote-phase-results');
+      if (resultsEl) {
+        resultsEl.innerHTML = `<div style="color: var(--accent-good); font-weight: bold; padding: 0.5rem; background: rgba(56, 189, 248, 0.15); border-radius: 8px; text-align: center;">
+          🔄 Revote #${state.voting.revoteCount} called! Votes cleared. Conduct a new vote.
+        </div>`;
+      }
     }
 
     function handleTieNoElimination() {
-      alert('No elimination this round. Proceed to the next phase.');
       state.voting.tiedPlayers = [];
       persistState();
+      // Show inline notification in the results area
+      const resultsEl = document.getElementById('vote-phase-results');
+      if (resultsEl) {
+        resultsEl.innerHTML = `<div style="color: var(--accent-neutral); font-weight: bold; padding: 0.5rem; background: rgba(250, 204, 21, 0.15); border-radius: 8px; text-align: center;">
+          ❌ No elimination this round. Proceed to the next phase.
+        </div>`;
+      }
     }
 
     function clearVotePhase() {
@@ -4202,12 +4214,24 @@
 
     function handleVoteRevote() {
       state.voting.revoteCount++;
-      alert(`Revote #${state.voting.revoteCount} called! Clear the votes and conduct a new vote.`);
       clearVotes();
+      // Show inline notification in the tally area
+      const tallyEl = document.getElementById('vote-tally');
+      if (tallyEl) {
+        tallyEl.innerHTML = `<div style="color: var(--accent-good); font-weight: bold; padding: 0.5rem; background: rgba(56, 189, 248, 0.15); border-radius: 8px; text-align: center;">
+          🔄 Revote #${state.voting.revoteCount} called! Votes cleared. Conduct a new vote.
+        </div>`;
+      }
     }
 
     function handleVoteNoElimination() {
-      alert('No elimination this round. Proceed to the next phase.');
+      // Show inline notification in the tally area
+      const tallyEl = document.getElementById('vote-tally');
+      if (tallyEl) {
+        tallyEl.innerHTML = `<div style="color: var(--accent-neutral); font-weight: bold; padding: 0.5rem; background: rgba(250, 204, 21, 0.15); border-radius: 8px; text-align: center;">
+          ❌ No elimination this round. Proceed to the next phase.
+        </div>`;
+      }
     }
 
     function clearVotes() {
