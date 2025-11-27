@@ -1307,11 +1307,12 @@
     function showCharacterCard(character) {
       if (!character) return;
       
-      characterName.textContent = character.roleName || character.name;
+      // Show role name (e.g., "The Champion") as the main title
+      characterName.textContent = character.roleName;
       characterType.textContent = `${character.type || 'Unknown'}-Type`;
       characterTeamBadge.textContent = character.team === 'good' ? '👼 Good Team' : '😈 Evil Team';
       characterTeamBadge.className = `character-team ${character.team}`;
-      characterAbility.textContent = character.ability || character.short || 'No ability description available.';
+      characterAbility.textContent = character.ability || 'No ability description available.';
       characterCard.className = `character-card ${character.team}`;
       
       characterModal.classList.add('active');

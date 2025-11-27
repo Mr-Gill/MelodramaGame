@@ -2669,21 +2669,6 @@
       });
     }
 
-    function broadcastShowCharacter(player) {
-      if (!projectorChannel) return;
-      const char = CHARACTERS.find(c => c.id === player.charId);
-      projectorChannel.postMessage({
-        type: 'show-character',
-        character: {
-          name: player.name,
-          roleName: player.roleName,
-          team: player.team,
-          type: char ? char.type : 'unknown',
-          ability: char ? char.short : 'No ability description available.'
-        }
-      });
-    }
-
     const audioControls = document.getElementById("audio-controls");
     const toggleAudioButton = document.getElementById("toggle-audio");
     const volumeSlider = document.getElementById("volume-slider");
