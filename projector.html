@@ -500,6 +500,73 @@
       font-size: clamp(4rem, 12vw, 10rem);
       margin-bottom: 1rem;
     }
+
+    /* Voting phase display */
+    .voting-card {
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 28px;
+      padding: 2rem;
+      text-align: center;
+      border: 3px solid rgba(244, 114, 182, 0.5);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      display: none;
+    }
+
+    .voting-card.active {
+      display: block;
+      animation: pulse-voting 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-voting {
+      0%, 100% {
+        box-shadow: 0 0 30px rgba(244, 114, 182, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 60px rgba(244, 114, 182, 0.7);
+      }
+    }
+
+    .voting-title {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 0 0 1rem 0;
+      color: #f472b6;
+      text-shadow: 0 0 20px rgba(244, 114, 182, 0.5);
+    }
+
+    .voting-phase-label {
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .nominated-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .nominated-item {
+      padding: 1rem 1.5rem;
+      background: rgba(244, 114, 182, 0.15);
+      border-radius: 12px;
+      border-left: 4px solid #f472b6;
+      font-size: clamp(1.1rem, 1.8vw, 1.6rem);
+      letter-spacing: 0.05em;
+      font-weight: 500;
+      text-align: left;
+    }
+
+    .voting-instruction {
+      margin-top: 1.5rem;
+      font-size: clamp(1rem, 1.5vw, 1.4rem);
+      color: var(--accent-timer);
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -552,6 +619,18 @@
       <section class="timer-card">
         <div class="timer-label">Discussion Timer</div>
         <div class="timer-display" id="timer-display">03:00</div>
+      </section>
+
+      <!-- Voting phase display -->
+      <section class="voting-card" id="voting-card">
+        <h2 class="voting-title">🗳️ Voting Phase</h2>
+        <div class="voting-phase-label" id="voting-phase-label">Nominations</div>
+        <ul class="nominated-list" id="nominated-list">
+          <li class="empty-message">No nominations yet</li>
+        </ul>
+        <div class="voting-instruction" id="voting-instruction">
+          Point to the person you suspect!
+        </div>
       </section>
 
       <section class="eliminated-card">
@@ -688,7 +767,12 @@
       theme: 'village',
       aliveCount: 0,
       goodCount: 0,
-      evilCount: 0
+      evilCount: 0,
+      voting: {
+        active: false,
+        phase: null,
+        nominations: []
+      }
     };
 
     // DOM elements
@@ -708,6 +792,10 @@
     const winEmoji = document.getElementById('win-emoji');
     const playerStats = document.getElementById('player-stats');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const votingCard = document.getElementById('voting-card');
+    const votingPhaseLabel = document.getElementById('voting-phase-label');
+    const nominatedList = document.getElementById('nominated-list');
+    const votingInstruction = document.getElementById('voting-instruction');
 
     let timerHandle = null;
 
@@ -781,6 +869,10 @@
         
         case 'player-counts':
           updatePlayerCounts(data.alive, data.good, data.evil);
+          break;
+        
+        case 'voting-update':
+          updateVotingDisplay(data.active, data.phase, data.nominations);
           break;
       }
     }
@@ -973,6 +1065,7 @@
       state.aliveCount = 0;
       state.goodCount = 0;
       state.evilCount = 0;
+      state.voting = { active: false, phase: null, nominations: [] };
       
       stopTimerDisplay();
       updatePhase('setup', 0);
@@ -981,6 +1074,7 @@
       applyThemeVisuals();
       hideWinNotification();
       updatePlayerCounts(0, 0, 0);
+      updateVotingDisplay(false, null, []);
       playerStats.style.display = 'none';
     }
 
@@ -1040,6 +1134,50 @@
       // Show/hide stats based on game phase
       if (state.phase !== 'setup') {
         playerStats.style.display = 'flex';
+      }
+    }
+
+    // Update voting display
+    function updateVotingDisplay(active, phase, nominations) {
+      state.voting.active = active;
+      state.voting.phase = phase;
+      state.voting.nominations = nominations || [];
+      
+      if (active) {
+        votingCard.classList.add('active');
+        
+        // Update phase label
+        if (phase === 'nomination') {
+          votingPhaseLabel.textContent = 'Accusation Phase';
+          votingInstruction.textContent = 'Who do you suspect? Nominate the suspicious!';
+        } else if (phase === 'defense') {
+          votingPhaseLabel.textContent = 'Defense Phase';
+          votingInstruction.textContent = 'The accused speak their truth...';
+        } else if (phase === 'vote') {
+          votingPhaseLabel.textContent = 'Vote Now!';
+          votingInstruction.textContent = 'Point to the person you want to eliminate!';
+        } else {
+          votingPhaseLabel.textContent = 'Voting';
+          votingInstruction.textContent = 'The village decides...';
+        }
+        
+        // Update nominated list
+        nominatedList.innerHTML = '';
+        if (nominations && nominations.length > 0) {
+          nominations.forEach(name => {
+            const li = document.createElement('li');
+            li.className = 'nominated-item';
+            li.textContent = name;
+            nominatedList.appendChild(li);
+          });
+        } else {
+          const li = document.createElement('li');
+          li.className = 'empty-message';
+          li.textContent = 'No nominations yet';
+          nominatedList.appendChild(li);
+        }
+      } else {
+        votingCard.classList.remove('active');
       }
     }
 

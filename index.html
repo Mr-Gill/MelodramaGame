@@ -2610,6 +2610,21 @@
       });
     }
 
+    function broadcastVotingUpdate(active, phase, nominations) {
+      if (!projectorChannel) return;
+      // Get nominated player names (not IDs) for display on projector
+      const nominationNames = nominations ? nominations.map(id => {
+        const player = state.players.find(p => p.id === id);
+        return player ? player.name : 'Unknown';
+      }) : [];
+      projectorChannel.postMessage({
+        type: 'voting-update',
+        active: active,
+        phase: phase,
+        nominations: nominationNames
+      });
+    }
+
     const audioControls = document.getElementById("audio-controls");
     const toggleAudioButton = document.getElementById("toggle-audio");
     const volumeSlider = document.getElementById("volume-slider");
@@ -3783,6 +3798,8 @@
           // Play phase change sound
           if (step.phase === 'night') {
             playNightStartSound();
+            // Hide voting display on projector during night
+            broadcastVotingUpdate(false, null, []);
           } else if (step.phase === 'day') {
             playDayStartSound();
           }
@@ -3827,18 +3844,24 @@
         if (step.showNominationTracker) {
           const nominationTracker = createNominationTracker();
           scriptStepsContainer.append(nominationTracker);
+          // Broadcast voting phase to projector
+          broadcastVotingUpdate(true, 'nomination', state.voting.nominations);
         }
 
         // Add defense tracker if this step needs it
         if (step.showDefenseTracker) {
           const defenseTracker = createDefenseTracker();
           scriptStepsContainer.append(defenseTracker);
+          // Broadcast voting phase to projector
+          broadcastVotingUpdate(true, 'defense', state.voting.nominations);
         }
 
         // Add vote phase tracker if this step needs it
         if (step.showVotePhaseTracker) {
           const votePhaseTracker = createVotePhaseTracker();
           scriptStepsContainer.append(votePhaseTracker);
+          // Broadcast voting phase to projector
+          broadcastVotingUpdate(true, 'vote', state.voting.nominations);
         }
 
         // Add vote tracker if this step needs it
@@ -4100,6 +4123,8 @@
       }
       persistState();
       renderScript();
+      // Broadcast to projector
+      broadcastVotingUpdate(true, 'nomination', state.voting.nominations);
     }
 
     function clearNominations() {
@@ -4107,6 +4132,8 @@
         state.voting.nominations = [];
         persistState();
         renderScript();
+        // Broadcast to projector
+        broadcastVotingUpdate(true, 'nomination', []);
       }
     }
 

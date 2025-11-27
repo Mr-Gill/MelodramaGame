@@ -14,6 +14,7 @@ The Projector View is a student-facing display screen designed to be shown on a 
 - **Player Counts**: Live counts of Alive, Good, and Evil players (without revealing who is who)
 - **Win Notifications**: Dramatic announcement when a team wins
 - **Fullscreen Mode**: One-click button to enter/exit fullscreen
+- **Voting Phase Display**: Shows nominated players during voting phases (names only, no roles)
 
 ### What Students DON'T See:
 - Character roles or abilities
@@ -41,6 +42,7 @@ The projector view automatically syncs with the narrator view using the browser'
 - **Eliminations**: When players are marked as eliminated
 - **Player Counts**: Updated automatically when players are eliminated
 - **Win Conditions**: Automatically displays when a team wins
+- **Voting Phases**: Shows nominated players during accusation, defense, and voting phases
 - **Game Reset**: When starting a new game
 
 No manual updates needed - just control the game from the narrator view!
