@@ -2536,6 +2536,20 @@
         .map(p => p.name);
       
       const counts = calculatePlayerCounts();
+      
+      // Build roster data for projector
+      const rosterData = state.players.map(p => {
+        const char = CHARACTERS.find(c => c.id === p.charId);
+        return {
+          id: p.id,
+          name: p.name,
+          roleName: p.roleName,
+          team: p.team,
+          type: char ? char.type : 'unknown',
+          ability: char ? char.short : '',
+          eliminated: p.eliminated
+        };
+      });
 
       projectorChannel.postMessage({
         type: 'full-state',
@@ -2549,7 +2563,8 @@
         theme: state.theme,
         aliveCount: counts.alive,
         goodCount: counts.good,
-        evilCount: counts.evil
+        evilCount: counts.evil,
+        roster: rosterData
       });
     }
 
@@ -2630,6 +2645,42 @@
         active: active,
         phase: phase,
         nominations: nominationNames
+      });
+    }
+
+    function broadcastRosterUpdate() {
+      if (!projectorChannel) return;
+      // Build roster data for projector (includes character info but protects spoilers)
+      const rosterData = state.players.map(p => {
+        const char = CHARACTERS.find(c => c.id === p.charId);
+        return {
+          id: p.id,
+          name: p.name,
+          roleName: p.roleName,
+          team: p.team,
+          type: char ? char.type : 'unknown',
+          ability: char ? char.short : '',
+          eliminated: p.eliminated
+        };
+      });
+      projectorChannel.postMessage({
+        type: 'roster-update',
+        players: rosterData
+      });
+    }
+
+    function broadcastShowCharacter(player) {
+      if (!projectorChannel) return;
+      const char = CHARACTERS.find(c => c.id === player.charId);
+      projectorChannel.postMessage({
+        type: 'show-character',
+        character: {
+          name: player.name,
+          roleName: player.roleName,
+          team: player.team,
+          type: char ? char.type : 'unknown',
+          ability: char ? char.short : 'No ability description available.'
+        }
       });
     }
 
@@ -4682,6 +4733,7 @@
           }
         }
         broadcastPlayersEliminated();
+        broadcastRosterUpdate();
       }
       if (action === "toggle-protected") {
         const wasUnprotected = !player.protected;
