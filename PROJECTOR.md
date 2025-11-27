@@ -11,6 +11,9 @@ The Projector View is a student-facing display screen designed to be shown on a 
 - **Discussion Timer**: Large, visible countdown during debates
 - **Eliminated Players**: List of players who have been eliminated (names only, no roles)
 - **Connection Status**: Visual indicator showing sync with narrator
+- **Player Counts**: Live counts of Alive, Good, and Evil players (without revealing who is who)
+- **Win Notifications**: Dramatic announcement when a team wins
+- **Fullscreen Mode**: One-click button to enter/exit fullscreen
 
 ### What Students DON'T See:
 - Character roles or abilities
@@ -27,7 +30,7 @@ The Projector View is a student-facing display screen designed to be shown on a 
 2. Click the **"📽️ Open Projector View"** button in the top header
 3. A new window will open with the projector display
 4. Move this window to your projector/second screen
-5. Maximize it for best visibility (F11 for fullscreen)
+5. Click the **"⛶ Fullscreen"** button for immersive display (or press F11)
 
 ### Automatic Synchronization
 
@@ -36,6 +39,8 @@ The projector view automatically syncs with the narrator view using the browser'
 - **Phase Changes**: When you advance through night/day phases
 - **Timer Updates**: Live countdown during discussions
 - **Eliminations**: When players are marked as eliminated
+- **Player Counts**: Updated automatically when players are eliminated
+- **Win Conditions**: Automatically displays when a team wins
 - **Game Reset**: When starting a new game
 
 No manual updates needed - just control the game from the narrator view!
