@@ -2510,6 +2510,16 @@
       }
     }
 
+    // Helper function to calculate player counts
+    function calculatePlayerCounts() {
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      return {
+        alive: alivePlayers.length,
+        good: alivePlayers.filter(p => p.team === 'good').length,
+        evil: alivePlayers.filter(p => p.team === 'evil').length
+      };
+    }
+
     function sendFullStateToProjector() {
       if (!projectorChannel) return;
       
@@ -2517,10 +2527,7 @@
         .filter(p => p.eliminated)
         .map(p => p.name);
       
-      const alivePlayers = state.players.filter(p => !p.eliminated);
-      const aliveCount = alivePlayers.length;
-      const goodCount = alivePlayers.filter(p => p.team === 'good').length;
-      const evilCount = alivePlayers.filter(p => p.team === 'evil').length;
+      const counts = calculatePlayerCounts();
 
       projectorChannel.postMessage({
         type: 'full-state',
@@ -2532,9 +2539,9 @@
         },
         eliminated: eliminatedPlayers,
         theme: state.theme,
-        aliveCount: aliveCount,
-        goodCount: goodCount,
-        evilCount: evilCount
+        aliveCount: counts.alive,
+        goodCount: counts.good,
+        evilCount: counts.evil
       });
     }
 
@@ -2579,15 +2586,12 @@
 
     function broadcastPlayerCounts() {
       if (!projectorChannel) return;
-      const alivePlayers = state.players.filter(p => !p.eliminated);
-      const aliveCount = alivePlayers.length;
-      const goodCount = alivePlayers.filter(p => p.team === 'good').length;
-      const evilCount = alivePlayers.filter(p => p.team === 'evil').length;
+      const counts = calculatePlayerCounts();
       projectorChannel.postMessage({
         type: 'player-counts',
-        alive: aliveCount,
-        good: goodCount,
-        evil: evilCount
+        alive: counts.alive,
+        good: counts.good,
+        evil: counts.evil
       });
     }
 

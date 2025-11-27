@@ -1009,11 +1009,15 @@
         winTitle.className = 'win-title good';
         winEmoji.textContent = '🎭 🏆 🎭';
         winSubtitle.textContent = `Victory after ${nightCount} nights!`;
-      } else {
+      } else if (team === 'evil') {
         winTitle.textContent = 'Evil Team Wins!';
         winTitle.className = 'win-title evil';
         winEmoji.textContent = '😈 💀 😈';
         winSubtitle.textContent = `Darkness prevails after ${nightCount} nights!`;
+      } else {
+        // Invalid team value - ignore
+        console.warn('Unknown team value:', team);
+        return;
       }
       winOverlay.classList.add('active');
     }
@@ -1045,10 +1049,10 @@
         document.documentElement.requestFullscreen().catch(err => {
           console.log('Fullscreen not available:', err);
         });
-        fullscreenBtn.textContent = '⛶ Exit Fullscreen';
+        // Button text updated by fullscreenchange event handler
       } else {
         document.exitFullscreen();
-        fullscreenBtn.textContent = '⛶ Fullscreen';
+        // Button text updated by fullscreenchange event handler
       }
     }
 
