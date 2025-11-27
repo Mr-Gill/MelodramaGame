@@ -2440,7 +2440,15 @@
       },
       silencedPlayer: null, // Manipulator silence effect
       markedPlayer: null, // Traitor's marked player
-      sfxEnabled: true // Sound effects toggle
+      sfxEnabled: true, // Sound effects toggle
+      voting: {
+        phase: null,
+        nominations: [],
+        accusedPlayer: null,
+        votesVisible: false,
+        revoteCount: 0,
+        tiedPlayers: []
+      }
     };
 
     let state = loadState();
