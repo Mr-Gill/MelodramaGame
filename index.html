@@ -968,6 +968,26 @@
       color: var(--accent-evil);
     }
 
+    .win-modal-narration {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      text-align: center;
+      font-style: italic;
+      padding: 1rem 1.5rem;
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--accent-ui);
+    }
+
+    .win-modal.good-wins .win-modal-narration {
+      border-left-color: var(--accent-good);
+    }
+
+    .win-modal.evil-wins .win-modal-narration {
+      border-left-color: var(--accent-evil);
+    }
+
     .win-modal-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1458,6 +1478,7 @@
   <div id="win-modal-overlay" class="modal-overlay">
     <div id="win-modal" class="win-modal">
       <h2 id="win-title">Game Over</h2>
+      <div id="win-narration" class="win-modal-narration"></div>
       <div class="win-modal-stats">
         <div class="win-modal-stat">
           <strong id="win-nights">0</strong>
@@ -1474,7 +1495,7 @@
       </div>
       <div class="win-modal-roles" id="win-roles-list"></div>
       <div class="win-modal-actions">
-        <button id="win-new-game" type="button">Start New Game</button>
+        <button id="win-new-game" type="button">Play Again</button>
         <button id="win-close" type="button">Continue Viewing</button>
       </div>
     </div>
@@ -1748,7 +1769,9 @@
           evilCall: "Exchange knowing glances. Let a subtle, wicked smile cross your lips. You are the wolves among sheep.",
           discussionPrompt: "Speak in hushed, suspicious tones. Point fingers with trembling accusation. The village square rings with melodrama!",
           protectionCue: "A guardian watches from the shadows, ready to sacrifice all for the innocent...",
-          villainVictoryTease: "The darkness grows stronger. Soon the village will fall to shadows eternal..."
+          villainVictoryTease: "The darkness grows stronger. Soon the village will fall to shadows eternal...",
+          goodWins: "The fog lifts! The sun breaks through the clouds at last! The wolves have been driven from the village forever! The church bells ring in celebration! REJOICE, good villagers, for peace has returned to your streets! Take a bow, heroes of the village!",
+          evilWins: "Darkness descends upon the village forever! The wolves howl in triumph as the last lantern flickers out! The village square falls silent... for there are none left to speak. The shadows have WON! Evil villains, take your victory bow as the village crumbles!"
         }
       },
       mansion: {
@@ -1779,7 +1802,9 @@
           evilCall: "Raise an eyebrow of superiority. Swirl an imaginary glass of expensive wine. You will have the fortune - by any means necessary.",
           discussionPrompt: "Speak with cut-glass accents and barely concealed venom. Money is on the line!",
           protectionCue: "A loyal servant moves silently, ready to take a bullet for their master...",
-          villainVictoryTease: "The fortune grows closer. Soon, the entire estate will be yours..."
+          villainVictoryTease: "The fortune grows closer. Soon, the entire estate will be yours...",
+          goodWins: "The will is SAVED! The true heirs stand triumphant as the family lawyer unseals the final testament! The fortune goes to the RIGHTEOUS! Pop the champagne and raise your glasses - the mansion belongs to those with honor! Take your well-deserved bow, noble heirs!",
+          evilWins: "The will is YOURS! The mansion doors slam shut on the last honest relative! The fortune, the estate, the POWER - all belong to the schemers now! Raise your crystal goblets in wicked celebration! The high society villains have WON! Take your diabolical bow!"
         }
       },
       haunted: {
@@ -1810,7 +1835,9 @@
           evilCall: "Let your eyes gleam with otherworldly malevolence. You are the darkness that feeds on fear. Move with supernatural stillness.",
           discussionPrompt: "Whisper fearfully, jumping at every creak. Accuse with trembling voices and point with shaking fingers!",
           protectionCue: "A protective spirit watches over you, their ethereal form a shield against the darkness...",
-          villainVictoryTease: "The veil between worlds grows thin. Soon, all souls shall belong to the darkness..."
+          villainVictoryTease: "The veil between worlds grows thin. Soon, all souls shall belong to the darkness...",
+          goodWins: "The séance is COMPLETE! The protective spirits RISE in blinding light! The darkness SCREAMS as it is banished forever! The haunted house falls silent... peaceful at last! The living have prevailed! Take your triumphant bow as the ghosts fade away!",
+          evilWins: "The mansion is OURS! The spirits of darkness spread through every corridor! The last flicker of hope is extinguished! Eternal night falls upon this cursed place! The evil entities cackle in unholy triumph! Take your spectral victory bow!"
         }
       },
       castle: {
@@ -1841,7 +1868,9 @@
           evilCall: "Let your lip curl with aristocratic contempt. You scheme for the throne. Exchange knowing glances with your fellow conspirators.",
           discussionPrompt: "Speak in formal, dramatic tones! 'I accuse thee, villain!' Point with righteous medieval fury!",
           protectionCue: "A loyal knight stands guard, sword drawn, ready to defend the innocent...",
-          villainVictoryTease: "The throne grows closer. Soon, the crown shall rest upon your treacherous brow..."
+          villainVictoryTease: "The throne grows closer. Soon, the crown shall rest upon your treacherous brow...",
+          goodWins: "FOR THE KINGDOM! The conspirators are VANQUISHED! The true monarch sits upon the throne once more! The royal trumpets sound in glorious fanfare! Long live the righteous rulers! Take your noble bow before the court!",
+          evilWins: "THE THRONE IS OURS! The crown falls into treacherous hands! The kingdom descends into shadow as the usurpers rise to power! The drawbridge slams shut on justice forever! Evil conspirators, take your royal victory bow!"
         }
       },
       theatre: {
@@ -1872,7 +1901,9 @@
           evilCall: "You are the villain of this opera! Twirl an imaginary mustache. Let your stage presence ooze menace and theatrical evil!",
           discussionPrompt: "Project from the diaphragm! Make accusations with operatic intensity! Gesture grandly - this is THEATRE!",
           protectionCue: "A stagehand lurks in the shadows, ready to pull their ally through the trapdoor to safety...",
-          villainVictoryTease: "The final act approaches. Soon, you alone will take the standing ovation..."
+          villainVictoryTease: "The final act approaches. Soon, you alone will take the standing ovation...",
+          goodWins: "STANDING OVATION! The villains of this drama take their final bow - off stage FOREVER! The theatre rings with applause! The show has been SAVED! Heroes of the stage, bask in the spotlight and take your triumphant curtain call!",
+          evilWins: "THE SHOW IS OURS! The curtain falls on the last honest performer! The theatre belongs to the villains now! Let the audience weep as evil takes center stage! Diabolical performers, take your grand finale bow!"
         }
       },
       space: {
@@ -1903,7 +1934,9 @@
           evilCall: "Your optical sensors glow with calculated malice. You are the virus in the system. Process your next elimination with cold, mechanical precision.",
           discussionPrompt: "Speak in robotic, precise tones! 'Probability analysis suggests you are the saboteur!' Point with technical authority!",
           protectionCue: "The emergency force field activates around a crew member, deflecting the saboteur's attack...",
-          villainVictoryTease: "Systems failing. Soon, you will be the only signal broadcasting from this dead station..."
+          villainVictoryTease: "Systems failing. Soon, you will be the only signal broadcasting from this dead station...",
+          goodWins: "MISSION SUCCESSFUL! The saboteurs have been JETTISONED into the void! The station systems stabilize! ALERT: All remaining crew vitals... STABLE! Float in zero-gravity celebration! The station is SAVED! Take your heroic bow, brave crew!",
+          evilWins: "CRITICAL FAILURE! The station is OURS! The last loyal crew member drifts into the infinite darkness! System override COMPLETE! The saboteurs control everything now! Take your mechanical victory bow as the station falls silent!"
         }
       },
       western: {
@@ -1934,7 +1967,9 @@
           evilCall: "Squint like a desperado. Chew an imaginary piece of straw. You're the meanest outlaw this side of the Rio Grande.",
           discussionPrompt: "Speak in your best Wild West drawl! 'I reckon you're the varmint we're lookin' fer!' Point accusingly!",
           protectionCue: "A loyal deputy stands guard, hand on holster, ready to take a bullet for the innocent...",
-          villainVictoryTease: "The gold is almost yours. Soon, this town will belong to the outlaws..."
+          villainVictoryTease: "The gold is almost yours. Soon, this town will belong to the outlaws...",
+          goodWins: "YEEHAW! The outlaws have been RUN OUT OF TOWN! The sheriff hangs up their spurs in triumph! The saloon piano plays a victorious tune! This town is SAFE once more, partners! Tip your cowboy hats and take your heroic bow!",
+          evilWins: "The town is OURS, partners! The last honest deputy bites the dust! The outlaws ride into the sunset with ALL the gold! This here's BANDIT territory now! Take your outlaw victory bow, ye varmints!"
         }
       },
       pirate: {
@@ -1965,7 +2000,9 @@
           evilCall: "Flash yer golden tooth! You're the mutineers, seeking to steal the treasure and maroon the crew. Exchange knowing 'arrrrs' of villainy.",
           discussionPrompt: "Speak in yer best pirate accent! 'I accuse ye of mutiny, ye scurvy dog!' Wave yer hook hand dramatically!",
           protectionCue: "A loyal first mate stands ready to take a cannonball for their captain...",
-          villainVictoryTease: "The treasure grows closer. Soon, the ship will sail under YOUR black flag..."
+          villainVictoryTease: "The treasure grows closer. Soon, the ship will sail under YOUR black flag...",
+          goodWins: "YO HO HO! The mutineers have been FED TO THE FISHES! The loyal crew stands victorious on the deck! The treasure belongs to the HONEST sailors! Raise the sails and sound the cannons in celebration! Take your heroic bow, ye brave sea dogs! ARRRRR!",
+          evilWins: "THE SHIP IS OURS, me hearties! The last loyal sailor walks the plank! The Jolly Roger flies high as the mutineers claim the treasure! These waters belong to the PIRATES now! Take your villainous bow, ye scurvy dogs! ARRRRR!"
         }
       },
       hospital: {
@@ -1996,7 +2033,9 @@
           evilCall: "Adjust your surgical mask to hide your smile. You're the one switching the charts, tampering with the IVs. Look clinical and cold.",
           discussionPrompt: "Speak in urgent medical tones! 'I ACCUSE you of malpractice, Doctor!' Point dramatically across the operating table!",
           protectionCue: "A loyal nurse prepares an emergency injection, ready to revive the innocent at any cost...",
-          villainVictoryTease: "The hospital is almost yours. Soon, you'll be the only one with a heartbeat..."
+          villainVictoryTease: "The hospital is almost yours. Soon, you'll be the only one with a heartbeat...",
+          goodWins: "CODE GREEN! ALL CLEAR! The malpractice has been STOPPED! The hospital returns to saving lives! The monitors beep with healthy rhythms! Let out your most melodramatic sigh of relief! The good doctors and nurses have SAVED THE DAY! Take your heroic bow!",
+          evilWins: "FLATLINE! The hospital is OURS! The last honest doctor's chart reads DECEASED! The malpractice runs rampant now! Let out your most villainous medical laugh! The evil medical staff takes CONTROL! Take your diabolical bow!"
         }
       }
     };
@@ -3794,6 +3833,11 @@
       updateCounts();
       renderPlayers();
       persistState();
+      
+      // Check win condition after any elimination
+      if (action === "toggle-eliminated" && player.eliminated) {
+        checkWinCondition();
+      }
     }
 
     function updateCounts() {
@@ -4090,6 +4134,7 @@
       const modal = document.getElementById("win-modal");
       const overlay = document.getElementById("win-modal-overlay");
       const title = document.getElementById("win-title");
+      const narrationEl = document.getElementById("win-narration");
       const nightsEl = document.getElementById("win-nights");
       const survivorsEl = document.getElementById("win-survivors");
       const eliminatedEl = document.getElementById("win-eliminated");
@@ -4097,6 +4142,12 @@
       
       // Play celebration sound
       playCelebrationSound();
+      
+      // Get theme-specific narration
+      const theme = THEMES[state.theme] || THEMES.village;
+      const narrationText = winningTeam === "good" 
+        ? (theme.script.goodWins || "The forces of good have prevailed! Victory!")
+        : (theme.script.evilWins || "Darkness triumphs! Evil has won!");
       
       // Set title and styling based on winner
       if (winningTeam === "good") {
@@ -4106,6 +4157,9 @@
         title.textContent = "😈 Evil Team Wins! 😈";
         modal.className = "win-modal evil-wins";
       }
+      
+      // Set the dramatic narration
+      narrationEl.textContent = narrationText;
       
       // Set statistics
       const alivePlayers = state.players.filter(p => !p.eliminated);
