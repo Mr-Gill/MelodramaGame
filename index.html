@@ -2440,7 +2440,15 @@
       },
       silencedPlayer: null, // Manipulator silence effect
       markedPlayer: null, // Traitor's marked player
-      sfxEnabled: true // Sound effects toggle
+      sfxEnabled: true, // Sound effects toggle
+      voting: {
+        phase: null,
+        nominations: [],
+        accusedPlayer: null,
+        votesVisible: false,
+        revoteCount: 0,
+        tiedPlayers: []
+      }
     };
 
     let state = loadState();
@@ -2510,12 +2518,38 @@
       }
     }
 
+    // Helper function to calculate player counts
+    function calculatePlayerCounts() {
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      return {
+        alive: alivePlayers.length,
+        good: alivePlayers.filter(p => p.team === 'good').length,
+        evil: alivePlayers.filter(p => p.team === 'evil').length
+      };
+    }
+
     function sendFullStateToProjector() {
       if (!projectorChannel) return;
       
       const eliminatedPlayers = state.players
         .filter(p => p.eliminated)
         .map(p => p.name);
+      
+      const counts = calculatePlayerCounts();
+      
+      // Build roster data for projector
+      const rosterData = state.players.map(p => {
+        const char = CHARACTERS.find(c => c.id === p.charId);
+        return {
+          id: p.id,
+          name: p.name,
+          roleName: p.roleName,
+          team: p.team,
+          type: char ? char.type : 'unknown',
+          ability: char ? char.short : '',
+          eliminated: p.eliminated
+        };
+      });
 
       projectorChannel.postMessage({
         type: 'full-state',
@@ -2526,7 +2560,11 @@
           running: state.timer.running
         },
         eliminated: eliminatedPlayers,
-        theme: state.theme
+        theme: state.theme,
+        aliveCount: counts.alive,
+        goodCount: counts.good,
+        evilCount: counts.evil,
+        roster: rosterData
       });
     }
 
@@ -2565,6 +2603,19 @@
         type: 'players-eliminated',
         players: eliminatedPlayers
       });
+      // Also broadcast updated player counts
+      broadcastPlayerCounts();
+    }
+
+    function broadcastPlayerCounts() {
+      if (!projectorChannel) return;
+      const counts = calculatePlayerCounts();
+      projectorChannel.postMessage({
+        type: 'player-counts',
+        alive: counts.alive,
+        good: counts.good,
+        evil: counts.evil
+      });
     }
 
     function broadcastGameReset() {
@@ -2579,6 +2630,42 @@
       projectorChannel.postMessage({
         type: 'theme-change',
         theme: theme
+      });
+    }
+
+    function broadcastVotingUpdate(active, phase, nominations) {
+      if (!projectorChannel) return;
+      // Get nominated player names (not IDs) for display on projector
+      const nominationNames = nominations ? nominations.map(id => {
+        const player = state.players.find(p => p.id === id);
+        return player ? player.name : 'Unknown';
+      }) : [];
+      projectorChannel.postMessage({
+        type: 'voting-update',
+        active: active,
+        phase: phase,
+        nominations: nominationNames
+      });
+    }
+
+    function broadcastRosterUpdate() {
+      if (!projectorChannel) return;
+      // Build roster data for projector (includes character info but protects spoilers)
+      const rosterData = state.players.map(p => {
+        const char = CHARACTERS.find(c => c.id === p.charId);
+        return {
+          id: p.id,
+          name: p.name,
+          roleName: p.roleName,
+          team: p.team,
+          type: char ? char.type : 'unknown',
+          ability: char ? char.short : '',
+          eliminated: p.eliminated
+        };
+      });
+      projectorChannel.postMessage({
+        type: 'roster-update',
+        players: rosterData
       });
     }
 
@@ -3755,6 +3842,8 @@
           // Play phase change sound
           if (step.phase === 'night') {
             playNightStartSound();
+            // Hide voting display on projector during night
+            broadcastVotingUpdate(false, null, []);
           } else if (step.phase === 'day') {
             playDayStartSound();
           }
@@ -3799,18 +3888,24 @@
         if (step.showNominationTracker) {
           const nominationTracker = createNominationTracker();
           scriptStepsContainer.append(nominationTracker);
+          // Broadcast voting phase to projector
+          broadcastVotingUpdate(true, 'nomination', state.voting.nominations);
         }
 
         // Add defense tracker if this step needs it
         if (step.showDefenseTracker) {
           const defenseTracker = createDefenseTracker();
           scriptStepsContainer.append(defenseTracker);
+          // Broadcast voting phase to projector
+          broadcastVotingUpdate(true, 'defense', state.voting.nominations);
         }
 
         // Add vote phase tracker if this step needs it
         if (step.showVotePhaseTracker) {
           const votePhaseTracker = createVotePhaseTracker();
           scriptStepsContainer.append(votePhaseTracker);
+          // Broadcast voting phase to projector
+          broadcastVotingUpdate(true, 'vote', state.voting.nominations);
         }
 
         // Add vote tracker if this step needs it
@@ -4072,6 +4167,8 @@
       }
       persistState();
       renderScript();
+      // Broadcast to projector
+      broadcastVotingUpdate(true, 'nomination', state.voting.nominations);
     }
 
     function clearNominations() {
@@ -4079,6 +4176,8 @@
         state.voting.nominations = [];
         persistState();
         renderScript();
+        // Broadcast to projector
+        broadcastVotingUpdate(true, 'nomination', []);
       }
     }
 
@@ -4619,6 +4718,7 @@
           }
         }
         broadcastPlayersEliminated();
+        broadcastRosterUpdate();
       }
       if (action === "toggle-protected") {
         const wasUnprotected = !player.protected;

@@ -246,7 +246,6 @@
       font-size: clamp(1rem, 1.5vw, 1.3rem);
       border-top: 1px solid rgba(148, 163, 184, 0.2);
     }
-    }
 
     .connection-status {
       position: fixed;
@@ -355,9 +354,473 @@
       25% { transform: scale(1.05); }
       50% { transform: scale(1); }
     }
+
+    /* Fullscreen button */
+    .fullscreen-btn {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: rgba(34, 211, 238, 0.2);
+      border: 2px solid #22d3ee;
+      color: #86efac;
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.2s ease;
+    }
+
+    .fullscreen-btn:hover {
+      background: rgba(34, 211, 238, 0.4);
+      transform: scale(1.05);
+    }
+
+    /* Player count stats */
+    .player-stats {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 2px solid rgba(148, 163, 184, 0.3);
+      min-width: 120px;
+    }
+
+    .stat-item.good {
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    .stat-item.evil {
+      border-color: rgba(244, 114, 182, 0.5);
+    }
+
+    .stat-value {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .stat-item.good .stat-value {
+      color: #38bdf8;
+    }
+
+    .stat-item.evil .stat-value {
+      color: #f472b6;
+    }
+
+    .stat-label {
+      font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.5rem;
+    }
+
+    /* Win notification overlay */
+    .win-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(10px);
+    }
+
+    .win-overlay.active {
+      display: flex;
+    }
+
+    .win-content {
+      text-align: center;
+      animation: win-appear 0.5s ease-out;
+    }
+
+    @keyframes win-appear {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .win-title {
+      font-size: clamp(3rem, 10vw, 8rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      animation: win-pulse 1.5s ease-in-out infinite;
+    }
+
+    .win-title.good {
+      color: #38bdf8;
+      text-shadow: 0 0 60px rgba(56, 189, 248, 0.8);
+    }
+
+    .win-title.evil {
+      color: #f472b6;
+      text-shadow: 0 0 60px rgba(244, 114, 182, 0.8);
+    }
+
+    @keyframes win-pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .win-subtitle {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      color: var(--text-secondary);
+      letter-spacing: 0.15em;
+    }
+
+    .win-emoji {
+      font-size: clamp(4rem, 12vw, 10rem);
+      margin-bottom: 1rem;
+    }
+
+    /* Voting phase display */
+    .voting-card {
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 28px;
+      padding: 2rem;
+      text-align: center;
+      border: 3px solid rgba(244, 114, 182, 0.5);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      display: none;
+    }
+
+    .voting-card.active {
+      display: block;
+      animation: pulse-voting 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-voting {
+      0%, 100% {
+        box-shadow: 0 0 30px rgba(244, 114, 182, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 60px rgba(244, 114, 182, 0.7);
+      }
+    }
+
+    .voting-title {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 0 0 1rem 0;
+      color: #f472b6;
+      text-shadow: 0 0 20px rgba(244, 114, 182, 0.5);
+    }
+
+    .voting-phase-label {
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .nominated-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .nominated-item {
+      padding: 1rem 1.5rem;
+      background: rgba(244, 114, 182, 0.15);
+      border-radius: 12px;
+      border-left: 4px solid #f472b6;
+      font-size: clamp(1.1rem, 1.8vw, 1.6rem);
+      letter-spacing: 0.05em;
+      font-weight: 500;
+      text-align: left;
+    }
+
+    .voting-instruction {
+      margin-top: 1.5rem;
+      font-size: clamp(1rem, 1.5vw, 1.4rem);
+      color: var(--accent-timer);
+      font-style: italic;
+    }
+
+    /* Player roster section */
+    .roster-card {
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 28px;
+      padding: 1.5rem;
+      border: 2px solid rgba(148, 163, 184, 0.3);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .roster-card.active {
+      display: block;
+    }
+
+    .roster-title {
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 0 0 1rem 0;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .roster-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .roster-item {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: clamp(0.9rem, 1.3vw, 1.2rem);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .roster-item:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .roster-item.good {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .roster-item.evil {
+      background: rgba(244, 114, 182, 0.15);
+      border-color: rgba(244, 114, 182, 0.4);
+    }
+
+    .roster-item.eliminated {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+
+    .roster-item.eliminated::after {
+      content: " ☠️";
+    }
+
+    .roster-name {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .roster-role {
+      font-size: 0.85em;
+      color: var(--text-secondary);
+    }
+
+    /* Character card modal */
+    .character-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      backdrop-filter: blur(10px);
+    }
+
+    .character-modal.active {
+      display: flex;
+    }
+
+    .character-card {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+      border-radius: 24px;
+      padding: 2.5rem;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      animation: card-appear 0.3s ease-out;
+      border: 3px solid;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+    }
+
+    .character-card.good {
+      border-color: #38bdf8;
+      box-shadow: 0 0 60px rgba(56, 189, 248, 0.4);
+    }
+
+    .character-card.evil {
+      border-color: #f472b6;
+      box-shadow: 0 0 60px rgba(244, 114, 182, 0.4);
+    }
+
+    @keyframes card-appear {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .character-name {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: 0.05em;
+    }
+
+    .character-card.good .character-name {
+      color: #38bdf8;
+      text-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
+    }
+
+    .character-card.evil .character-name {
+      color: #f472b6;
+      text-shadow: 0 0 30px rgba(244, 114, 182, 0.6);
+    }
+
+    .character-type {
+      font-size: clamp(1rem, 1.8vw, 1.4rem);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1.5rem;
+    }
+
+    .character-team {
+      display: inline-block;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
+
+    .character-team.good {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 2px solid #38bdf8;
+    }
+
+    .character-team.evil {
+      background: rgba(244, 114, 182, 0.2);
+      color: #f472b6;
+      border: 2px solid #f472b6;
+    }
+
+    .character-ability {
+      font-size: clamp(1.2rem, 2vw, 1.6rem);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 1.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+    }
+
+    .character-close {
+      background: rgba(148, 163, 184, 0.3);
+      border: 2px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-primary);
+      padding: 0.75rem 2rem;
+      border-radius: 999px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .character-close:hover {
+      background: rgba(148, 163, 184, 0.5);
+      transform: scale(1.05);
+    }
+
+    /* Scrollbar for roster */
+    .roster-card::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .roster-card::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+    }
+
+    .roster-card::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 8px;
+    }
+
+    .roster-card::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.6);
+    }
   </style>
 </head>
 <body>
+  <!-- Character card modal -->
+  <div class="character-modal" id="character-modal" onclick="hideCharacterCard(event)">
+    <div class="character-card" id="character-card">
+      <h2 class="character-name" id="character-name">Character Name</h2>
+      <div class="character-type" id="character-type">Type</div>
+      <div class="character-team" id="character-team-badge">Team</div>
+      <div class="character-ability" id="character-ability">Ability description</div>
+      <button class="character-close" onclick="closeCharacterModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- Win notification overlay -->
+  <div class="win-overlay" id="win-overlay">
+    <div class="win-content">
+      <div class="win-emoji" id="win-emoji">🎭</div>
+      <div class="win-title" id="win-title">Victory!</div>
+      <div class="win-subtitle" id="win-subtitle">The game has ended</div>
+    </div>
+  </div>
+
+  <!-- Fullscreen button -->
+  <button class="fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()">
+    ⛶ Fullscreen
+  </button>
+
   <div class="connection-status disconnected">
     <span class="indicator"></span>
     <span class="status-text">Waiting for Narrator</span>
@@ -372,12 +835,47 @@
     <section class="phase-indicator night" id="phase-indicator">
       <div class="phase-label" id="phase-label">Setup</div>
       <div class="night-number" id="night-number">Preparing game...</div>
+      <!-- Player stats -->
+      <div class="player-stats" id="player-stats">
+        <div class="stat-item">
+          <span class="stat-value" id="alive-count">0</span>
+          <span class="stat-label">Alive</span>
+        </div>
+        <div class="stat-item good">
+          <span class="stat-value" id="good-count">0</span>
+          <span class="stat-label">Good</span>
+        </div>
+        <div class="stat-item evil">
+          <span class="stat-value" id="evil-count">0</span>
+          <span class="stat-label">Evil</span>
+        </div>
+      </div>
     </section>
 
     <div class="main-display">
       <section class="timer-card">
         <div class="timer-label">Discussion Timer</div>
         <div class="timer-display" id="timer-display">03:00</div>
+      </section>
+
+      <!-- Player roster -->
+      <section class="roster-card" id="roster-card">
+        <h2 class="roster-title">🎭 Characters in Play</h2>
+        <ul class="roster-list" id="roster-list">
+          <li class="empty-message">Waiting for game to start...</li>
+        </ul>
+      </section>
+
+      <!-- Voting phase display -->
+      <section class="voting-card" id="voting-card">
+        <h2 class="voting-title">🗳️ Voting Phase</h2>
+        <div class="voting-phase-label" id="voting-phase-label">Nominations</div>
+        <ul class="nominated-list" id="nominated-list">
+          <li class="empty-message">No nominations yet</li>
+        </ul>
+        <div class="voting-instruction" id="voting-instruction">
+          Point to the person you suspect!
+        </div>
       </section>
 
       <section class="eliminated-card">
@@ -511,7 +1009,16 @@
       },
       eliminated: [],
       connected: false,
-      theme: 'village'
+      theme: 'village',
+      aliveCount: 0,
+      goodCount: 0,
+      evilCount: 0,
+      voting: {
+        active: false,
+        phase: null,
+        nominations: []
+      },
+      roster: [] // Player roster with character info
     };
 
     // DOM elements
@@ -522,6 +1029,27 @@
     const nightNumber = document.getElementById('night-number');
     const timerDisplay = document.getElementById('timer-display');
     const eliminatedList = document.getElementById('eliminated-list');
+    const aliveCountEl = document.getElementById('alive-count');
+    const goodCountEl = document.getElementById('good-count');
+    const evilCountEl = document.getElementById('evil-count');
+    const winOverlay = document.getElementById('win-overlay');
+    const winTitle = document.getElementById('win-title');
+    const winSubtitle = document.getElementById('win-subtitle');
+    const winEmoji = document.getElementById('win-emoji');
+    const playerStats = document.getElementById('player-stats');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const votingCard = document.getElementById('voting-card');
+    const votingPhaseLabel = document.getElementById('voting-phase-label');
+    const nominatedList = document.getElementById('nominated-list');
+    const votingInstruction = document.getElementById('voting-instruction');
+    const rosterCard = document.getElementById('roster-card');
+    const rosterList = document.getElementById('roster-list');
+    const characterModal = document.getElementById('character-modal');
+    const characterCard = document.getElementById('character-card');
+    const characterName = document.getElementById('character-name');
+    const characterType = document.getElementById('character-type');
+    const characterTeamBadge = document.getElementById('character-team-badge');
+    const characterAbility = document.getElementById('character-ability');
 
     let timerHandle = null;
 
@@ -587,6 +1115,26 @@
         
         case 'theme-change':
           updateTheme(data.theme);
+          break;
+        
+        case 'WIN':
+          showWinNotification(data.team, data.night);
+          break;
+        
+        case 'player-counts':
+          updatePlayerCounts(data.alive, data.good, data.evil);
+          break;
+        
+        case 'voting-update':
+          updateVotingDisplay(data.active, data.phase, data.nominations);
+          break;
+        
+        case 'roster-update':
+          updateRoster(data.players);
+          break;
+        
+        case 'show-character':
+          showCharacterCard(data.character);
           break;
       }
     }
@@ -705,7 +1253,80 @@
         updateTheme(data.theme);
       }
       
+      if (data.aliveCount !== undefined) {
+        updatePlayerCounts(data.aliveCount, data.goodCount || 0, data.evilCount || 0);
+      }
+      
+      if (data.roster) {
+        updateRoster(data.roster);
+      }
+      
       updateConnectionStatus(true);
+    }
+
+    // Update player roster display
+    function updateRoster(players) {
+      state.roster = players || [];
+      renderRoster();
+    }
+
+    function renderRoster() {
+      rosterList.innerHTML = '';
+      
+      if (state.roster.length === 0) {
+        const li = document.createElement('li');
+        li.className = 'empty-message';
+        li.textContent = 'Waiting for game to start...';
+        rosterList.appendChild(li);
+        rosterCard.classList.remove('active');
+        return;
+      }
+      
+      // Show roster card
+      rosterCard.classList.add('active');
+      
+      // Sort: alive players first, then eliminated
+      const sortedRoster = [...state.roster].sort((a, b) => {
+        if (a.eliminated === b.eliminated) return 0;
+        return a.eliminated ? 1 : -1;
+      });
+      
+      sortedRoster.forEach(player => {
+        const li = document.createElement('li');
+        li.className = `roster-item ${player.team}${player.eliminated ? ' eliminated' : ''}`;
+        li.innerHTML = `
+          <span class="roster-name">${player.name}</span>
+          <span class="roster-role">${player.roleName}</span>
+        `;
+        li.onclick = () => showCharacterCard(player);
+        rosterList.appendChild(li);
+      });
+    }
+
+    // Character card modal functions
+    function showCharacterCard(character) {
+      if (!character) return;
+      
+      // Show role name (e.g., "The Champion") as the main title
+      characterName.textContent = character.roleName;
+      characterType.textContent = `${character.type || 'Unknown'}-Type`;
+      characterTeamBadge.textContent = character.team === 'good' ? '👼 Good Team' : '😈 Evil Team';
+      characterTeamBadge.className = `character-team ${character.team}`;
+      characterAbility.textContent = character.ability || 'No ability description available.';
+      characterCard.className = `character-card ${character.team}`;
+      
+      characterModal.classList.add('active');
+    }
+
+    function hideCharacterCard(event) {
+      // Close if clicking the backdrop (not the card itself)
+      if (event.target === characterModal) {
+        closeCharacterModal();
+      }
+    }
+
+    function closeCharacterModal() {
+      characterModal.classList.remove('active');
     }
 
     function updateTheme(themeName) {
@@ -772,12 +1393,23 @@
       state.timer = { remaining: 180, running: false };
       state.eliminated = [];
       state.theme = 'village';
+      state.aliveCount = 0;
+      state.goodCount = 0;
+      state.evilCount = 0;
+      state.voting = { active: false, phase: null, nominations: [] };
+      state.roster = [];
       
       stopTimerDisplay();
       updatePhase('setup', 0);
       renderTimer();
       renderEliminated();
       applyThemeVisuals();
+      hideWinNotification();
+      updatePlayerCounts(0, 0, 0);
+      updateVotingDisplay(false, null, []);
+      updateRoster([]);
+      closeCharacterModal();
+      playerStats.style.display = 'none';
     }
 
     function updateConnectionStatus(connected) {
@@ -797,6 +1429,113 @@
     function showFallbackMessage() {
       nightNumber.textContent = 'Open this page from the Narrator View to sync automatically';
     }
+
+    // Win notification display
+    function showWinNotification(team, nightCount) {
+      if (team === 'good') {
+        winTitle.textContent = 'Good Team Wins!';
+        winTitle.className = 'win-title good';
+        winEmoji.textContent = '🎭 🏆 🎭';
+        winSubtitle.textContent = `Victory after ${nightCount} nights!`;
+      } else if (team === 'evil') {
+        winTitle.textContent = 'Evil Team Wins!';
+        winTitle.className = 'win-title evil';
+        winEmoji.textContent = '😈 💀 😈';
+        winSubtitle.textContent = `Darkness prevails after ${nightCount} nights!`;
+      } else {
+        // Invalid team value - ignore
+        console.warn('Unknown team value:', team);
+        return;
+      }
+      winOverlay.classList.add('active');
+    }
+
+    // Hide win notification
+    function hideWinNotification() {
+      winOverlay.classList.remove('active');
+    }
+
+    // Update player counts
+    function updatePlayerCounts(alive, good, evil) {
+      state.aliveCount = alive;
+      state.goodCount = good;
+      state.evilCount = evil;
+      
+      aliveCountEl.textContent = alive;
+      goodCountEl.textContent = good;
+      evilCountEl.textContent = evil;
+      
+      // Show/hide stats based on game phase
+      if (state.phase !== 'setup') {
+        playerStats.style.display = 'flex';
+      }
+    }
+
+    // Update voting display
+    function updateVotingDisplay(active, phase, nominations) {
+      state.voting.active = active;
+      state.voting.phase = phase;
+      state.voting.nominations = nominations || [];
+      
+      if (active) {
+        votingCard.classList.add('active');
+        
+        // Update phase label
+        if (phase === 'nomination') {
+          votingPhaseLabel.textContent = 'Accusation Phase';
+          votingInstruction.textContent = 'Who do you suspect? Nominate the suspicious!';
+        } else if (phase === 'defense') {
+          votingPhaseLabel.textContent = 'Defense Phase';
+          votingInstruction.textContent = 'The accused speak their truth...';
+        } else if (phase === 'vote') {
+          votingPhaseLabel.textContent = 'Vote Now!';
+          votingInstruction.textContent = 'Point to the person you want to eliminate!';
+        } else {
+          votingPhaseLabel.textContent = 'Voting';
+          votingInstruction.textContent = 'The village decides...';
+        }
+        
+        // Update nominated list
+        nominatedList.innerHTML = '';
+        if (nominations && nominations.length > 0) {
+          nominations.forEach(name => {
+            const li = document.createElement('li');
+            li.className = 'nominated-item';
+            li.textContent = name;
+            nominatedList.appendChild(li);
+          });
+        } else {
+          const li = document.createElement('li');
+          li.className = 'empty-message';
+          li.textContent = 'No nominations yet';
+          nominatedList.appendChild(li);
+        }
+      } else {
+        votingCard.classList.remove('active');
+      }
+    }
+
+    // Fullscreen toggle
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('Fullscreen not available:', err);
+        });
+        // Button text updated by fullscreenchange event handler
+      } else {
+        document.exitFullscreen();
+        // Button text updated by fullscreenchange event handler
+      }
+    }
+
+    // Listen for fullscreen changes
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        fullscreenBtn.textContent = '⛶ Exit Fullscreen';
+      } else {
+        fullscreenBtn.textContent = '⛶ Fullscreen';
+      }
+    });
 
     // Periodic connection check
     setInterval(() => {

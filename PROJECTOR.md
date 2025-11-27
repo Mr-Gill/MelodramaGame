@@ -11,9 +11,23 @@ The Projector View is a student-facing display screen designed to be shown on a 
 - **Discussion Timer**: Large, visible countdown during debates
 - **Eliminated Players**: List of players who have been eliminated (names only, no roles)
 - **Connection Status**: Visual indicator showing sync with narrator
+- **Player Counts**: Live counts of Alive, Good, and Evil players (without revealing who is who)
+- **Win Notifications**: Dramatic announcement when a team wins
+- **Fullscreen Mode**: One-click button to enter/exit fullscreen
+- **Voting Phase Display**: Shows nominated players during voting phases (names only, no roles)
+- **Character Roster**: Color-coded list of all players with their characters
+  - Good team shown in blue, Evil team in pink
+  - Eliminated players are crossed out with a ☠️ indicator
+  - Click any character to see their full ability description
+
+### Character Card Display
+When students ask "What does [character] do?", simply click on that character in the roster to display a large, easy-to-read character card showing:
+- Character name
+- Team affiliation (Good/Evil)
+- Character type (Villain, Elder, Hero, etc.)
+- Full ability description
 
 ### What Students DON'T See:
-- Character roles or abilities
 - Night actions or targets
 - Narrator notes or instructions
 - Protected/trapped player status
@@ -27,7 +41,14 @@ The Projector View is a student-facing display screen designed to be shown on a 
 2. Click the **"📽️ Open Projector View"** button in the top header
 3. A new window will open with the projector display
 4. Move this window to your projector/second screen
-5. Maximize it for best visibility (F11 for fullscreen)
+5. Click the **"⛶ Fullscreen"** button for immersive display (or press F11)
+
+### Showing Character Abilities
+When a student asks what a character can do:
+1. Find the character in the "Characters in Play" roster
+2. Click on the character's name
+3. A large character card will appear with the full ability description
+4. Click "Close" or anywhere outside the card to dismiss it
 
 ### Automatic Synchronization
 
@@ -36,6 +57,10 @@ The projector view automatically syncs with the narrator view using the browser'
 - **Phase Changes**: When you advance through night/day phases
 - **Timer Updates**: Live countdown during discussions
 - **Eliminations**: When players are marked as eliminated
+- **Player Counts**: Updated automatically when players are eliminated
+- **Win Conditions**: Automatically displays when a team wins
+- **Voting Phases**: Shows nominated players during accusation, defense, and voting phases
+- **Character Roster**: Updates automatically when game starts or players are eliminated
 - **Game Reset**: When starting a new game
 
 No manual updates needed - just control the game from the narrator view!
