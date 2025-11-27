@@ -822,6 +822,45 @@
       padding: 0.75rem;
     }
 
+    /* Voting tracker styles */
+    .nomination-item,
+    .defense-item,
+    .vote-item {
+      transition: all 0.2s ease;
+    }
+
+    .nomination-item:hover,
+    .defense-item:hover,
+    .vote-item:hover {
+      background: rgba(56, 189, 248, 0.1) !important;
+    }
+
+    .silenced-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(244, 114, 182, 0.2);
+      color: var(--accent-evil);
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid var(--accent-evil);
+    }
+
+    .corrupted-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(250, 204, 21, 0.2);
+      color: var(--accent-neutral);
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid var(--accent-neutral);
+    }
+
     /* Theme-specific animations */
     @keyframes flicker {
       0%, 100% { opacity: 1; }
@@ -2108,7 +2147,15 @@
         rightHandUsed: false
       },
       silencedPlayer: null, // Manipulator silence effect
-      markedPlayer: null // Traitor's marked player
+      markedPlayer: null, // Traitor's marked player
+      voting: {
+        phase: null, // 'accusation', 'defense', 'vote', 'resolution'
+        nominations: [], // Array of player IDs nominated
+        accusedPlayer: null, // Current player being accused
+        votesVisible: false, // Whether votes are shown/hidden
+        revoteCount: 0, // Number of revotes this round
+        tiedPlayers: [] // Players tied in vote
+      }
     };
 
     let state = loadState();
@@ -2398,7 +2445,12 @@
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          return { ...INITIAL_STATE, ...parsed, timer: { ...INITIAL_STATE.timer, ...parsed.timer, handle: null } };
+          return { 
+            ...INITIAL_STATE, 
+            ...parsed, 
+            timer: { ...INITIAL_STATE.timer, ...parsed.timer, handle: null },
+            voting: { ...INITIAL_STATE.voting, ...(parsed.voting || {}) }
+          };
         } catch (error) {
           console.warn("Failed to parse stored state", error);
         }
@@ -2890,32 +2942,53 @@
             { type: "reminder", text: theme.script.villainVictoryTease ? "EVIL TEASE: " + theme.script.villainVictoryTease : "" }
           ]
         },
+        // ACCUSATION PHASE
         {
-          title: "Discussion",
+          title: "Accusation Phase",
           phase: "day",
           blocks: [
-            { type: "say", text: "The floor is yours! You have three minutes to accuse, defend, and convince!" },
-            { type: "narrator", text: "DISCUSSION MANAGEMENT:" },
+            { type: "say", text: "The floor is yours! Who do you suspect?" },
+            { type: "narrator", text: "ACCUSATION PHASE - Players nominate suspects:" },
             { type: "narrator", text: "1. Start the 3-minute timer (or 1 minute for shorter games)" },
-            { type: "reminder", text: "DISCUSSION CUE: " + (theme.script.discussionPrompt || "Encourage dramatic accusations and defenses!") },
-            { type: "narrator", text: "3. Watch for The Innocent - they can reveal their role ONCE to prove they're good" },
-            { type: "narrator", text: "4. Keep energy high - this is the drama phase!" },
-            { type: "narrator", text: "5. At 30 seconds, announce 'Final accusations!' to build urgency" },
-            { type: "action", text: "Start the timer below when the debate begins." },
-            { type: "reminder", text: "The Innocent can reveal once to confirm goodness. The Marked can force a revote if eliminated." }
-          ]
+            { type: "reminder", text: "DISCUSSION CUE: " + (theme.script.discussionPrompt || "Encourage dramatic accusations!") },
+            { type: "narrator", text: "2. Players take turns making accusations against others" },
+            { type: "narrator", text: "3. Each accusation requires a seconder to be valid" },
+            { type: "narrator", text: "4. At 30 seconds, announce 'Final accusations!' to build urgency" },
+            { type: "action", text: "Start the timer below when accusations begin." },
+            { type: "reminder", text: "The Innocent can reveal once to prove their innocence. Watch for dramatic claims!" }
+          ],
+          showNominationTracker: true
         },
+        // DEFENSE PHASE
         {
-          title: "Voting",
+          title: "Defense Phase",
+          phase: "day",
+          blocks: [
+            { type: "say", text: "The accused shall speak in their defense!" },
+            { type: "narrator", text: "DEFENSE PHASE - Accused players can speak:" },
+            { type: "narrator", text: "1. Each nominated player gets 30 seconds to defend themselves" },
+            { type: "narrator", text: "2. Let accused speak in order of nomination (or most accused first)" },
+            { type: "narrator", text: "3. No interruptions during defense speeches" },
+            { type: "narrator", text: "4. After all defenses, give 30 seconds for final rebuttals" },
+            { type: "action", text: "Use the Defense Tracker below to manage speaking order." }
+          ],
+          showDefenseTracker: true
+        },
+        // VOTE PHASE
+        {
+          title: "Vote Phase",
           phase: "day",
           blocks: [
             { type: "say", text: theme.script.vote },
-            { type: "narrator", text: "VOTING PROCESS:" },
-            { type: "narrator", text: "1. Remind players: 'On three, everyone point to who you think should be eliminated.'" },
-            { type: "narrator", text: "2. Count with building tension: '1... 2... THREE!'" },
-            { type: "narrator", text: "3. Quickly tally votes while students hold their points" },
-            { type: "narrator", text: "4. Announce the person with the most votes with appropriate drama" }
-          ]
+            { type: "narrator", text: "VOTE PHASE - Show/Hide hands, narrator counts:" },
+            { type: "narrator", text: "1. Say: 'All players close your eyes and put your hands down'" },
+            { type: "narrator", text: "2. Say: 'On my count, raise your hand to vote for [first nominee]'" },
+            { type: "narrator", text: "3. Count: '1... 2... 3... VOTE!' (players raise hands)" },
+            { type: "narrator", text: "4. Count the votes quickly while hands are raised" },
+            { type: "narrator", text: "5. Say: 'Hands down. Eyes open.' and announce the count" },
+            { type: "narrator", text: "6. Repeat for each nominated player" }
+          ],
+          showVotePhaseTracker: true
         }
       ];
       
@@ -2945,38 +3018,20 @@
           });
         });
         
-        daySteps.splice(2, 0, sidekickStep); // Insert after "Discussion" step
+        daySteps.splice(2, 0, sidekickStep); // Insert after "Accusation Phase" step
       }
       
-      // Add voting reminders dynamically based on active roles
-      const votingReminders = [];
-      const votingStep = daySteps[daySteps.length - 1]; // The Voting step we just added
-      
-      if (hasRole(4)) { // Corrupted Authority
-        const corruptedPlayer = state.players.find(p => p.charId === 4 && !p.eliminated);
-        if (corruptedPlayer) {
-          votingStep.blocks.push({ 
-            type: "reminder", 
-            text: `⚠️ ${corruptedPlayer.name} (Corrupted Authority): Count their vote TWICE. Their vote = 2 votes.` 
-          });
-        }
-      }
-      if (hasRole(8)) { // Manipulator
-        votingStep.blocks.push({ 
-          type: "reminder", 
-          text: "⚠️ Check Action Tracker: If Manipulator silenced someone, announce they cannot vote this round." 
-        });
-      }
-      
+      // VOTE RESOLUTION PHASE (enhanced with tie handling)
       daySteps.push({
         title: "Vote Resolution",
         phase: "day",
         blocks: [
-          { type: "narrator", text: "1. Announce who received the most votes with dramatic flair" },
-          { type: "narrator", text: "2. Check for The Marked: If eliminated player is The Marked, they can demand ONE revote" },
-          { type: "narrator", text: "3. Check for The Traitor: If Traitor's marked player was eliminated, Traitor can force revote" },
-          { type: "narrator", text: "4. If revote happens: Repeat voting process (same rules apply)" },
-          { type: "narrator", text: "5. Final: Announce the eliminated player and prepare for their death scene" },
+          { type: "narrator", text: "VOTE RESOLUTION - Determine the outcome:" },
+          { type: "narrator", text: "1. Review the vote counts from the Vote Tracker below" },
+          { type: "narrator", text: "2. If there's a TIE: Choose either REVOTE or NO ELIMINATION" },
+          { type: "narrator", text: "3. Check for The Marked: If eliminated, they can demand ONE revote" },
+          { type: "narrator", text: "4. Check for The Traitor: If Traitor's marked player was eliminated, Traitor can force revote" },
+          { type: "narrator", text: "5. Announce the final decision with dramatic flair" },
           { type: "reminder", text: "DEATH SCENE CUE: " + theme.script.deathScene }
         ],
         showVoteTracker: true
@@ -3445,6 +3500,24 @@
           scriptStepsContainer.append(actionTracker);
         }
 
+        // Add nomination tracker if this step needs it
+        if (step.showNominationTracker) {
+          const nominationTracker = createNominationTracker();
+          scriptStepsContainer.append(nominationTracker);
+        }
+
+        // Add defense tracker if this step needs it
+        if (step.showDefenseTracker) {
+          const defenseTracker = createDefenseTracker();
+          scriptStepsContainer.append(defenseTracker);
+        }
+
+        // Add vote phase tracker if this step needs it
+        if (step.showVotePhaseTracker) {
+          const votePhaseTracker = createVotePhaseTracker();
+          scriptStepsContainer.append(votePhaseTracker);
+        }
+
         // Add vote tracker if this step needs it
         if (step.showVoteTracker) {
           const voteTracker = createVoteTracker();
@@ -3498,9 +3571,9 @@
       prevStepButton.disabled = state.stepIndex === 0;
       nextStepButton.textContent = state.stepIndex >= steps.length - 1 ? "Next Night" : "Next";
 
-      const discussionIndex = steps.findIndex(step => step.title === "Discussion");
-      if (discussionIndex >= 0 && state.stepIndex >= discussionIndex) {
-        timerPhase.textContent = "Discussion Timer";
+      const accusationIndex = steps.findIndex(step => step.title === "Accusation Phase");
+      if (accusationIndex >= 0 && state.stepIndex >= accusationIndex) {
+        timerPhase.textContent = "Voting Timer";
       } else {
         timerPhase.textContent = "Timer";
       }
@@ -3641,6 +3714,389 @@
       }
     }
 
+    // VOTING MECHANICS TRACKERS
+
+    function createNominationTracker() {
+      const tracker = document.createElement('div');
+      tracker.className = 'action-tracker';
+      
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      
+      // Build nomination checkboxes for each player
+      const nominationInputs = alivePlayers.map(p => {
+        const isNominated = state.voting.nominations.includes(p.id);
+        const isSilenced = state.silencedPlayer === p.id;
+        
+        return `
+          <div class="nomination-item" style="display: flex; gap: 0.75rem; align-items: center; margin: 0.5rem 0; padding: 0.5rem; border-radius: 8px; background: ${isNominated ? 'rgba(244, 114, 182, 0.15)' : 'transparent'}; border: 1px solid ${isNominated ? 'var(--accent-evil)' : 'transparent'};">
+            <input 
+              type="checkbox" 
+              id="nominate-${p.id}" 
+              ${isNominated ? 'checked' : ''}
+              style="width: 20px; height: 20px; accent-color: var(--accent-evil);"
+              onchange="toggleNomination(${p.id})"
+            />
+            <label for="nominate-${p.id}" style="flex: 1; cursor: pointer;">
+              <strong>${p.name}</strong> <span style="color: var(--text-secondary);">(${p.roleName})</span>
+            </label>
+            ${isSilenced ? '<span style="color: var(--accent-evil); font-size: 0.85rem;" title="Cannot vote - Silenced by Manipulator">🔇 Silenced</span>' : ''}
+          </div>
+        `;
+      }).join('');
+
+      const nominatedCount = state.voting.nominations.length;
+      
+      tracker.innerHTML = `
+        <h4>📋 Nomination Tracker</h4>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Check the box next to any player who has been nominated (and seconded) for elimination.
+        </p>
+        
+        <div style="margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px;">
+          <strong>Nominated Players:</strong> <span id="nomination-count" style="color: var(--accent-evil); font-size: 1.1rem;">${nominatedCount}</span>
+        </div>
+        
+        ${nominationInputs}
+        
+        <div class="action-buttons" style="margin-top: 1rem;">
+          <button onclick="clearNominations()" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.5), rgba(100, 116, 139, 0.7));">
+            🗑️ Clear All Nominations
+          </button>
+        </div>
+      `;
+
+      return tracker;
+    }
+
+    function toggleNomination(playerId) {
+      const index = state.voting.nominations.indexOf(playerId);
+      if (index > -1) {
+        state.voting.nominations.splice(index, 1);
+      } else {
+        state.voting.nominations.push(playerId);
+      }
+      persistState();
+      renderScript();
+    }
+
+    function clearNominations() {
+      if (confirm('Clear all nominations?')) {
+        state.voting.nominations = [];
+        persistState();
+        renderScript();
+      }
+    }
+
+    function createDefenseTracker() {
+      const tracker = document.createElement('div');
+      tracker.className = 'action-tracker';
+      
+      const nominatedPlayers = state.players.filter(p => 
+        !p.eliminated && state.voting.nominations.includes(p.id)
+      );
+      
+      if (nominatedPlayers.length === 0) {
+        tracker.innerHTML = `
+          <h4>🛡️ Defense Tracker</h4>
+          <div style="padding: 1rem; text-align: center; color: var(--text-secondary); font-style: italic;">
+            No players have been nominated yet. Go back to the Accusation Phase to nominate suspects.
+          </div>
+        `;
+        return tracker;
+      }
+      
+      const defenseOrder = nominatedPlayers.map((p, index) => {
+        const isCurrentDefender = state.voting.accusedPlayer === p.id;
+        const isSilenced = state.silencedPlayer === p.id;
+        
+        return `
+          <div class="defense-item" style="display: flex; gap: 0.75rem; align-items: center; margin: 0.5rem 0; padding: 0.75rem; border-radius: 10px; background: ${isCurrentDefender ? 'rgba(56, 189, 248, 0.2)' : 'rgba(15, 23, 42, 0.5)'}; border: 2px solid ${isCurrentDefender ? 'var(--accent-good)' : 'transparent'};">
+            <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--accent-evil); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+              ${index + 1}
+            </div>
+            <div style="flex: 1;">
+              <strong>${p.name}</strong> <span style="color: var(--text-secondary);">(${p.roleName})</span>
+              ${isSilenced ? '<span style="color: var(--accent-evil); font-size: 0.85rem; margin-left: 0.5rem;">🔇 Silenced</span>' : ''}
+              ${isCurrentDefender ? '<span style="color: var(--accent-good); font-size: 0.85rem; margin-left: 0.5rem;">🎤 SPEAKING</span>' : ''}
+            </div>
+            <button onclick="setCurrentDefender(${p.id})" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; ${isCurrentDefender ? 'opacity: 0.5;' : ''}">
+              ${isCurrentDefender ? '✓ Active' : 'Select'}
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      tracker.innerHTML = `
+        <h4>🛡️ Defense Tracker</h4>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+          Each nominated player gets 30 seconds to defend themselves. Click "Select" to highlight the current speaker.
+        </p>
+        
+        <div style="margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+          <span><strong>Accused Players:</strong> ${nominatedPlayers.length}</span>
+          <span style="color: var(--text-secondary);">30 seconds each</span>
+        </div>
+        
+        ${defenseOrder}
+        
+        <div class="action-buttons" style="margin-top: 1rem;">
+          <button onclick="clearCurrentDefender()" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.5), rgba(100, 116, 139, 0.7));">
+            Clear Selection
+          </button>
+        </div>
+      `;
+
+      return tracker;
+    }
+
+    function setCurrentDefender(playerId) {
+      state.voting.accusedPlayer = playerId;
+      persistState();
+      renderScript();
+    }
+
+    function clearCurrentDefender() {
+      state.voting.accusedPlayer = null;
+      persistState();
+      renderScript();
+    }
+
+    function createVotePhaseTracker() {
+      const tracker = document.createElement('div');
+      tracker.className = 'action-tracker';
+      
+      const nominatedPlayers = state.players.filter(p => 
+        !p.eliminated && state.voting.nominations.includes(p.id)
+      );
+      
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      
+      // Check for Corrupted Authority and Silenced players
+      const corruptedPlayer = alivePlayers.find(p => p.charId === 4);
+      const silencedPlayerObj = alivePlayers.find(p => p.id === state.silencedPlayer);
+      
+      if (nominatedPlayers.length === 0) {
+        tracker.innerHTML = `
+          <h4>🗳️ Vote Phase Tracker</h4>
+          <div style="padding: 1rem; text-align: center; color: var(--text-secondary); font-style: italic;">
+            No players have been nominated yet. Go back to the Accusation Phase to nominate suspects.
+          </div>
+        `;
+        return tracker;
+      }
+      
+      // Build vote count inputs for each nominated player
+      const voteInputs = nominatedPlayers.map(p => {
+        return `
+          <div class="vote-item" style="display: flex; gap: 0.75rem; align-items: center; margin: 0.5rem 0; padding: 0.75rem; border-radius: 10px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(148, 163, 184, 0.2);">
+            <div style="flex: 1;">
+              <strong>${p.name}</strong> <span style="color: var(--text-secondary);">(${p.roleName})</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <label style="font-size: 0.85rem; color: var(--text-secondary);">Votes:</label>
+              <input 
+                type="number" 
+                id="vote-phase-${p.id}" 
+                min="0" 
+                max="50" 
+                value="0" 
+                style="width: 60px; padding: 0.35rem; border-radius: 6px; border: 1px solid rgba(148, 163, 184, 0.3); background: rgba(15, 23, 42, 0.6); color: inherit;"
+                oninput="updateVotePhase()"
+              />
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Build voter list with silenced indicator
+      const voterIndicators = alivePlayers.map(p => {
+        const isCorrupted = p.charId === 4;
+        const isSilenced = state.silencedPlayer === p.id;
+        
+        return `
+          <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; margin: 0.15rem; border-radius: 999px; font-size: 0.75rem; background: ${isSilenced ? 'rgba(244, 114, 182, 0.2)' : isCorrupted ? 'rgba(250, 204, 21, 0.2)' : 'rgba(56, 189, 248, 0.1)'}; border: 1px solid ${isSilenced ? 'var(--accent-evil)' : isCorrupted ? 'var(--accent-neutral)' : 'transparent'};">
+            ${p.name}
+            ${isCorrupted ? '<span title="Corrupted Authority - Double Vote">×2</span>' : ''}
+            ${isSilenced ? '<span title="Silenced - Cannot Vote">🔇</span>' : ''}
+          </span>
+        `;
+      }).join('');
+
+      tracker.innerHTML = `
+        <h4>🗳️ Vote Phase Tracker</h4>
+        
+        <div style="margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: 8px;">
+          <div style="margin-bottom: 0.5rem;"><strong>Show/Hide Hands Voting:</strong></div>
+          <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+            1. "Eyes closed, hands down"<br>
+            2. Call each nominee's name<br>
+            3. "Raise hand to vote for [Name]... NOW!"<br>
+            4. Count hands, then "Hands down"
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button onclick="toggleVotesVisible()" style="padding: 0.5rem 1rem;">
+              ${state.voting.votesVisible ? '👁️ Votes VISIBLE' : '🙈 Votes HIDDEN'}
+            </button>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(15, 23, 42, 0.4); border-radius: 8px;">
+          <div style="margin-bottom: 0.5rem; font-size: 0.85rem;"><strong>Voters:</strong></div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+            ${voterIndicators}
+          </div>
+          ${corruptedPlayer ? `<div style="margin-top: 0.5rem; color: var(--accent-neutral); font-size: 0.85rem;">⚠️ ${corruptedPlayer.name}'s vote counts DOUBLE (auto-calculated)</div>` : ''}
+          ${silencedPlayerObj ? `<div style="margin-top: 0.5rem; color: var(--accent-evil); font-size: 0.85rem;">🔇 ${silencedPlayerObj.name} CANNOT vote (silenced)</div>` : ''}
+        </div>
+        
+        <div style="margin-bottom: 0.5rem;"><strong>Vote Count per Nominee:</strong></div>
+        ${voteInputs}
+        
+        <div id="vote-phase-tally" style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px;">
+          <h5 style="margin: 0 0 0.5rem;">📊 Current Tally</h5>
+          <div id="vote-phase-results" style="font-family: monospace; font-size: 0.9rem;">Enter votes above to see results</div>
+        </div>
+        
+        <div class="action-buttons" style="margin-top: 1rem;">
+          <button onclick="updateVotePhase()" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.7), rgba(56, 189, 248, 0.9));">
+            📊 Update Tally
+          </button>
+          <button onclick="clearVotePhase()" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.5), rgba(100, 116, 139, 0.7));">
+            🗑️ Clear Votes
+          </button>
+        </div>
+      `;
+
+      // Add event listeners after render
+      setTimeout(() => updateVotePhase(), 0);
+
+      return tracker;
+    }
+
+    function toggleVotesVisible() {
+      state.voting.votesVisible = !state.voting.votesVisible;
+      persistState();
+      renderScript();
+    }
+
+    function updateVotePhase() {
+      const nominatedPlayers = state.players.filter(p => 
+        !p.eliminated && state.voting.nominations.includes(p.id)
+      );
+      
+      const results = [];
+      nominatedPlayers.forEach(p => {
+        const input = document.getElementById(`vote-phase-${p.id}`);
+        if (input) {
+          const votes = parseInt(input.value) || 0;
+          results.push({ player: p, votes: votes });
+        }
+      });
+      
+      // Sort by votes descending
+      results.sort((a, b) => b.votes - a.votes);
+      
+      const resultsEl = document.getElementById('vote-phase-results');
+      if (!resultsEl) return;
+      
+      if (results.length === 0 || results.every(r => r.votes === 0)) {
+        resultsEl.innerHTML = '<div style="color: var(--text-secondary);">Enter votes above to see results</div>';
+        return;
+      }
+      
+      let html = '';
+      results.forEach((r, index) => {
+        if (r.votes > 0) {
+          const isFirst = index === 0;
+          const style = isFirst ? 'color: var(--accent-evil); font-weight: bold;' : '';
+          html += `<div style="${style}">${index + 1}. ${r.player.name}: ${r.votes} votes</div>`;
+        }
+      });
+      
+      // Check for tie
+      const firstPlace = results[0];
+      const secondPlace = results[1];
+      
+      if (firstPlace && firstPlace.votes > 0) {
+        html += '<hr style="margin: 0.5rem 0; opacity: 0.3;">';
+        
+        if (secondPlace && secondPlace.votes === firstPlace.votes) {
+          // TIE!
+          const tiedPlayers = results.filter(r => r.votes === firstPlace.votes);
+          state.voting.tiedPlayers = tiedPlayers.map(r => r.player.id);
+          
+          html += `<div style="color: var(--accent-neutral); font-weight: bold; margin-top: 0.5rem;">
+            ⚠️ TIE between ${tiedPlayers.map(r => r.player.name).join(' and ')}!
+          </div>`;
+          html += `<div style="margin-top: 0.5rem;">
+            <button onclick="handleTieRevote()" style="margin-right: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;">🔄 REVOTE</button>
+            <button onclick="handleTieNoElimination()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">❌ NO ELIMINATION</button>
+          </div>`;
+        } else {
+          // Clear winner
+          state.voting.tiedPlayers = [];
+          html += `<div style="color: var(--accent-evil); margin-top: 0.5rem;">
+            → ${firstPlace.player.name} is to be ELIMINATED
+          </div>`;
+          
+          // Check for The Marked
+          if (firstPlace.player.charId === 26) {
+            html += `<div style="color: var(--accent-good); margin-top: 0.25rem;">⚠️ The Marked can demand a REVOTE!</div>`;
+          }
+          
+          // Check for Traitor's marked player
+          const traitor = state.players.find(p => p.charId === 9 && !p.eliminated);
+          if (traitor && state.markedPlayer === firstPlace.player.id) {
+            html += `<div style="color: var(--accent-evil); margin-top: 0.25rem;">⚠️ Traitor can force a REVOTE!</div>`;
+          }
+        }
+      }
+      
+      resultsEl.innerHTML = html;
+      persistState();
+    }
+
+    function handleTieRevote() {
+      state.voting.revoteCount++;
+      clearVotePhase();
+      // Show inline notification in the results area
+      const resultsEl = document.getElementById('vote-phase-results');
+      if (resultsEl) {
+        resultsEl.innerHTML = `<div style="color: var(--accent-good); font-weight: bold; padding: 0.5rem; background: rgba(56, 189, 248, 0.15); border-radius: 8px; text-align: center;">
+          🔄 Revote #${state.voting.revoteCount} called! Votes cleared. Conduct a new vote.
+        </div>`;
+      }
+    }
+
+    function handleTieNoElimination() {
+      state.voting.tiedPlayers = [];
+      persistState();
+      // Show inline notification in the results area
+      const resultsEl = document.getElementById('vote-phase-results');
+      if (resultsEl) {
+        resultsEl.innerHTML = `<div style="color: var(--accent-neutral); font-weight: bold; padding: 0.5rem; background: rgba(250, 204, 21, 0.15); border-radius: 8px; text-align: center;">
+          ❌ No elimination this round. Proceed to the next phase.
+        </div>`;
+      }
+    }
+
+    function clearVotePhase() {
+      const nominatedPlayers = state.players.filter(p => 
+        !p.eliminated && state.voting.nominations.includes(p.id)
+      );
+      
+      nominatedPlayers.forEach(p => {
+        const input = document.getElementById(`vote-phase-${p.id}`);
+        if (input) {
+          input.value = '0';
+        }
+      });
+      
+      state.voting.tiedPlayers = [];
+      updateVotePhase();
+      persistState();
+    }
+
     function createVoteTracker() {
       const tracker = document.createElement('div');
       tracker.className = 'action-tracker';
@@ -3758,17 +4214,31 @@
           tallyHTML += `<div style="margin-top: 0.5rem;">`;
           
           if (firstPlace && firstPlace.votes > 0) {
-            tallyHTML += `<div style="color: var(--accent-evil);">→ ${firstPlace.name} is ELIMINATED</div>`;
-            
-            // Check for Marked revote
-            if (firstPlace.player.charId === 26) {
-              tallyHTML += `<div style="color: var(--accent-good); margin-top: 0.25rem;">⚠️ The Marked demands a REVOTE!</div>`;
-            }
-            
-            // Check for Traitor revote trigger
-            const traitor = state.players.find(p => p.charId === 9 && !p.eliminated);
-            if (traitor && state.markedPlayer === firstPlace.player.id) {
-              tallyHTML += `<div style="color: var(--accent-evil); margin-top: 0.25rem;">⚠️ Traitor triggers REVOTE!</div>`;
+            // Check for tie
+            if (secondPlace && secondPlace.votes === firstPlace.votes) {
+              // TIE!
+              const tiedPlayers = sorted.filter(e => e.votes === firstPlace.votes);
+              tallyHTML += `<div style="color: var(--accent-neutral); font-weight: bold;">
+                ⚠️ TIE between ${tiedPlayers.map(e => e.name).join(' and ')}!
+              </div>`;
+              tallyHTML += `<div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+                <button onclick="handleVoteRevote()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 6px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.7), rgba(244, 114, 182, 0.9)); border: none; cursor: pointer; font-weight: 600;">🔄 REVOTE</button>
+                <button onclick="handleVoteNoElimination()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 6px; background: linear-gradient(135deg, rgba(148, 163, 184, 0.5), rgba(100, 116, 139, 0.7)); border: none; cursor: pointer; font-weight: 600;">❌ NO ELIMINATION</button>
+              </div>`;
+            } else {
+              // Clear winner
+              tallyHTML += `<div style="color: var(--accent-evil);">→ ${firstPlace.name} is ELIMINATED</div>`;
+              
+              // Check for Marked revote
+              if (firstPlace.player.charId === 26) {
+                tallyHTML += `<div style="color: var(--accent-good); margin-top: 0.25rem;">⚠️ The Marked demands a REVOTE!</div>`;
+              }
+              
+              // Check for Traitor revote trigger
+              const traitor = state.players.find(p => p.charId === 9 && !p.eliminated);
+              if (traitor && state.markedPlayer === firstPlace.player.id) {
+                tallyHTML += `<div style="color: var(--accent-evil); margin-top: 0.25rem;">⚠️ Traitor triggers REVOTE!</div>`;
+              }
             }
           }
           
@@ -3779,6 +4249,28 @@
       }
       
       return sorted;
+    }
+
+    function handleVoteRevote() {
+      state.voting.revoteCount++;
+      clearVotes();
+      // Show inline notification in the tally area
+      const tallyEl = document.getElementById('vote-tally');
+      if (tallyEl) {
+        tallyEl.innerHTML = `<div style="color: var(--accent-good); font-weight: bold; padding: 0.5rem; background: rgba(56, 189, 248, 0.15); border-radius: 8px; text-align: center;">
+          🔄 Revote #${state.voting.revoteCount} called! Votes cleared. Conduct a new vote.
+        </div>`;
+      }
+    }
+
+    function handleVoteNoElimination() {
+      // Show inline notification in the tally area
+      const tallyEl = document.getElementById('vote-tally');
+      if (tallyEl) {
+        tallyEl.innerHTML = `<div style="color: var(--accent-neutral); font-weight: bold; padding: 0.5rem; background: rgba(250, 204, 21, 0.15); border-radius: 8px; text-align: center;">
+          ❌ No elimination this round. Proceed to the next phase.
+        </div>`;
+      }
     }
 
     function clearVotes() {
@@ -3854,6 +4346,15 @@
       if (state.stepIndex >= steps.length) {
         state.night += 1;
         state.stepIndex = 0;
+        // Reset voting state for the new round
+        state.voting = {
+          phase: null,
+          nominations: [],
+          accusedPlayer: null,
+          votesVisible: false,
+          revoteCount: 0,
+          tiedPlayers: []
+        };
       }
       persistState();
       renderScript();
