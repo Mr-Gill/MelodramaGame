@@ -2728,7 +2728,7 @@
       stopAudio();
 
       const theme = THEMES[state.theme];
-      const audioUrl = state.phase === "night" ? theme.audio.night : theme.audio.day;
+      const audioUrl = state.audio.phase === "night" ? theme.audio.night : theme.audio.day;
 
       // If no audio URL is set, just update indicator
       if (!audioUrl) {
