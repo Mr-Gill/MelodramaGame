@@ -1678,18 +1678,30 @@
         <div class="stat">
           <span>Player Names (optional)</span>
           <textarea id="player-names" class="name-list" placeholder="Enter one name per line to assign specific students."></textarea>
-          <small style="color:var(--text-secondary);">Names are matched to roles when you start the game.</small>
+          <small style="color:var(--text-secondary);">Names are randomly assigned to roles when you start the game or shuffle.</small>
         </div>
       </div>
 
       <div class="role-groups" id="role-groups"></div>
+
+      <!-- Shuffle Preview Section -->
+      <div id="shuffle-preview" class="hidden" style="margin-top: 1.5rem; padding: 1.25rem; background: rgba(15, 23, 42, 0.5); border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.25);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="margin: 0; font-size: 1.1rem;">🎲 Player Assignments Preview</h3>
+          <button id="shuffle-assignments" type="button" style="padding: 0.5rem 1rem;">🔀 Shuffle Again</button>
+        </div>
+        <div id="assignment-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.5rem; max-height: 300px; overflow-y: auto;"></div>
+      </div>
 
       <div class="start-footer">
         <div>
           <div class="pill" id="role-balance">Good: 0 • Evil: 0 • Selected: 0</div>
           <small id="balance-warning" style="display:block; margin-top:0.4rem; color:#fef08a;">Select roles to match the player count.</small>
         </div>
-        <button id="start-game" type="button" disabled>Enter Narrator View</button>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button id="preview-shuffle" type="button" disabled style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.7), rgba(56, 189, 248, 0.9));">🎲 Preview Assignments</button>
+          <button id="start-game" type="button" disabled>Enter Narrator View</button>
+        </div>
       </div>
     </section>
 
@@ -2441,6 +2453,10 @@
     const themeSelect = document.getElementById("theme-select");
     const themeDescription = document.getElementById("theme-description");
     const namesInput = document.getElementById("player-names");
+    const previewShuffleBtn = document.getElementById("preview-shuffle");
+    const shuffleAssignmentsBtn = document.getElementById("shuffle-assignments");
+    const shufflePreviewDiv = document.getElementById("shuffle-preview");
+    const assignmentListDiv = document.getElementById("assignment-list");
 
     const scriptStepsContainer = document.getElementById("script-steps");
     const scriptTitle = document.getElementById("script-title");
@@ -2512,18 +2528,32 @@
       
       const counts = calculatePlayerCounts();
       
-      // Build roster data for projector
+      // Build roster data for projector - hide player names and team/role until eliminated
       const rosterData = state.players.map(p => {
         const char = CHARACTERS.find(c => c.id === p.charId);
-        return {
-          id: p.id,
-          name: p.name,
-          roleName: p.roleName,
-          team: p.team,
-          type: char ? char.type : 'unknown',
-          ability: char ? char.short : '',
-          eliminated: p.eliminated
-        };
+        // Only reveal player name and team/role info when eliminated
+        if (p.eliminated) {
+          return {
+            id: p.id,
+            name: p.name,
+            roleName: p.roleName,
+            team: p.team,
+            type: char ? char.type : 'unknown',
+            ability: char ? char.short : '',
+            eliminated: true
+          };
+        } else {
+          // For alive players, hide identity - just show they exist
+          return {
+            id: p.id,
+            name: '???',
+            roleName: 'Unknown',
+            team: 'unknown',
+            type: 'unknown',
+            ability: '',
+            eliminated: false
+          };
+        }
       });
 
       projectorChannel.postMessage({
@@ -2625,18 +2655,32 @@
 
     function broadcastRosterUpdate() {
       if (!projectorChannel) return;
-      // Build roster data for projector (includes character info but protects spoilers)
+      // Build roster data for projector - hide player name and team/role until eliminated
       const rosterData = state.players.map(p => {
         const char = CHARACTERS.find(c => c.id === p.charId);
-        return {
-          id: p.id,
-          name: p.name,
-          roleName: p.roleName,
-          team: p.team,
-          type: char ? char.type : 'unknown',
-          ability: char ? char.short : '',
-          eliminated: p.eliminated
-        };
+        // Only reveal player name and team/role info when eliminated
+        if (p.eliminated) {
+          return {
+            id: p.id,
+            name: p.name,
+            roleName: p.roleName,
+            team: p.team,
+            type: char ? char.type : 'unknown',
+            ability: char ? char.short : '',
+            eliminated: true
+          };
+        } else {
+          // For alive players, hide identity - just show they exist
+          return {
+            id: p.id,
+            name: '???',
+            roleName: 'Unknown',
+            team: 'unknown',
+            type: 'unknown',
+            ability: '',
+            eliminated: false
+          };
+        }
       });
       projectorChannel.postMessage({
         type: 'roster-update',
@@ -2897,6 +2941,9 @@
       state.selectedRoles = Array.from(selected);
       updateRoleSelectionUI();
       persistState();
+      // Reset preview when roles change
+      previewPlayers = [];
+      shufflePreviewDiv.classList.add('hidden');
     }
 
     function updateRoleSelectionUI() {
@@ -2923,16 +2970,98 @@
       });
       const ready = totals.total === target && typeIssues.length === 0;
       startButton.disabled = !ready;
+      previewShuffleBtn.disabled = !ready;
       balanceWarning.textContent = ready ? "Ready! Dramatic chaos awaits." : "Adjust counts to match the player total and type ranges.";
+    }
+
+    // Fisher-Yates shuffle algorithm
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // Store current preview assignments
+    let previewPlayers = [];
+
+    // Generate preview of player assignments without starting the game
+    function generatePreviewAssignments() {
+      const selected = state.selectedRoles.map(id => CHARACTERS.find(c => c.id === id));
+      const names = state.nameList.split(/\n+/).map(n => n.trim()).filter(Boolean);
+      
+      // Shuffle the names to randomly assign players to characters
+      const shuffledNames = shuffleArray(names);
+      
+      previewPlayers = selected.map((char, index) => ({
+        id: index,
+        charId: char.id,
+        name: shuffledNames[index] || `Player ${index + 1}`,
+        roleName: char.name,
+        team: char.team,
+        type: char.type
+      }));
+      
+      return previewPlayers;
+    }
+
+    // Render the preview list
+    function renderPreviewAssignments() {
+      assignmentListDiv.innerHTML = '';
+      
+      previewPlayers.forEach(player => {
+        const div = document.createElement('div');
+        const isEvil = player.team === 'evil';
+        div.className = 'preview-assignment-item';
+        div.style.cssText = `
+          padding: 0.5rem 0.75rem;
+          border-radius: 8px;
+          background: ${isEvil ? 'rgba(244, 114, 182, 0.15)' : 'rgba(56, 189, 248, 0.15)'};
+          border: 1px solid ${isEvil ? 'rgba(244, 114, 182, 0.4)' : 'rgba(56, 189, 248, 0.4)'};
+          font-size: 0.9rem;
+        `;
+        div.innerHTML = `
+          <strong style="color: var(${isEvil ? '--accent-evil' : '--accent-good'});">${player.name}</strong>
+          <span style="color: var(--text-secondary);"> → ${player.roleName}</span>
+        `;
+        assignmentListDiv.appendChild(div);
+      });
+    }
+
+    // Show preview with current shuffle
+    function showShufflePreview() {
+      generatePreviewAssignments();
+      renderPreviewAssignments();
+      shufflePreviewDiv.classList.remove('hidden');
+    }
+
+    // Shuffle again without closing preview
+    function shuffleAgain() {
+      generatePreviewAssignments();
+      renderPreviewAssignments();
     }
 
     function preparePlayers() {
       const selected = state.selectedRoles.map(id => CHARACTERS.find(c => c.id === id));
       const names = state.nameList.split(/\n+/).map(n => n.trim()).filter(Boolean);
+      
+      // If we have preview players from the shuffle preview, use those assignments
+      // Otherwise, generate new random assignments
+      let shuffledNames;
+      if (previewPlayers.length > 0 && previewPlayers.length === selected.length) {
+        // Use the previewed assignments
+        shuffledNames = previewPlayers.map(p => p.name);
+      } else {
+        // Shuffle the names to randomly assign players to characters
+        shuffledNames = shuffleArray(names);
+      }
+      
       return selected.map((char, index) => ({
         id: index,
         charId: char.id,
-        name: names[index] || `Player ${index + 1}`,
+        name: shuffledNames[index] || `Player ${index + 1}`,
         roleName: char.name,
         team: char.team,
         type: char.type,
@@ -5542,6 +5671,10 @@
       updatePlayerCountDisplays();
       updateRoleSelectionUI();
       
+      // Reset preview when preset is loaded
+      previewPlayers = [];
+      shufflePreviewDiv.classList.add('hidden');
+      
       // Show preset info
       const presetInfo = document.getElementById("preset-info");
       const presetDetails = document.getElementById("preset-details");
@@ -5601,6 +5734,9 @@
     namesInput.addEventListener("input", () => {
       state.nameList = namesInput.value;
       persistState();
+      // Reset preview when names change
+      previewPlayers = [];
+      shufflePreviewDiv.classList.add('hidden');
     });
 
     notesArea.addEventListener("input", event => {
@@ -5608,6 +5744,10 @@
       persistState();
       renderDownloadLink();
     });
+
+    // Preview and shuffle button event listeners
+    previewShuffleBtn.addEventListener("click", showShufflePreview);
+    shuffleAssignmentsBtn.addEventListener("click", shuffleAgain);
 
     startButton.addEventListener("click", handleStartGame);
     prevStepButton.addEventListener("click", goToPrevStep);
