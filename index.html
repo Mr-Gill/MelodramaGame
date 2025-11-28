@@ -2028,48 +2028,58 @@
     </article>
   </template>
 
+  <!-- Shared Character Data - Single source of truth for all 30 characters -->
+  <script src="characters.js"></script>
+  
   <script>
-    const CHARACTERS = [
-      { id: 1, name: "The Evil Mastermind", team: "evil", type: "villain", short: "Leads the villains, breaks ties.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
-      { id: 2, name: "The Assassin", team: "evil", type: "villain", short: "Once per game, add a second victim.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false, limited: 1 },
-      { id: 3, name: "The Pretender", team: "evil", type: "villain", short: "Appears good to Elder checks.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
-      { id: 4, name: "Corrupted Authority", team: "evil", type: "villain", short: "Day vote counts as two.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
-      { id: 5, name: "The Stalker", team: "evil", type: "villain", short: "Backup elimination if target survives.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
-      { id: 6, name: "The Right Hand", team: "evil", type: "accomplice", short: "Block one player's night ability.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false, limited: 1 },
-      { id: 7, name: "The Spy", team: "evil", type: "accomplice", short: "Learn if a player has a night action.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
-      { id: 8, name: "The Manipulator", team: "evil", type: "accomplice", short: "Silence one player's vote next day.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
-      { id: 9, name: "The Traitor", team: "evil", type: "accomplice", short: "Force revote if marked player is eliminated.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
-      { id: 10, name: "The Informant", team: "evil", type: "accomplice", short: "Reveal exact role of a player to evil team.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
-      { id: 11, name: "The Sage", team: "good", type: "elder", short: "Check two players; learn if at least one is evil.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
-      { id: 12, name: "The Oracle", team: "good", type: "elder", short: "Check one player; good or evil.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
-      { id: 13, name: "The Sensitive", team: "good", type: "elder", short: "Learn if a player has a night action.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
-      { id: 14, name: "The Dreamer", team: "good", type: "elder", short: "Learn how many evil sit beside them.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
-      { id: 15, name: "The Witness", team: "good", type: "elder", short: "Narrator gives a clue about the night.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
-      { id: 16, name: "The Champion", team: "good", type: "hero", short: "Protects nightly. First success reveals a villain but ends power.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false, firstNightSetup: true },
-      { id: 17, name: "The Healer", team: "good", type: "hero", short: "Save one player, can't repeat.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false },
-      { id: 18, name: "The Guardian", team: "good", type: "hero", short: "Sacrifice self to save another.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false },
-      { id: 19, name: "The Survivor", team: "good", type: "hero", short: "Survives first night attack until after next vote.", nightOrder: 4, hasNightAction: false, oneTimeOnly: false, passive: true },
-      { id: 20, name: "The Defender", team: "good", type: "hero", short: "Traps a player; if they die, a villain dies too.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false },
-      { id: 21, name: "The Loyal Companion", team: "good", type: "sidekick", short: "Knows Champion; can boost their vote (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true },
-      { id: 22, name: "The Voice", team: "good", type: "sidekick", short: "Double elimination after vote (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
-      { id: 23, name: "The Fool", team: "good", type: "sidekick", short: "Wild accusation with dramatic blowback (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
-      { id: 24, name: "The Trickster", team: "good", type: "sidekick", short: "Creates a false claim (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
-      { id: 25, name: "The Imitator", team: "good", type: "sidekick", short: "Copies another day power (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
-      { id: 26, name: "The Marked", team: "good", type: "damsel", short: "If voted out, demand a dramatic revote.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false },
-      { id: 27, name: "The Innocent", team: "good", type: "damsel", short: "Can reveal once to confirm they are good.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false },
-      { id: 28, name: "Twin A", team: "good", type: "damsel", short: "Linked to Twin B. If one dies, both do.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true, linkedTo: 29 },
-      { id: 29, name: "Twin B", team: "good", type: "damsel", short: "Linked to Twin A. If one dies, both do.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true, linkedTo: 28 },
-      { id: 30, name: "The Cursed", team: "good", type: "damsel", short: "If eliminated, random players also die (scales with game size, can hit Evil!).", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true }
-    ];
-
-    const TYPE_DETAILS = {
-      villain: { label: "Villain-Type", min: 2, max: 5, description: "All wake together in Step 1 to pick the night's target.", accent: "var(--accent-evil)" },
-      accomplice: { label: "Accomplice-Type", min: 1, max: 5, description: "Thumbs-up helpers with one-off tricks to boost the villains.", accent: "#fb7185" },
-      elder: { label: "Elder-Type", min: 1, max: 5, description: "Information gatherers who never directly save or kill.", accent: "var(--accent-good)" },
-      hero: { label: "Hero-Type", min: 1, max: 5, description: "Defensive powers keeping the village alive.", accent: "#34d399" },
-      sidekick: { label: "Sidekick-Type", min: 1, max: 5, description: "Daytime drama with risky dice rolls.", accent: "#bef264" },
-      damsel: { label: "Damsel-Type", min: 1, max: 5, description: "Melodramatic twists when the crowd turns on them.", accent: "#a855f7" }
-    };
+    // CHARACTERS and TYPE_DETAILS are now loaded from characters.js
+    // Fallback inline definitions in case characters.js fails to load
+    if (typeof CHARACTERS === 'undefined') {
+      console.warn('characters.js failed to load, using inline definitions');
+      var CHARACTERS = [
+        { id: 1, name: "The Evil Mastermind", team: "evil", type: "villain", short: "Leads the villains, breaks ties.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
+        { id: 2, name: "The Assassin", team: "evil", type: "villain", short: "Once per game, add a second victim.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false, limited: 1 },
+        { id: 3, name: "The Pretender", team: "evil", type: "villain", short: "Appears good to Elder checks.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
+        { id: 4, name: "Corrupted Authority", team: "evil", type: "villain", short: "Day vote counts as two.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
+        { id: 5, name: "The Stalker", team: "evil", type: "villain", short: "Backup elimination if target survives.", nightOrder: 1, hasNightAction: true, oneTimeOnly: false },
+        { id: 6, name: "The Right Hand", team: "evil", type: "accomplice", short: "Block one player's night ability.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false, limited: 1 },
+        { id: 7, name: "The Spy", team: "evil", type: "accomplice", short: "Learn if a player has a night action.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
+        { id: 8, name: "The Manipulator", team: "evil", type: "accomplice", short: "Silence one player's vote next day.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
+        { id: 9, name: "The Traitor", team: "evil", type: "accomplice", short: "Force revote if marked player is eliminated.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
+        { id: 10, name: "The Informant", team: "evil", type: "accomplice", short: "Reveal exact role of a player to evil team.", nightOrder: 2, hasNightAction: true, oneTimeOnly: false },
+        { id: 11, name: "The Sage", team: "good", type: "elder", short: "Check two players; learn if at least one is evil.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+        { id: 12, name: "The Oracle", team: "good", type: "elder", short: "Check one player; good or evil.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+        { id: 13, name: "The Sensitive", team: "good", type: "elder", short: "Learn if a player has a night action.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+        { id: 14, name: "The Dreamer", team: "good", type: "elder", short: "Learn how many evil sit beside them.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+        { id: 15, name: "The Witness", team: "good", type: "elder", short: "Narrator gives a clue about the night.", nightOrder: 3, hasNightAction: true, oneTimeOnly: false },
+        { id: 16, name: "The Champion", team: "good", type: "hero", short: "Protects nightly. First success reveals a villain but ends power.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false, firstNightSetup: true },
+        { id: 17, name: "The Healer", team: "good", type: "hero", short: "Save one player, can't repeat.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false },
+        { id: 18, name: "The Guardian", team: "good", type: "hero", short: "Sacrifice self to save another.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false },
+        { id: 19, name: "The Survivor", team: "good", type: "hero", short: "Survives first night attack until after next vote.", nightOrder: 4, hasNightAction: false, oneTimeOnly: false, passive: true },
+        { id: 20, name: "The Defender", team: "good", type: "hero", short: "Traps a player; if they die, a villain dies too.", nightOrder: 4, hasNightAction: true, oneTimeOnly: false },
+        { id: 21, name: "The Loyal Companion", team: "good", type: "sidekick", short: "Knows Champion; can boost their vote (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true },
+        { id: 22, name: "The Voice", team: "good", type: "sidekick", short: "Double elimination after vote (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
+        { id: 23, name: "The Fool", team: "good", type: "sidekick", short: "Wild accusation with dramatic blowback (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
+        { id: 24, name: "The Trickster", team: "good", type: "sidekick", short: "Creates a false claim (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
+        { id: 25, name: "The Imitator", team: "good", type: "sidekick", short: "Copies another day power (dice).", nightOrder: 5, hasNightAction: false, oneTimeOnly: false },
+        { id: 26, name: "The Marked", team: "good", type: "damsel", short: "If voted out, demand a dramatic revote.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false },
+        { id: 27, name: "The Innocent", team: "good", type: "damsel", short: "Can reveal once to confirm they are good.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false },
+        { id: 28, name: "Twin A", team: "good", type: "damsel", short: "Linked to Twin B. If one dies, both do.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true, linkedTo: 29 },
+        { id: 29, name: "Twin B", team: "good", type: "damsel", short: "Linked to Twin A. If one dies, both do.", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true, linkedTo: 28 },
+        { id: 30, name: "The Cursed", team: "good", type: "damsel", short: "If eliminated, random players also die (scales with game size, can hit Evil!).", nightOrder: 0, hasNightAction: false, oneTimeOnly: false, firstNightSetup: true }
+      ];
+    }
+    
+    if (typeof TYPE_DETAILS === 'undefined') {
+      var TYPE_DETAILS = {
+        villain: { label: "Villain-Type", min: 2, max: 5, description: "All wake together in Step 1 to pick the night's target.", accent: "var(--accent-evil)" },
+        accomplice: { label: "Accomplice-Type", min: 1, max: 5, description: "Thumbs-up helpers with one-off tricks to boost the villains.", accent: "#fb7185" },
+        elder: { label: "Elder-Type", min: 1, max: 5, description: "Information gatherers who never directly save or kill.", accent: "var(--accent-good)" },
+        hero: { label: "Hero-Type", min: 1, max: 5, description: "Defensive powers keeping the village alive.", accent: "#34d399" },
+        sidekick: { label: "Sidekick-Type", min: 1, max: 5, description: "Daytime drama with risky dice rolls.", accent: "#bef264" },
+        damsel: { label: "Damsel-Type", min: 1, max: 5, description: "Melodramatic twists when the crowd turns on them.", accent: "#a855f7" }
+      };
+    }
 
     const THEMES = {
       village: {
@@ -2424,6 +2434,7 @@
         villainTarget: null,
         assassinTarget: null,
         stalkerActive: false,
+        stalkerBackupTarget: null,
         championProtect: null,
         healerProtect: null,
         guardianProtect: null,
@@ -2448,7 +2459,12 @@
         votesVisible: false,
         revoteCount: 0,
         tiedPlayers: []
-      }
+      },
+      // Special mechanics state tracking
+      markedRevoteUsed: false,     // The Marked (D1) revote power
+      traitorRevoteUsed: false,    // The Traitor (A4) revote power
+      voicePowerUsed: false,       // The Voice (S2) double elimination
+      voiceSecondElimination: null // Player ID for Voice's second elimination
     };
 
     let state = loadState();
@@ -3634,13 +3650,55 @@
       }
 
       // Step 7: Check Stalker backup (if primary target was protected and Stalker is in game)
-      if (actions.stalkerActive && actions.villainTarget !== null && protectedPlayers.has(actions.villainTarget)) {
+      if (actions.villainTarget !== null && protectedPlayers.has(actions.villainTarget)) {
         const stalker = state.players.find(p => p.charId === 5 && !p.eliminated);
         if (stalker) {
-          result.specialEvents.push({
-            type: 'stalkerBackupAttempt',
-            message: 'Stalker can attempt backup kill (only works on Damsel/Elder types)'
-          });
+          // Check if stalker backup target was specified
+          if (actions.stalkerBackupTarget !== null) {
+            const backupTarget = state.players.find(p => p.id === actions.stalkerBackupTarget);
+            if (backupTarget && !backupTarget.eliminated) {
+              // Stalker backup ONLY works on Elder or Damsel types
+              if (backupTarget.type === 'elder' || backupTarget.type === 'damsel') {
+                // Check if backup target is protected
+                if (!protectedPlayers.has(actions.stalkerBackupTarget)) {
+                  // Check for Survivor passive on backup target (char ID 19)
+                  if (backupTarget.charId === 19 && !backupTarget.survivorUsed) {
+                    result.specialEvents.push({
+                      type: 'survivorTriggered',
+                      player: backupTarget.id,
+                      playerName: `${backupTarget.name} (${backupTarget.roleName})`
+                    });
+                    result.stateChanges[`players.${backupTarget.id}.survivorUsed`] = true;
+                  } else {
+                    result.preDoctorEliminations.push({
+                      player: backupTarget.id,
+                      playerName: `${backupTarget.name} (${backupTarget.roleName})`,
+                      cause: 'Stalker Backup Kill'
+                    });
+                    result.specialEvents.push({
+                      type: 'stalkerBackupSuccess',
+                      message: `Stalker backup kill succeeded on ${backupTarget.name} (${backupTarget.type})`
+                    });
+                  }
+                } else {
+                  result.specialEvents.push({
+                    type: 'stalkerBackupBlocked',
+                    message: `Stalker backup target (${backupTarget.name}) was also protected!`
+                  });
+                }
+              } else {
+                result.specialEvents.push({
+                  type: 'stalkerBackupFailed',
+                  message: `Stalker backup failed - ${backupTarget.name} is a ${backupTarget.type} (only works on Elder/Damsel)`
+                });
+              }
+            }
+          } else {
+            result.specialEvents.push({
+              type: 'stalkerBackupAttempt',
+              message: 'Stalker can attempt backup kill (only works on Damsel/Elder types)'
+            });
+          }
         }
       }
 
@@ -3752,6 +3810,18 @@
             }
             if (e.type === 'defenderTrapTriggered') {
               return `<p class="special-event">• Defender trap killed a villain!</p>`;
+            }
+            if (e.type === 'stalkerBackupSuccess') {
+              return `<p class="special-event" style="color: var(--accent-evil);">• 🗡️ ${e.message}</p>`;
+            }
+            if (e.type === 'stalkerBackupFailed') {
+              return `<p class="special-event" style="color: var(--accent-neutral);">• ⚠️ ${e.message}</p>`;
+            }
+            if (e.type === 'stalkerBackupBlocked') {
+              return `<p class="special-event" style="color: var(--accent-good);">• 🛡️ ${e.message}</p>`;
+            }
+            if (e.type === 'stalkerBackupAttempt') {
+              return `<p class="special-event" style="color: var(--accent-neutral);">• 👁️ ${e.message}</p>`;
             }
             return `<p class="special-event">• ${e.message || JSON.stringify(e)}</p>`;
           }).join('') || '<p>None</p>'}
@@ -4026,6 +4096,15 @@
           ${playerOptions}
         </select>
 
+        <label>Stalker Backup Target (if main target protected):</label>
+        <select id="action-stalker-backup">
+          <option value="">-- None --</option>
+          ${alivePlayers.filter(p => p.type === 'elder' || p.type === 'damsel').map(p => 
+            `<option value="${p.id}">${p.name} (${p.roleName}) [${p.type.toUpperCase()}]</option>`
+          ).join('')}
+        </select>
+        <small style="display: block; color: var(--text-secondary); margin-bottom: 1rem;">⚠️ Stalker backup ONLY works on Elder or Damsel types!</small>
+
         <div class="action-buttons">
           <button onclick="saveNightActions()" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.7), rgba(56, 189, 248, 0.9));">
             💾 Save Actions
@@ -4059,6 +4138,9 @@
         if (state.nightActions.rightHandBlock !== null) {
           document.getElementById('action-right-hand-block').value = state.nightActions.rightHandBlock;
         }
+        if (state.nightActions.stalkerBackupTarget !== null) {
+          document.getElementById('action-stalker-backup').value = state.nightActions.stalkerBackupTarget;
+        }
       }, 0);
 
       return tracker;
@@ -4072,6 +4154,7 @@
       const guardianProtect = document.getElementById('action-guardian-protect').value;
       const defenderTrap = document.getElementById('action-defender-trap').value;
       const rightHandBlock = document.getElementById('action-right-hand-block').value;
+      const stalkerBackup = document.getElementById('action-stalker-backup').value;
 
       state.nightActions.villainTarget = villainTarget ? parseInt(villainTarget) : null;
       state.nightActions.assassinTarget = assassinTarget ? parseInt(assassinTarget) : null;
@@ -4080,6 +4163,7 @@
       state.nightActions.guardianProtect = guardianProtect ? parseInt(guardianProtect) : null;
       state.nightActions.defenderTrap = defenderTrap ? parseInt(defenderTrap) : null;
       state.nightActions.rightHandBlock = rightHandBlock ? parseInt(rightHandBlock) : null;
+      state.nightActions.stalkerBackupTarget = stalkerBackup ? parseInt(stalkerBackup) : null;
 
       persistState();
       alert('✓ Night actions saved! Now click "Calculate Night Resolution" to see the results.');
@@ -4091,6 +4175,7 @@
           villainTarget: null,
           assassinTarget: null,
           stalkerActive: false,
+          stalkerBackupTarget: null,
           championProtect: null,
           healerProtect: null,
           guardianProtect: null,
@@ -4433,15 +4518,33 @@
             → ${firstPlace.player.name} is to be ELIMINATED
           </div>`;
           
-          // Check for The Marked
-          if (firstPlace.player.charId === 26) {
-            html += `<div style="color: var(--accent-good); margin-top: 0.25rem;">⚠️ The Marked can demand a REVOTE!</div>`;
+          // Check for The Marked (char ID 26)
+          if (firstPlace.player.charId === 26 && !state.markedRevoteUsed) {
+            html += `<div style="color: var(--accent-good); margin-top: 0.5rem; padding: 0.5rem; background: rgba(168, 85, 247, 0.2); border-radius: 8px;">
+              ⚠️ <strong>The Marked (${firstPlace.player.name})</strong> can demand a REVOTE!
+              <button onclick="triggerMarkedRevote(${firstPlace.player.id})" style="margin-left: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;">🔄 Trigger Revote</button>
+              <button onclick="skipMarkedRevote()" style="margin-left: 0.25rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;">❌ Skip</button>
+            </div>`;
           }
           
-          // Check for Traitor's marked player
+          // Check for Traitor's marked player (char ID 9)
           const traitor = state.players.find(p => p.charId === 9 && !p.eliminated);
-          if (traitor && state.markedPlayer === firstPlace.player.id) {
-            html += `<div style="color: var(--accent-evil); margin-top: 0.25rem;">⚠️ Traitor can force a REVOTE!</div>`;
+          if (traitor && state.markedPlayer === firstPlace.player.id && !state.traitorRevoteUsed) {
+            html += `<div style="color: var(--accent-evil); margin-top: 0.5rem; padding: 0.5rem; background: rgba(251, 113, 133, 0.2); border-radius: 8px;">
+              ⚠️ <strong>The Traitor (${traitor.name})</strong> can force a REVOTE!
+              <button onclick="triggerTraitorRevote(${traitor.id})" style="margin-left: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;">🔄 Force Revote</button>
+              <button onclick="skipTraitorRevote()" style="margin-left: 0.25rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;">❌ Skip</button>
+            </div>`;
+          }
+          
+          // Voice double elimination check (char ID 22)
+          const voice = state.players.find(p => p.charId === 22 && !p.eliminated);
+          const secondPlace = results[1];
+          if (voice && secondPlace && secondPlace.votes > 0 && !state.voicePowerUsed) {
+            html += `<div style="color: var(--accent-good); margin-top: 0.5rem; padding: 0.5rem; background: rgba(190, 242, 100, 0.2); border-radius: 8px;">
+              🎤 <strong>The Voice (${voice.name})</strong> can attempt DOUBLE ELIMINATION!
+              <button onclick="triggerVoicePower(${voice.id}, ${secondPlace.player.id})" style="margin-left: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;">🎲 Roll Dice</button>
+            </div>`;
           }
         }
       }
@@ -4488,6 +4591,89 @@
       
       state.voting.tiedPlayers = [];
       updateVotePhase();
+      persistState();
+    }
+
+    // The Marked revote mechanic (char ID 26)
+    function triggerMarkedRevote(playerId) {
+      const markedPlayer = state.players.find(p => p.id === playerId);
+      if (!markedPlayer) return;
+      
+      state.markedRevoteUsed = true;
+      state.voting.revoteCount++;
+      clearVotePhase();
+      
+      const resultsEl = document.getElementById('vote-phase-results');
+      if (resultsEl) {
+        resultsEl.innerHTML = `<div style="color: var(--accent-good); font-weight: bold; padding: 0.75rem; background: rgba(168, 85, 247, 0.2); border-radius: 8px; text-align: center;">
+          🎭 <strong>THE MARKED DEMANDS A REVOTE!</strong><br>
+          <em>${markedPlayer.name} reveals their mark of fate. All previous votes are cancelled!</em><br>
+          Conduct a complete new vote. The Marked can no longer use this power.
+        </div>`;
+      }
+      persistState();
+    }
+
+    function skipMarkedRevote() {
+      state.markedRevoteUsed = true; // Power is forfeited
+      persistState();
+      updateVotePhase();
+    }
+
+    // The Traitor revote mechanic (char ID 9)
+    function triggerTraitorRevote(traitorId) {
+      const traitor = state.players.find(p => p.id === traitorId);
+      if (!traitor) return;
+      
+      state.traitorRevoteUsed = true;
+      state.voting.revoteCount++;
+      clearVotePhase();
+      
+      const resultsEl = document.getElementById('vote-phase-results');
+      if (resultsEl) {
+        resultsEl.innerHTML = `<div style="color: var(--accent-evil); font-weight: bold; padding: 0.75rem; background: rgba(251, 113, 133, 0.2); border-radius: 8px; text-align: center;">
+          ⚔️ <strong>THE TRAITOR REVEALS THEMSELVES!</strong><br>
+          <em>${traitor.name} steps forward: "You cannot eliminate my ally!"</em><br>
+          All previous votes are cancelled. Conduct a complete new vote.
+        </div>`;
+      }
+      persistState();
+    }
+
+    function skipTraitorRevote() {
+      state.traitorRevoteUsed = true; // Power is forfeited
+      persistState();
+      updateVotePhase();
+    }
+
+    // The Voice double elimination mechanic (char ID 22)
+    async function triggerVoicePower(voiceId, secondPlaceId) {
+      const voice = state.players.find(p => p.id === voiceId);
+      const secondPlace = state.players.find(p => p.id === secondPlaceId);
+      if (!voice || !secondPlace) return;
+      
+      state.voicePowerUsed = true;
+      
+      const result = await triggerSidekickPower(voiceId);
+      
+      const resultsEl = document.getElementById('vote-phase-results');
+      if (result && resultsEl) {
+        if (result.success) {
+          resultsEl.innerHTML = `<div style="color: var(--accent-good); font-weight: bold; padding: 0.75rem; background: rgba(190, 242, 100, 0.3); border-radius: 8px; text-align: center;">
+            🎤✅ <strong>THE VOICE SUCCEEDS! (Roll: ${result.roll})</strong><br>
+            <em>${voice.name}'s dramatic proclamation carries weight!</em><br>
+            <strong>${secondPlace.name}</strong> is ALSO eliminated as second-place!
+          </div>`;
+          // Mark second place for elimination
+          state.voiceSecondElimination = secondPlaceId;
+        } else {
+          resultsEl.innerHTML = `<div style="color: var(--accent-evil); font-weight: bold; padding: 0.75rem; background: rgba(239, 68, 68, 0.2); border-radius: 8px; text-align: center;">
+            🎤❌ <strong>THE VOICE FAILS! (Roll: ${result.roll})</strong><br>
+            <em>${voice.name}'s plea falls on deaf ears...</em><br>
+            Only the voted player is eliminated. The Voice is now exposed!
+          </div>`;
+        }
+      }
       persistState();
     }
 

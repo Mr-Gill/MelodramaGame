@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Melodrama Werewolf - Physical Character Cards</title>
+  <style>
+    /* Reset and Base Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --villain-bg: linear-gradient(135deg, #fecaca, #fca5a5);
+      --villain-border: #ef4444;
+      --accomplice-bg: linear-gradient(135deg, #fecdd3, #fb7185);
+      --accomplice-border: #f43f5e;
+      --elder-bg: linear-gradient(135deg, #bfdbfe, #93c5fd);
+      --elder-border: #3b82f6;
+      --hero-bg: linear-gradient(135deg, #a7f3d0, #34d399);
+      --hero-border: #10b981;
+      --sidekick-bg: linear-gradient(135deg, #d9f99d, #bef264);
+      --sidekick-border: #84cc16;
+      --damsel-bg: linear-gradient(135deg, #ddd6fe, #a855f7);
+      --damsel-border: #8b5cf6;
+      
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    @media print {
+      @page {
+        size: letter;
+        margin: 0.25in;
+      }
+      
+      body {
+        background: white !important;
+      }
+      
+      .no-print {
+        display: none !important;
+      }
+      
+      .card-container {
+        page-break-inside: avoid;
+      }
+      
+      .page-break {
+        page-break-after: always;
+      }
+    }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+      color: var(--text-dark);
+      line-height: 1.4;
+    }
+
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .controls h1 {
+      width: 100%;
+      text-align: center;
+      margin: 0 0 15px 0;
+      font-size: 1.8rem;
+      color: var(--text-dark);
+    }
+
+    .controls button {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .controls button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-print {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+    }
+
+    .btn-filter {
+      background: #e5e7eb;
+      color: var(--text-dark);
+    }
+
+    .btn-filter.active {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Card A - Full Information */
+    .card-a {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      border: 3px solid;
+    }
+
+    .card-a.villain { border-color: var(--villain-border); }
+    .card-a.accomplice { border-color: var(--accomplice-border); }
+    .card-a.elder { border-color: var(--elder-border); }
+    .card-a.hero { border-color: var(--hero-border); }
+    .card-a.sidekick { border-color: var(--sidekick-border); }
+    .card-a.damsel { border-color: var(--damsel-border); }
+
+    .card-header {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-a.villain .card-header { background: var(--villain-bg); }
+    .card-a.accomplice .card-header { background: var(--accomplice-bg); }
+    .card-a.elder .card-header { background: var(--elder-bg); }
+    .card-a.hero .card-header { background: var(--hero-bg); }
+    .card-a.sidekick .card-header { background: var(--sidekick-bg); }
+    .card-a.damsel .card-header { background: var(--damsel-bg); }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .card-id {
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .team-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .team-evil {
+      background: #fecaca;
+      color: #991b1b;
+      border: 1px solid #ef4444;
+    }
+
+    .team-good {
+      background: #bbf7d0;
+      color: #166534;
+      border: 1px solid #22c55e;
+    }
+
+    .card-body {
+      padding: 16px 20px;
+    }
+
+    .card-section {
+      margin-bottom: 14px;
+    }
+
+    .card-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+
+    .section-content {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .power-text {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .acting-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .acting-item {
+      background: #f9fafb;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    .acting-item strong {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .instructions-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .instructions-list li {
+      padding: 4px 0 4px 16px;
+      position: relative;
+      font-size: 0.85rem;
+    }
+
+    .instructions-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--text-light);
+    }
+
+    .win-condition {
+      background: #f3f4f6;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      text-align: center;
+      font-style: italic;
+    }
+
+    /* Card B - Anonymous Acting Hints (back of card) */
+    .card-b {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      border: 3px solid #9ca3af;
+      min-height: 200px;
+    }
+
+    .card-b-header {
+      background: #f3f4f6;
+      padding: 12px 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .card-b-header h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-light);
+    }
+
+    .card-b-body {
+      padding: 16px 20px;
+    }
+
+    .hint-section {
+      margin-bottom: 12px;
+    }
+
+    .hint-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+
+    .hint-text {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--text-dark);
+    }
+
+    /* Type Section Headers */
+    .type-section {
+      margin: 40px 0 20px 0;
+      text-align: center;
+    }
+
+    .type-section h2 {
+      font-size: 1.5rem;
+      margin: 0;
+      padding: 15px 30px;
+      display: inline-block;
+      border-radius: 30px;
+      color: white;
+    }
+
+    .type-section.villain h2 { background: var(--villain-border); }
+    .type-section.accomplice h2 { background: var(--accomplice-border); }
+    .type-section.elder h2 { background: var(--elder-border); }
+    .type-section.hero h2 { background: var(--hero-border); }
+    .type-section.sidekick h2 { background: var(--sidekick-border); }
+    .type-section.damsel h2 { background: var(--damsel-border); }
+
+    .type-description {
+      color: var(--text-light);
+      font-style: italic;
+      margin-top: 10px;
+    }
+
+    /* View Toggle */
+    .view-toggle {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .view-toggle button {
+      margin: 0 5px;
+    }
+
+    .view-toggle button.active {
+      background: var(--text-dark);
+      color: white;
+    }
+
+    .card-b-container {
+      display: none;
+    }
+
+    .show-card-b .card-a-container {
+      display: none;
+    }
+
+    .show-card-b .card-b-container {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls no-print">
+    <h1>🎭 Melodrama Werewolf - Character Cards</h1>
+    
+    <button class="btn-print" onclick="window.print()">🖨️ Print Cards</button>
+    
+    <button class="btn-filter active" data-filter="all" onclick="filterCards('all', this)">All Types</button>
+    <button class="btn-filter" data-filter="villain" onclick="filterCards('villain', this)">Villains</button>
+    <button class="btn-filter" data-filter="accomplice" onclick="filterCards('accomplice', this)">Accomplices</button>
+    <button class="btn-filter" data-filter="elder" onclick="filterCards('elder', this)">Elders</button>
+    <button class="btn-filter" data-filter="hero" onclick="filterCards('hero', this)">Heroes</button>
+    <button class="btn-filter" data-filter="sidekick" onclick="filterCards('sidekick', this)">Sidekicks</button>
+    <button class="btn-filter" data-filter="damsel" onclick="filterCards('damsel', this)">Damsels</button>
+    
+    <div class="view-toggle">
+      <button class="btn-filter active" onclick="toggleView('a', this)">Card A (Full Info)</button>
+      <button class="btn-filter" onclick="toggleView('b', this)">Card B (Acting Hints)</button>
+    </div>
+  </div>
+
+  <div id="cards-container">
+    <!-- Cards will be rendered here by JavaScript -->
+  </div>
+
+  <script src="characters.js"></script>
+  <script>
+    // Render all character cards
+    function renderCards() {
+      const container = document.getElementById('cards-container');
+      container.innerHTML = '';
+
+      // Group characters by type
+      const types = ['villain', 'accomplice', 'elder', 'hero', 'sidekick', 'damsel'];
+      
+      types.forEach(type => {
+        const typeChars = CHARACTERS.filter(c => c.type === type);
+        const typeInfo = TYPE_DETAILS[type];
+        
+        // Type section header
+        const sectionDiv = document.createElement('div');
+        sectionDiv.className = `type-section ${type}`;
+        sectionDiv.dataset.type = type;
+        sectionDiv.innerHTML = `
+          <h2>${typeInfo.label} (${typeChars.length})</h2>
+          <p class="type-description">${typeInfo.description}</p>
+        `;
+        container.appendChild(sectionDiv);
+        
+        // Cards grid for this type
+        const gridDiv = document.createElement('div');
+        gridDiv.className = 'cards-grid';
+        gridDiv.dataset.type = type;
+        
+        typeChars.forEach(char => {
+          gridDiv.appendChild(createCardA(char));
+          gridDiv.appendChild(createCardB(char));
+        });
+        
+        container.appendChild(gridDiv);
+      });
+    }
+
+    // Create Card A (Full Information)
+    function createCardA(char) {
+      const card = document.createElement('div');
+      card.className = `card-container card-a-container`;
+      card.dataset.type = char.type;
+      
+      card.innerHTML = `
+        <div class="card-a ${char.type}">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">${char.name}</h2>
+              <span class="team-badge team-${char.team}">${char.team.toUpperCase()}</span>
+            </div>
+            <span class="card-id">${char.charId}</span>
+          </div>
+          
+          <div class="card-body">
+            <div class="card-section">
+              <div class="section-label">Motivation</div>
+              <div class="section-content">${char.motivation}</div>
+            </div>
+            
+            <div class="card-section">
+              <div class="section-label">Power</div>
+              <div class="section-content power-text">${char.power}</div>
+            </div>
+            
+            <div class="card-section">
+              <div class="section-label">Acting Instructions</div>
+              <div class="acting-grid">
+                <div class="acting-item">
+                  <strong>Body</strong>
+                  ${char.actingA.body}
+                </div>
+                <div class="acting-item">
+                  <strong>Face</strong>
+                  ${char.actingA.face}
+                </div>
+                <div class="acting-item">
+                  <strong>Voice</strong>
+                  ${char.actingA.voice}
+                </div>
+                <div class="acting-item">
+                  <strong>Death Scene</strong>
+                  ${char.actingA.death}
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-section">
+              <div class="section-label">Night Phase Instructions</div>
+              <ul class="instructions-list">
+                ${char.nightB.map(instruction => `<li>${instruction}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div class="card-section">
+              <div class="section-label">Day Phase Instructions</div>
+              <ul class="instructions-list">
+                ${char.dayB.map(instruction => `<li>${instruction}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div class="win-condition">
+              ${char.winCondition}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    // Create Card B (Anonymous Acting Hints - back of card)
+    function createCardB(char) {
+      const card = document.createElement('div');
+      card.className = `card-container card-b-container`;
+      card.dataset.type = char.type;
+      
+      card.innerHTML = `
+        <div class="card-b">
+          <div class="card-b-header">
+            <h3>Anonymous Acting Hints</h3>
+          </div>
+          
+          <div class="card-b-body">
+            <div class="hint-section">
+              <div class="hint-label">Physical Presence</div>
+              <div class="hint-text">${char.actingB.physical}</div>
+            </div>
+            
+            <div class="hint-section">
+              <div class="hint-label">Vocal Style</div>
+              <div class="hint-text">${char.actingB.vocal}</div>
+            </div>
+            
+            <div class="hint-section">
+              <div class="hint-label">Death Scene Hint</div>
+              <div class="hint-text">${char.actingB.deathHint}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    // Filter cards by type
+    function filterCards(type, button) {
+      // Update button states
+      document.querySelectorAll('.btn-filter[data-filter]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      button.classList.add('active');
+      
+      // Filter cards
+      const sections = document.querySelectorAll('.type-section');
+      const grids = document.querySelectorAll('.cards-grid');
+      
+      if (type === 'all') {
+        sections.forEach(el => el.style.display = 'block');
+        grids.forEach(el => el.style.display = 'grid');
+      } else {
+        sections.forEach(el => {
+          el.style.display = el.dataset.type === type ? 'block' : 'none';
+        });
+        grids.forEach(el => {
+          el.style.display = el.dataset.type === type ? 'grid' : 'none';
+        });
+      }
+    }
+
+    // Toggle between Card A and Card B views
+    function toggleView(view, button) {
+      document.querySelectorAll('.view-toggle button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      button.classList.add('active');
+      
+      const container = document.getElementById('cards-container');
+      if (view === 'b') {
+        container.classList.add('show-card-b');
+      } else {
+        container.classList.remove('show-card-b');
+      }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', renderCards);
+  </script>
+</body>
+</html>

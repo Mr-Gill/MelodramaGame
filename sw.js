@@ -1,7 +1,9 @@
-const CACHE_NAME = 'melodrama-werewolf-v1';
+const CACHE_NAME = 'melodrama-werewolf-v2';
 const ASSETS = [
   './',
   './index.html',
+  './characters.js',
+  './V4.html',
   './manifest.json'
 ];
 
