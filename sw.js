@@ -5,6 +5,9 @@ const ASSETS = [
   './characters.js',
   './V4.html',
   './manifest.json'
+  './manifest.json',
+  './audio/village-night.mp3',
+  './audio/village-day.mp3'
 ];
 
 self.addEventListener('install', (event) => {
