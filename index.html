@@ -2973,6 +2973,7 @@
         });
         
         // First Night Setup Actions - only on Night 1
+        // Accomplices meet Villains happens before Step 1 (per design brief)
         if (hasType("accomplice")) {
           nightSteps.push({
             title: "Night 1: Accomplices Meet Villains",
@@ -2984,43 +2985,8 @@
             ]
           });
         }
-        
-        // Champion sees Cursed (only if both are in game)
-        if (hasRole(16) && hasRole(30)) {
-          const cursedPlayer = state.players.find(p => p.charId === 30);
-          nightSteps.push({
-            title: "Night 1: Champion Sees the Cursed",
-            phase: "night",
-            blocks: [
-              { type: "say", text: "Champion, open your eyes and look for the Cursed." },
-              { type: "narrator", text: `Point silently to ${cursedPlayer ? cursedPlayer.name : "the Cursed player"}'s seat.` }
-            ]
-          });
-        }
-        
-        // Twins Meet (only if both twins are in game)
-        if (hasRole(28) && hasRole(29)) {
-          nightSteps.push({
-            title: "Night 1: Twins Meet",
-            phase: "night",
-            blocks: [
-              { type: "say", text: "Twin A and Twin B, open your eyes and find each other." },
-              { type: "narrator", text: "Remind them: if one is eliminated, the other falls immediately. Note their identities for later." }
-            ]
-          });
-        }
-        
-        // Loyal Companion meets Champion (only if both are in game)
-        if (hasRole(21) && hasRole(16)) {
-          nightSteps.push({
-            title: "Night 1: Loyal Companion",
-            phase: "night",
-            blocks: [
-              { type: "say", text: "Loyal Companion, open your eyes. Champion, give them a nod." },
-              { type: "narrator", text: "Confirm they've spotted each other before sending them back to sleep." }
-            ]
-          });
-        }
+        // NOTE: Champion sees Cursed, Twins Meet, and Loyal Companion meets Champion
+        // are inserted at their correct positions later in the sequence (see below)
       } else {
         // Subsequent nights opening
         nightSteps.push({
@@ -3101,6 +3067,33 @@
             phase: "night",
             blocks: blocks
           });
+        });
+      }
+
+      // Night 1 Special: Champion sees Cursed (before Step 3, per design brief)
+      if (state.night === 1 && hasRole(16) && hasRole(30)) {
+        const cursedPlayer = state.players.find(p => p.charId === 30);
+        nightSteps.push({
+          title: "Night 1: Champion Sees the Cursed",
+          phase: "night",
+          blocks: [
+            { type: "say", text: "Champion, open your eyes and look for the Cursed." },
+            { type: "narrator", text: `Point silently to ${cursedPlayer ? cursedPlayer.name : "the Cursed player"}'s seat.` },
+            { type: "say", text: "Champion, close your eyes." }
+          ]
+        });
+      }
+
+      // Night 1 Special: Twins see each other (before Step 3, per design brief)
+      if (state.night === 1 && hasRole(28) && hasRole(29)) {
+        nightSteps.push({
+          title: "Night 1: Twins Meet",
+          phase: "night",
+          blocks: [
+            { type: "say", text: "Twin A and Twin B, open your eyes and find each other." },
+            { type: "narrator", text: "Remind them: if one is eliminated, the other falls immediately. Note their identities for later." },
+            { type: "say", text: "Twins, close your eyes." }
+          ]
         });
       }
 
@@ -3213,6 +3206,19 @@
             phase: "night",
             blocks: blocks
           });
+        });
+      }
+
+      // Night 1 Special: Loyal Companion sees Champion (before Step 5, per design brief)
+      if (state.night === 1 && hasRole(21) && hasRole(16)) {
+        nightSteps.push({
+          title: "Night 1: Loyal Companion Meets Champion",
+          phase: "night",
+          blocks: [
+            { type: "say", text: "Loyal Companion, open your eyes. Champion, give them a nod." },
+            { type: "narrator", text: "Confirm they've spotted each other before sending them back to sleep." },
+            { type: "say", text: "Loyal Companion and Champion, close your eyes." }
+          ]
         });
       }
 
