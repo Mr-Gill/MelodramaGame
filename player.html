@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Melodrama Werewolf - Player View</title>
+  <meta name="description" content="Player view for Melodrama Werewolf game - see your character and take notes." />
+  <!-- Google Fonts for theme-specific typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cinzel:wght@400;700&family=Orbitron:wght@400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #e2e8f0;
+      --accent-good: #38bdf8;
+      --accent-evil: #f472b6;
+      --accent-ui: #22d3ee;
+      --border-color: #475569;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, rgba(124, 58, 237, 0.15), transparent 60%), var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    header h1 {
+      margin: 0 0 0.25rem 0;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      letter-spacing: 0.05em;
+    }
+
+    header .subtitle {
+      font-size: clamp(0.9rem, 2vw, 1.2rem);
+      color: var(--text-secondary);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Login Section */
+    .login-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+    }
+
+    .login-section h2 {
+      margin: 0 0 1.5rem 0;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+    }
+
+    .login-form {
+      background: rgba(30, 41, 59, 0.8);
+      padding: 2rem;
+      border-radius: 20px;
+      border: 2px solid rgba(148, 163, 184, 0.3);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .game-code-input {
+      width: 100%;
+      padding: 1rem;
+      font-size: 2rem;
+      text-align: center;
+      letter-spacing: 0.5rem;
+      text-transform: uppercase;
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid rgba(148, 163, 184, 0.4);
+      border-radius: 12px;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .game-code-input:focus {
+      outline: none;
+      border-color: var(--accent-ui);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+    }
+
+    .game-code-input::placeholder {
+      letter-spacing: 0.2rem;
+      opacity: 0.5;
+    }
+
+    .player-name-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1.1rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid rgba(148, 163, 184, 0.4);
+      border-radius: 12px;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .player-name-input:focus {
+      outline: none;
+      border-color: var(--accent-ui);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+    }
+
+    .join-btn {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.8), rgba(244, 114, 182, 0.9));
+      border: none;
+      border-radius: 12px;
+      color: #0f172a;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .join-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.4);
+    }
+
+    .join-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      color: #f87171;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      display: none;
+    }
+
+    .error-message.visible {
+      display: block;
+    }
+
+    /* Game Section (after joining) */
+    .game-section {
+      display: none;
+    }
+
+    .game-section.active {
+      display: block;
+    }
+
+    /* Phase Indicator */
+    .phase-indicator {
+      text-align: center;
+      padding: 1rem 1.5rem;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 2px solid;
+      margin-bottom: 1.5rem;
+    }
+
+    .phase-indicator.night {
+      border-color: #7c3aed;
+      box-shadow: 0 0 30px rgba(124, 58, 237, 0.4);
+    }
+
+    .phase-indicator.day {
+      border-color: #f59e0b;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+    }
+
+    .phase-label {
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 0;
+    }
+
+    /* Character Card */
+    .character-card {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+      border-radius: 24px;
+      padding: 2rem;
+      text-align: center;
+      border: 3px solid;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      margin-bottom: 1.5rem;
+    }
+
+    .character-card.good {
+      border-color: var(--accent-good);
+      box-shadow: 0 0 40px rgba(56, 189, 248, 0.3);
+    }
+
+    .character-card.evil {
+      border-color: var(--accent-evil);
+      box-shadow: 0 0 40px rgba(244, 114, 182, 0.3);
+    }
+
+    .player-name-display {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .character-name {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: 0.03em;
+    }
+
+    .character-card.good .character-name {
+      color: var(--accent-good);
+      text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+    }
+
+    .character-card.evil .character-name {
+      color: var(--accent-evil);
+      text-shadow: 0 0 20px rgba(244, 114, 182, 0.5);
+    }
+
+    .character-type {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+    }
+
+    .character-team {
+      display: inline-block;
+      padding: 0.5rem 1.25rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
+
+    .character-team.good {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-good);
+      border: 2px solid var(--accent-good);
+    }
+
+    .character-team.evil {
+      background: rgba(244, 114, 182, 0.2);
+      color: var(--accent-evil);
+      border: 2px solid var(--accent-evil);
+    }
+
+    .character-ability {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      line-height: 1.7;
+      padding: 1.25rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
+      text-align: left;
+    }
+
+    .character-ability h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+    }
+
+    /* Night/Day Instructions */
+    .instructions-section {
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .instructions-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      color: var(--accent-ui);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .instructions-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .instructions-list li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .instructions-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent-ui);
+    }
+
+    /* Notes Section */
+    .notes-section {
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .notes-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      color: var(--accent-ui);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .notes-section h3 span {
+      font-size: 0.8rem;
+      font-weight: normal;
+      color: var(--text-secondary);
+    }
+
+    .notes-textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 1rem;
+      font-size: 1rem;
+      line-height: 1.6;
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid rgba(148, 163, 184, 0.3);
+      border-radius: 12px;
+      color: var(--text-primary);
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .notes-textarea:focus {
+      outline: none;
+      border-color: var(--accent-ui);
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+    }
+
+    .notes-textarea::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+
+    /* Connection Status */
+    .connection-status {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .connection-status.connected {
+      background: rgba(34, 197, 94, 0.2);
+      border: 2px solid #22c55e;
+      color: #86efac;
+    }
+
+    .connection-status.disconnected {
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid #ef4444;
+      color: #fca5a5;
+    }
+
+    .connection-status .indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    .connection-status.connected .indicator {
+      background: #22c55e;
+    }
+
+    .connection-status.disconnected .indicator {
+      background: #ef4444;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Leave Game Button */
+    .leave-btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid rgba(239, 68, 68, 0.5);
+      border-radius: 12px;
+      color: #fca5a5;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .leave-btn:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: #ef4444;
+    }
+
+    /* Win Overlay */
+    .win-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(10px);
+    }
+
+    .win-overlay.active {
+      display: flex;
+    }
+
+    .win-content {
+      text-align: center;
+      animation: win-appear 0.5s ease-out;
+    }
+
+    @keyframes win-appear {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .win-emoji {
+      font-size: clamp(4rem, 12vw, 8rem);
+      margin-bottom: 1rem;
+    }
+
+    .win-title {
+      font-size: clamp(2rem, 8vw, 5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      animation: win-pulse 1.5s ease-in-out infinite;
+    }
+
+    .win-title.good {
+      color: var(--accent-good);
+      text-shadow: 0 0 40px rgba(56, 189, 248, 0.7);
+    }
+
+    .win-title.evil {
+      color: var(--accent-evil);
+      text-shadow: 0 0 40px rgba(244, 114, 182, 0.7);
+    }
+
+    @keyframes win-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .win-subtitle {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      color: var(--text-secondary);
+      letter-spacing: 0.1em;
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      main {
+        padding: 1rem;
+      }
+
+      .character-card {
+        padding: 1.5rem;
+      }
+
+      .notes-textarea {
+        min-height: 150px;
+      }
+    }
+
+    /* Waiting state */
+    .waiting-message {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .waiting-message .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(148, 163, 184, 0.3);
+      border-top-color: var(--accent-ui);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 0.75rem;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Win notification overlay -->
+  <div class="win-overlay" id="win-overlay">
+    <div class="win-content">
+      <div class="win-emoji" id="win-emoji">🎭</div>
+      <div class="win-title" id="win-title">Victory!</div>
+      <div class="win-subtitle" id="win-subtitle">The game has ended</div>
+    </div>
+  </div>
+
+  <div class="connection-status disconnected" id="connection-status">
+    <span class="indicator"></span>
+    <span class="status-text">Not Connected</span>
+  </div>
+
+  <header>
+    <h1>🎭 Melodrama Werewolf</h1>
+    <div class="subtitle">Player View</div>
+  </header>
+
+  <main>
+    <!-- Login Section -->
+    <section class="login-section" id="login-section">
+      <h2>Join the Game</h2>
+      <div class="login-form">
+        <label for="game-code">Game Code</label>
+        <input 
+          type="text" 
+          id="game-code" 
+          class="game-code-input" 
+          placeholder="XXXX" 
+          maxlength="4" 
+          autocomplete="off"
+          autocapitalize="characters"
+        />
+        
+        <label for="player-name">Your Name</label>
+        <input 
+          type="text" 
+          id="player-name" 
+          class="player-name-input" 
+          placeholder="Enter your name"
+          maxlength="30"
+          autocomplete="off"
+        />
+        
+        <button class="join-btn" id="join-btn" disabled>Join Game</button>
+        
+        <div class="error-message" id="error-message">
+          Invalid game code. Please check with your narrator.
+        </div>
+      </div>
+    </section>
+
+    <!-- Game Section (shown after joining) -->
+    <section class="game-section" id="game-section">
+      <!-- Phase Indicator -->
+      <div class="phase-indicator night" id="phase-indicator">
+        <div class="phase-label" id="phase-label">Waiting for game...</div>
+      </div>
+
+      <!-- Character Card -->
+      <div class="character-card good" id="character-card">
+        <div class="player-name-display" id="player-name-display">Your Name</div>
+        <h2 class="character-name" id="character-name">Loading...</h2>
+        <div class="character-type" id="character-type">Character Type</div>
+        <div class="character-team good" id="character-team">Team</div>
+        
+        <div class="character-ability">
+          <h4>Your Ability</h4>
+          <p id="character-ability-text">Loading character information...</p>
+        </div>
+      </div>
+
+      <!-- Night/Day Instructions -->
+      <div class="instructions-section" id="instructions-section">
+        <h3>📋 Your Instructions</h3>
+        <ul class="instructions-list" id="instructions-list">
+          <li>Waiting for character assignment...</li>
+        </ul>
+      </div>
+
+      <!-- Notes Section -->
+      <div class="notes-section">
+        <h3>
+          📝 Your Private Notes
+          <span>Only you can see these</span>
+        </h3>
+        <textarea 
+          class="notes-textarea" 
+          id="notes-textarea" 
+          placeholder="Keep track of suspicions, observations, and clues here...
+
+• Who seems suspicious?
+• What did you learn tonight?
+• Who might be on your team?"
+        ></textarea>
+      </div>
+
+      <!-- Leave Game Button -->
+      <button class="leave-btn" id="leave-btn">Leave Game</button>
+    </section>
+  </main>
+
+  <script>
+    // BroadcastChannel for communication
+    const CHANNEL_NAME = 'melodrama-player-channel';
+    let channel = null;
+    let retryTimeout = null;
+
+    // Player state
+    const playerState = {
+      gameCode: null,
+      playerName: null,
+      playerId: null,
+      character: null,
+      phase: 'setup',
+      night: 0,
+      connected: false,
+      notes: ''
+    };
+
+    // DOM Elements
+    const loginSection = document.getElementById('login-section');
+    const gameSection = document.getElementById('game-section');
+    const gameCodeInput = document.getElementById('game-code');
+    const playerNameInput = document.getElementById('player-name');
+    const joinBtn = document.getElementById('join-btn');
+    const errorMessage = document.getElementById('error-message');
+    const connectionStatus = document.getElementById('connection-status');
+    const statusText = connectionStatus.querySelector('.status-text');
+    
+    // Game section elements
+    const phaseIndicator = document.getElementById('phase-indicator');
+    const phaseLabel = document.getElementById('phase-label');
+    const characterCard = document.getElementById('character-card');
+    const playerNameDisplay = document.getElementById('player-name-display');
+    const characterName = document.getElementById('character-name');
+    const characterType = document.getElementById('character-type');
+    const characterTeam = document.getElementById('character-team');
+    const characterAbilityText = document.getElementById('character-ability-text');
+    const instructionsList = document.getElementById('instructions-list');
+    const notesTextarea = document.getElementById('notes-textarea');
+    const leaveBtn = document.getElementById('leave-btn');
+    
+    // Win overlay elements
+    const winOverlay = document.getElementById('win-overlay');
+    const winTitle = document.getElementById('win-title');
+    const winSubtitle = document.getElementById('win-subtitle');
+    const winEmoji = document.getElementById('win-emoji');
+
+    // Initialize
+    function init() {
+      // Load saved state from localStorage
+      loadSavedState();
+      
+      // Set up event listeners
+      gameCodeInput.addEventListener('input', handleCodeInput);
+      playerNameInput.addEventListener('input', validateForm);
+      joinBtn.addEventListener('click', handleJoin);
+      leaveBtn.addEventListener('click', handleLeave);
+      notesTextarea.addEventListener('input', saveNotes);
+      
+      // Set up BroadcastChannel
+      initBroadcastChannel();
+      
+      // If we have a saved game code and character, rejoin
+      if (playerState.gameCode && playerState.character) {
+        showGameSection();
+        requestStateUpdate();
+      }
+    }
+
+    function loadSavedState() {
+      try {
+        const saved = localStorage.getItem('melodrama_player_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          Object.assign(playerState, parsed);
+          
+          // Restore notes
+          if (playerState.notes) {
+            notesTextarea.value = playerState.notes;
+          }
+          
+          // Restore game code and name in inputs
+          if (playerState.gameCode) {
+            gameCodeInput.value = playerState.gameCode;
+          }
+          if (playerState.playerName) {
+            playerNameInput.value = playerState.playerName;
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to load saved state:', error);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('melodrama_player_state', JSON.stringify(playerState));
+      } catch (error) {
+        console.warn('Failed to save state:', error);
+      }
+    }
+
+    function saveNotes() {
+      playerState.notes = notesTextarea.value;
+      saveState();
+    }
+
+    function handleCodeInput(event) {
+      // Convert to uppercase and filter non-alphanumeric
+      let value = event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      event.target.value = value;
+      validateForm();
+    }
+
+    function validateForm() {
+      const code = gameCodeInput.value.trim();
+      const name = playerNameInput.value.trim();
+      joinBtn.disabled = code.length !== 4 || name.length === 0;
+    }
+
+    function initBroadcastChannel() {
+      if ('BroadcastChannel' in window) {
+        try {
+          channel = new BroadcastChannel(CHANNEL_NAME);
+          
+          channel.onmessage = (event) => {
+            handleMessage(event.data);
+          };
+
+          channel.onmessageerror = (error) => {
+            console.error('BroadcastChannel message error:', error);
+          };
+
+          console.log('BroadcastChannel initialized');
+        } catch (error) {
+          console.error('Failed to initialize BroadcastChannel:', error);
+        }
+      } else {
+        console.warn('BroadcastChannel not supported');
+      }
+    }
+
+    function handleJoin() {
+      const code = gameCodeInput.value.trim().toUpperCase();
+      const name = playerNameInput.value.trim();
+      
+      if (code.length !== 4 || name.length === 0) {
+        return;
+      }
+      
+      playerState.gameCode = code;
+      playerState.playerName = name;
+      saveState();
+      
+      // Send join request
+      if (channel) {
+        channel.postMessage({
+          type: 'player-join',
+          gameCode: code,
+          playerName: name
+        });
+      }
+      
+      // Show waiting state
+      errorMessage.classList.remove('visible');
+      joinBtn.disabled = true;
+      joinBtn.textContent = 'Joining...';
+      
+      // Set timeout for response
+      retryTimeout = setTimeout(() => {
+        showError('No game found with this code. Make sure the narrator has started a game.');
+        joinBtn.disabled = false;
+        joinBtn.textContent = 'Join Game';
+      }, 5000);
+    }
+
+    function handleMessage(data) {
+      console.log('Received message:', data);
+      
+      // Check if this message is for our game code
+      if (data.gameCode && data.gameCode !== playerState.gameCode) {
+        return;
+      }
+      
+      switch (data.type) {
+        case 'player-assigned':
+          if (data.playerName === playerState.playerName) {
+            clearTimeout(retryTimeout);
+            handlePlayerAssigned(data);
+          }
+          break;
+          
+        case 'join-rejected':
+          if (data.playerName === playerState.playerName) {
+            clearTimeout(retryTimeout);
+            showError(data.reason || 'Unable to join game.');
+            joinBtn.disabled = false;
+            joinBtn.textContent = 'Join Game';
+          }
+          break;
+          
+        case 'game-state':
+          updateGameState(data);
+          break;
+          
+        case 'phase-change':
+          updatePhase(data.phase, data.night);
+          break;
+          
+        case 'WIN':
+          showWinNotification(data.team, data.night);
+          break;
+          
+        case 'game-reset':
+          handleGameReset();
+          break;
+      }
+    }
+
+    function handlePlayerAssigned(data) {
+      playerState.playerId = data.playerId;
+      playerState.character = data.character;
+      playerState.connected = true;
+      saveState();
+      
+      showGameSection();
+      updateCharacterDisplay();
+      updateConnectionStatus(true);
+    }
+
+    function showGameSection() {
+      loginSection.style.display = 'none';
+      gameSection.classList.add('active');
+      
+      if (playerState.character) {
+        updateCharacterDisplay();
+      }
+    }
+
+    function updateCharacterDisplay() {
+      const char = playerState.character;
+      if (!char) return;
+      
+      // Update player name
+      playerNameDisplay.textContent = playerState.playerName;
+      
+      // Update character info
+      characterName.textContent = char.name;
+      characterType.textContent = `${char.typeLabel || char.type}-Type`;
+      
+      // Update team badge
+      characterTeam.textContent = char.team === 'good' ? '👼 Good Team' : '😈 Evil Team';
+      characterTeam.className = `character-team ${char.team}`;
+      
+      // Update card styling
+      characterCard.className = `character-card ${char.team}`;
+      
+      // Update ability text
+      characterAbilityText.textContent = char.power || char.short || 'No ability description available.';
+      
+      // Update instructions based on character
+      updateInstructions(char);
+    }
+
+    function updateInstructions(char) {
+      const instructions = [];
+      
+      // Add night instructions
+      if (char.nightB && Array.isArray(char.nightB)) {
+        char.nightB.forEach(instruction => {
+          instructions.push(instruction);
+        });
+      }
+      
+      // Add day instructions
+      if (char.dayB && Array.isArray(char.dayB)) {
+        char.dayB.forEach(instruction => {
+          instructions.push(instruction);
+        });
+      }
+      
+      // If no instructions, add default
+      if (instructions.length === 0) {
+        instructions.push('Listen to the narrator for your cues.');
+        instructions.push('Stay in character and be dramatic!');
+        if (char.team === 'evil') {
+          instructions.push('Work with your team to eliminate the good players.');
+        } else {
+          instructions.push('Work to identify and eliminate the evil players.');
+        }
+      }
+      
+      // Update the list
+      instructionsList.innerHTML = '';
+      instructions.forEach(instruction => {
+        const li = document.createElement('li');
+        li.textContent = instruction;
+        instructionsList.appendChild(li);
+      });
+    }
+
+    function updatePhase(phase, night) {
+      playerState.phase = phase;
+      playerState.night = night;
+      saveState();
+      
+      phaseIndicator.className = `phase-indicator ${phase}`;
+      
+      if (phase === 'night') {
+        phaseLabel.textContent = `🌙 Night ${night}`;
+      } else if (phase === 'day') {
+        phaseLabel.textContent = `☀️ Day ${night}`;
+      } else {
+        phaseLabel.textContent = 'Waiting for game...';
+      }
+    }
+
+    function updateGameState(data) {
+      if (data.phase) {
+        updatePhase(data.phase, data.night || 0);
+      }
+      updateConnectionStatus(true);
+    }
+
+    function showWinNotification(team, nightCount) {
+      if (team === 'good') {
+        winTitle.textContent = 'Good Team Wins!';
+        winTitle.className = 'win-title good';
+        winEmoji.textContent = '🎭 🏆 🎭';
+        winSubtitle.textContent = `Victory after ${nightCount} nights!`;
+      } else if (team === 'evil') {
+        winTitle.textContent = 'Evil Team Wins!';
+        winTitle.className = 'win-title evil';
+        winEmoji.textContent = '😈 💀 😈';
+        winSubtitle.textContent = `Darkness prevails after ${nightCount} nights!`;
+      }
+      winOverlay.classList.add('active');
+    }
+
+    function handleGameReset() {
+      // Clear character assignment but keep notes
+      playerState.character = null;
+      playerState.playerId = null;
+      playerState.phase = 'setup';
+      playerState.night = 0;
+      saveState();
+      
+      // Hide win overlay
+      winOverlay.classList.remove('active');
+      
+      // Go back to login
+      gameSection.classList.remove('active');
+      loginSection.style.display = 'flex';
+      joinBtn.disabled = false;
+      joinBtn.textContent = 'Join Game';
+    }
+
+    function handleLeave() {
+      if (confirm('Are you sure you want to leave the game?')) {
+        // Notify narrator
+        if (channel) {
+          channel.postMessage({
+            type: 'player-leave',
+            gameCode: playerState.gameCode,
+            playerName: playerState.playerName,
+            playerId: playerState.playerId
+          });
+        }
+        
+        handleGameReset();
+      }
+    }
+
+    function requestStateUpdate() {
+      if (channel && playerState.gameCode) {
+        channel.postMessage({
+          type: 'player-request-state',
+          gameCode: playerState.gameCode,
+          playerName: playerState.playerName
+        });
+      }
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.add('visible');
+    }
+
+    function updateConnectionStatus(connected) {
+      playerState.connected = connected;
+      
+      if (connected) {
+        connectionStatus.classList.remove('disconnected');
+        connectionStatus.classList.add('connected');
+        statusText.textContent = 'Connected';
+      } else {
+        connectionStatus.classList.remove('connected');
+        connectionStatus.classList.add('disconnected');
+        statusText.textContent = 'Not Connected';
+      }
+    }
+
+    // Periodic connection check
+    setInterval(() => {
+      if (playerState.gameCode && playerState.character) {
+        requestStateUpdate();
+      }
+    }, 10000); // Every 10 seconds
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', init);
+
+    // Cleanup on unload
+    window.addEventListener('beforeunload', () => {
+      if (channel) {
+        channel.close();
+      }
+    });
+  </script>
+</body>
+</html>
