@@ -630,6 +630,11 @@
       border-color: rgba(244, 114, 182, 0.4);
     }
 
+    .roster-item.unknown {
+      background: rgba(148, 163, 184, 0.15);
+      border-color: rgba(148, 163, 184, 0.4);
+    }
+
     .roster-item.eliminated {
       opacity: 0.5;
       text-decoration: line-through;
@@ -1293,12 +1298,25 @@
       
       sortedRoster.forEach(player => {
         const li = document.createElement('li');
+        // Use 'unknown' team for alive players (their identity is hidden)
         li.className = `roster-item ${player.team}${player.eliminated ? ' eliminated' : ''}`;
-        li.innerHTML = `
-          <span class="roster-name">${player.name}</span>
-          <span class="roster-role">${player.roleName}</span>
-        `;
-        li.onclick = () => showCharacterCard(player);
+        
+        // Only show details for eliminated players
+        if (player.eliminated) {
+          li.innerHTML = `
+            <span class="roster-name">${player.name}</span>
+            <span class="roster-role">${player.roleName}</span>
+          `;
+          li.onclick = () => showCharacterCard(player);
+        } else {
+          // For alive players, just show a placeholder
+          li.innerHTML = `
+            <span class="roster-name">🎭 Player ${player.id + 1}</span>
+            <span class="roster-role">Still in the game...</span>
+          `;
+          // Don't allow clicking on alive players
+          li.onclick = null;
+        }
         rosterList.appendChild(li);
       });
     }
@@ -1306,6 +1324,9 @@
     // Character card modal functions
     function showCharacterCard(character) {
       if (!character) return;
+      
+      // Only show character card for eliminated players
+      if (!character.eliminated) return;
       
       // Show role name (e.g., "The Champion") as the main title
       characterName.textContent = character.roleName;
