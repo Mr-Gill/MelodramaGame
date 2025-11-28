@@ -2981,7 +2981,8 @@
             blocks: [
               { type: "say", text: "Accomplices, lift your heads and find your villain allies." },
               { type: "narrator", text: "Have villains give a subtle nod so accomplices know them." },
-              { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall }
+              { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall },
+              { type: "say", text: "Accomplices, lower your heads. Villains, close your eyes." }
             ]
           });
         }
@@ -3010,7 +3011,8 @@
             { type: "say", text: "Villain team, open your eyes and choose your victim." },
             { type: "narrator", text: "Watch their silent debate. Confirm their choice before moving on." },
             { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall },
-            { type: "info", text: `Villains alive: ${villains || "None"}` }
+            { type: "info", text: `Villains alive: ${villains || "None"}` },
+            { type: "say", text: "Villain team, close your eyes." }
           ]
         });
       }
@@ -3229,10 +3231,22 @@
           phase: "night",
           blocks: [
             { type: "say", text: "Sidekicks ready for drama, give a single silent thumbs-up." },
-            { type: "narrator", text: "Note who will trigger a dice roll during the day phase." }
+            { type: "narrator", text: "Note who will trigger a dice roll during the day phase." },
+            { type: "say", text: "Sidekicks, hands down." }
           ]
         });
       }
+
+      // Night Closing - wake everyone before resolution
+      nightSteps.push({
+        title: "Night Ends",
+        phase: "night",
+        blocks: [
+          { type: "say", text: "The night is over. Everyone, open your eyes and look around..." },
+          { type: "narrator", text: "Pause dramatically. Let the tension build as players look for who might be missing." },
+          { type: "narrator", text: "Now proceed to the Night Resolution to calculate the outcomes privately." }
+        ]
+      });
 
       // Night Resolution - Private calculation step with detailed order
       nightSteps.push({
