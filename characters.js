@@ -1231,7 +1231,5 @@ function getCharactersByTeam(team) {
   return CHARACTERS.filter(c => c.team === team);
 }
 
-// Export for use in other files
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { CHARACTERS, TYPE_DETAILS, getCharacterById, getCharacterByCharId, getCharactersByType, getCharactersByTeam };
-}
+// Note: This file is designed for browser use via <script> tags.
+// CHARACTERS and TYPE_DETAILS are available as global variables.

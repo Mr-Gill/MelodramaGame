@@ -393,6 +393,18 @@
 
   <script src="characters.js"></script>
   <script>
+    // Check that characters.js loaded successfully
+    if (typeof CHARACTERS === 'undefined' || typeof TYPE_DETAILS === 'undefined') {
+      document.getElementById('cards-container').innerHTML = `
+        <div style="padding: 40px; text-align: center; color: #dc2626; font-size: 1.2rem;">
+          <h2>⚠️ Error Loading Character Data</h2>
+          <p>The characters.js file failed to load. Please ensure the file exists and the page is served from a web server.</p>
+          <p style="color: #6b7280; font-size: 0.9rem;">If running locally, try using a local server like <code>npx serve</code> or Python's <code>http.server</code>.</p>
+        </div>
+      `;
+      throw new Error('characters.js failed to load - CHARACTERS or TYPE_DETAILS undefined');
+    }
+
     // Render all character cards
     function renderCards() {
       const container = document.getElementById('cards-container');
