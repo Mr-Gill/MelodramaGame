@@ -74,8 +74,16 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 60vh;
+      min-height: 50vh;
+      padding: 2rem 0;
       text-align: center;
+    }
+
+    @media (max-height: 600px) {
+      .login-section {
+        min-height: auto;
+        padding: 1rem 0;
+      }
     }
 
     .login-section h2 {
@@ -860,7 +868,7 @@
         showError('No game found with this code. Make sure the narrator has started a game.');
         joinBtn.disabled = false;
         joinBtn.textContent = 'Join Game';
-      }, 5000);
+      }, JOIN_TIMEOUT_MS);
     }
 
     function handleMessage(data) {
@@ -915,6 +923,7 @@
       showGameSection();
       updateCharacterDisplay();
       updateConnectionStatus(true);
+      startConnectionCheck();
     }
 
     function showGameSection() {
@@ -1027,6 +1036,9 @@
     }
 
     function handleGameReset() {
+      // Stop connection check
+      stopConnectionCheck();
+      
       // Clear character assignment but keep notes
       playerState.character = null;
       playerState.playerId = null;
@@ -1075,6 +1087,13 @@
       errorMessage.classList.add('visible');
     }
 
+    // Constants
+    const JOIN_TIMEOUT_MS = 5000;
+    const CONNECTION_CHECK_INTERVAL_MS = 10000;
+
+    // Interval handle for cleanup
+    let connectionCheckInterval = null;
+
     function updateConnectionStatus(connected) {
       playerState.connected = connected;
       
@@ -1089,18 +1108,30 @@
       }
     }
 
-    // Periodic connection check
-    setInterval(() => {
-      if (playerState.gameCode && playerState.character) {
-        requestStateUpdate();
+    // Start periodic connection check
+    function startConnectionCheck() {
+      if (connectionCheckInterval) return; // Already running
+      connectionCheckInterval = setInterval(() => {
+        if (playerState.gameCode && playerState.character) {
+          requestStateUpdate();
+        }
+      }, CONNECTION_CHECK_INTERVAL_MS);
+    }
+
+    // Stop periodic connection check
+    function stopConnectionCheck() {
+      if (connectionCheckInterval) {
+        clearInterval(connectionCheckInterval);
+        connectionCheckInterval = null;
       }
-    }, 10000); // Every 10 seconds
+    }
 
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', init);
 
     // Cleanup on unload
     window.addEventListener('beforeunload', () => {
+      stopConnectionCheck();
       if (channel) {
         channel.close();
       }
