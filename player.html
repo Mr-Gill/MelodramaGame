@@ -956,6 +956,531 @@
       color: var(--text-secondary);
       font-size: 0.95rem;
     }
+
+    /* Elimination Notification */
+    .elimination-notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(185, 28, 28, 0.95));
+      border: 3px solid #ef4444;
+      border-radius: 20px;
+      padding: 2rem 3rem;
+      text-align: center;
+      z-index: 3000;
+      box-shadow: 0 20px 60px rgba(239, 68, 68, 0.5);
+      opacity: 0;
+      transition: all 0.4s ease-out;
+    }
+
+    .elimination-notification.active {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .elimination-notification .skull-icon {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+      animation: skullShake 0.5s ease-in-out;
+    }
+
+    @keyframes skullShake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg); }
+      75% { transform: rotate(10deg); }
+    }
+
+    .elimination-notification .elimination-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+
+    .elimination-notification .elimination-name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fecaca;
+      text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .elimination-notification .elimination-subtitle {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
+    /* Role-Specific Tips */
+    .role-tips-section {
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--accent-ui);
+    }
+
+    .role-tips-section.good {
+      border-left-color: var(--accent-good);
+    }
+
+    .role-tips-section.evil {
+      border-left-color: var(--accent-evil);
+    }
+
+    .role-tips-section h4 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      color: var(--accent-ui);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .role-tips-section.good h4 {
+      color: var(--accent-good);
+    }
+
+    .role-tips-section.evil h4 {
+      color: var(--accent-evil);
+    }
+
+    .role-tip-text {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Tutorial Section */
+    .tutorial-section {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(56, 189, 248, 0.15));
+      border: 2px solid rgba(124, 58, 237, 0.4);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .tutorial-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.2rem;
+      color: var(--accent-ui);
+      text-align: center;
+    }
+
+    .tutorial-step {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--accent-ui);
+    }
+
+    .tutorial-step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tutorial-step-number {
+      width: 28px;
+      height: 28px;
+      background: var(--accent-ui);
+      color: #0f172a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .tutorial-step-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+
+    .tutorial-step-content {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .tutorial-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .tutorial-nav-btn {
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .tutorial-nav-btn.prev {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--text-secondary);
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+
+    .tutorial-nav-btn.next {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.8), rgba(124, 58, 237, 0.8));
+      color: white;
+    }
+
+    .tutorial-nav-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .tutorial-nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .tutorial-progress {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tutorial-progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(148, 163, 184, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .tutorial-progress-dot.active {
+      background: var(--accent-ui);
+      transform: scale(1.2);
+    }
+
+    .tutorial-progress-dot.completed {
+      background: rgba(34, 197, 94, 0.6);
+    }
+
+    .tutorial-complete {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .tutorial-complete-icon {
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tutorial-complete-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-good);
+      margin-bottom: 0.5rem;
+    }
+
+    .tutorial-complete-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .start-tutorial-btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.7), rgba(56, 189, 248, 0.8));
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .start-tutorial-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+    }
+
+    /* Night Activity Section */
+    .night-activity-section {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(79, 70, 229, 0.15));
+      border: 2px solid rgba(124, 58, 237, 0.5);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      display: none;
+    }
+
+    .night-activity-section.active {
+      display: block;
+      animation: nightFade 0.5s ease-out;
+    }
+
+    @keyframes nightFade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .night-activity-section h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.2rem;
+      color: #a78bfa;
+    }
+
+    .night-activity-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+
+    .night-activity-card {
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .night-activity-emoji {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .night-activity-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #c4b5fd;
+      margin-bottom: 0.5rem;
+    }
+
+    .night-activity-text {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .night-activity-timer {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: rgba(124, 58, 237, 0.3);
+      border-radius: 999px;
+      color: #c4b5fd;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 0.75rem;
+    }
+
+    .next-activity-btn {
+      padding: 0.6rem 1.5rem;
+      background: rgba(124, 58, 237, 0.4);
+      border: 2px solid rgba(124, 58, 237, 0.6);
+      border-radius: 10px;
+      color: #c4b5fd;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0.5rem;
+    }
+
+    .next-activity-btn:hover {
+      background: rgba(124, 58, 237, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* Acting Prompts Section */
+    .acting-prompt-section {
+      background: linear-gradient(135deg, rgba(244, 114, 182, 0.15), rgba(251, 113, 133, 0.15));
+      border: 2px solid rgba(244, 114, 182, 0.4);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+
+    .acting-prompt-section.active {
+      display: block;
+      animation: promptAppear 0.4s ease-out;
+    }
+
+    @keyframes promptAppear {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .acting-prompt-section h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 1rem;
+      color: #f472b6;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .acting-prompt-card {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .acting-prompt-type {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(244, 114, 182, 0.8);
+      margin-bottom: 0.5rem;
+    }
+
+    .acting-prompt-text {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .new-prompt-btn {
+      display: block;
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.75rem;
+      background: rgba(244, 114, 182, 0.2);
+      border: 1px solid rgba(244, 114, 182, 0.4);
+      border-radius: 8px;
+      color: #f9a8d4;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .new-prompt-btn:hover {
+      background: rgba(244, 114, 182, 0.3);
+    }
+
+    /* Death Scene Suggestions */
+    .death-scene-section {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 4000;
+      padding: 1.5rem;
+    }
+
+    .death-scene-section.active {
+      display: flex;
+      animation: deathFade 0.5s ease-out;
+    }
+
+    @keyframes deathFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .death-scene-card {
+      background: linear-gradient(135deg, rgba(127, 29, 29, 0.9), rgba(153, 27, 27, 0.9));
+      border: 3px solid #dc2626;
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(220, 38, 38, 0.4);
+    }
+
+    .death-scene-icon {
+      font-size: 4rem;
+      margin-bottom: 0.75rem;
+      animation: deathPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes deathPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .death-scene-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fecaca;
+      margin-bottom: 0.5rem;
+    }
+
+    .death-scene-subtitle {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .death-scene-prompt {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .death-scene-prompt-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(254, 202, 202, 0.7);
+      margin-bottom: 0.5rem;
+    }
+
+    .death-scene-prompt-text {
+      font-size: 1.15rem;
+      color: white;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .death-scene-tips {
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .death-scene-tips h5 {
+      font-size: 0.85rem;
+      color: #fca5a5;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .death-scene-tips ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .death-scene-close {
+      padding: 0.75rem 2rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .death-scene-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
   </style>
   <!-- Firebase SDK for cross-device communication -->
   <script type="module">
@@ -1005,6 +1530,30 @@
   </script>
 </head>
 <body>
+  <!-- Death Scene Overlay (shown when player is eliminated) -->
+  <div class="death-scene-section" id="death-scene-section">
+    <div class="death-scene-card">
+      <div class="death-scene-icon">💀</div>
+      <div class="death-scene-title">You Have Been Eliminated!</div>
+      <div class="death-scene-subtitle">Time for your dramatic exit...</div>
+      <div class="death-scene-prompt">
+        <div class="death-scene-prompt-label">Your Death Scene</div>
+        <div class="death-scene-prompt-text" id="death-scene-prompt-text">
+          "With my dying breath, I curse you all!"
+        </div>
+      </div>
+      <div class="death-scene-tips">
+        <h5>🎭 Performance Tips:</h5>
+        <ul id="death-scene-tips-list">
+          <li>Point dramatically at someone suspicious</li>
+          <li>Clutch your chest and stagger</li>
+          <li>Deliver your final words with passion</li>
+        </ul>
+      </div>
+      <button class="death-scene-close" id="death-scene-close">I'm Ready to Perform! 🎭</button>
+    </div>
+  </div>
+
   <!-- Win notification overlay -->
   <div class="win-overlay" id="win-overlay">
     <div class="win-content">
@@ -1099,6 +1648,34 @@
           <div class="dice-result-text" id="dice-result-text">Result</div>
           <div class="dice-result-description" id="dice-result-description">Description</div>
         </div>
+      </div>
+
+      <!-- Night Activity Section (shown during night phase) -->
+      <div class="night-activity-section" id="night-activity-section">
+        <h3>🌙 Night Phase</h3>
+        <div class="night-activity-subtitle">While you wait with eyes closed or turned around...</div>
+        <div class="night-activity-card">
+          <div class="night-activity-emoji" id="night-activity-emoji">🧘</div>
+          <div class="night-activity-title" id="night-activity-title">Loading activity...</div>
+          <div class="night-activity-text" id="night-activity-text">Get ready for the next round!</div>
+        </div>
+        <button class="next-activity-btn" id="next-activity-btn">Next Activity →</button>
+      </div>
+
+      <!-- Acting Prompt Section (shown during day phase) -->
+      <div class="acting-prompt-section" id="acting-prompt-section">
+        <h4>🎭 Acting Challenge</h4>
+        <div class="acting-prompt-card">
+          <div class="acting-prompt-type" id="acting-prompt-type">Performance Tip</div>
+          <div class="acting-prompt-text" id="acting-prompt-text">Loading prompt...</div>
+        </div>
+        <button class="new-prompt-btn" id="new-prompt-btn">🎲 New Challenge</button>
+      </div>
+
+      <!-- Role-Specific Tips Section -->
+      <div class="role-tips-section" id="role-tips-section" style="display: none;">
+        <h4>💡 Strategy Tip</h4>
+        <div class="role-tip-text" id="role-tip-text">Loading tip...</div>
       </div>
 
       <!-- Character Card -->
@@ -2022,7 +2599,7 @@
           type: 'player-vote',
           gameCode: playerState.gameCode,
           playerName: playerState.playerName,
-          playerId: playerState.gamePlayerId,
+          playerId: playerState.playerId,
           votedFor: votingState.selectedPlayer
         });
       }
@@ -2145,7 +2722,7 @@
               type: 'player-dice-roll',
               gameCode: playerState.gameCode,
               playerName: playerState.playerName,
-              playerId: playerState.gamePlayerId,
+              playerId: playerState.playerId,
               result: result,
               success: success
             });
@@ -2159,6 +2736,376 @@
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    // ===== NIGHT ACTIVITIES SYSTEM =====
+    const NIGHT_ACTIVITIES = [
+      // SUSPICION JOURNAL - Explicit note-taking prompts
+      {
+        emoji: "📝",
+        title: "Suspicion Journal",
+        text: "WRITE THIS DOWN NOW: List 3 players you're most suspicious of and WHY. Be specific - what did they say or do?",
+        category: "journal"
+      },
+      {
+        emoji: "📋",
+        title: "Alliance Tracker",
+        text: "WRITE THIS DOWN: Who defended whom today? Draw lines between players who seem to be working together.",
+        category: "journal"
+      },
+      {
+        emoji: "🔍",
+        title: "Evidence Log",
+        text: "WRITE THIS DOWN: What concrete evidence do you have? 'Player X accused Y when...' 'Player Z stayed quiet when...'",
+        category: "journal"
+      },
+      {
+        emoji: "❓",
+        title: "Unanswered Questions",
+        text: "WRITE THIS DOWN: What questions do you want to ask tomorrow? Who hasn't explained themselves? What doesn't add up?",
+        category: "journal"
+      },
+      // OBSERVATION TASKS - Mental exercises
+      {
+        emoji: "🔢",
+        title: "Counting Exercise",
+        text: "Count slowly to 30 in your head. At each number, think of one thing you noticed today about any player.",
+        category: "observation"
+      },
+      {
+        emoji: "🎯",
+        title: "Accusation Prep",
+        text: "Think of 3 reasons to accuse the person sitting to your LEFT. Then 3 reasons for the person on your RIGHT.",
+        category: "observation"
+      },
+      {
+        emoji: "👥",
+        title: "Behavior Recall",
+        text: "Picture each player's face. How did they react when votes were counted? Who looked relieved? Who looked worried?",
+        category: "observation"
+      },
+      // MINDFULNESS/FOCUS - Breathing and strategy
+      {
+        emoji: "🧘",
+        title: "Deep Breathing",
+        text: "Breathe in for 4 counts... hold for 4... exhale for 4. Repeat 5 times. Clear your mind for strategic thinking.",
+        category: "mindfulness"
+      },
+      {
+        emoji: "💭",
+        title: "Strategy Planning",
+        text: "Eyes closed, plan your next move: What will you say first? Who will you watch? What's your backup plan?",
+        category: "mindfulness"
+      },
+      {
+        emoji: "🎭",
+        title: "Character Focus",
+        text: "Get into character: How does your role feel right now? Confident? Scared? Calculating? Let that emotion guide you.",
+        category: "mindfulness"
+      },
+      // MINI PUZZLES/TRIVIA - Fun activities
+      {
+        emoji: "🧩",
+        title: "Word Puzzle",
+        text: "How many words can you make from the letters in 'MELODRAMA'? (Example: drama, lame, dome, roam...)",
+        category: "puzzle"
+      },
+      {
+        emoji: "🎲",
+        title: "Math Challenge",
+        text: "Without looking: How many players started the game? How many are left? What percentage has been eliminated?",
+        category: "puzzle"
+      },
+      {
+        emoji: "🌟",
+        title: "Memory Test",
+        text: "Can you name every player still alive in clockwise order? Test your memory before eyes open!",
+        category: "puzzle"
+      },
+      {
+        emoji: "🎬",
+        title: "Movie Quote",
+        text: "Think of a dramatic movie quote you could use today: 'I see dead people...' 'May the odds be ever in your favor...'",
+        category: "puzzle"
+      },
+      {
+        emoji: "🎭",
+        title: "Accent Challenge",
+        text: "Pick an accent for your next statement: British detective? Southern drawl? News reporter? Practice silently!",
+        category: "puzzle"
+      },
+      {
+        emoji: "🤔",
+        title: "Riddle Time",
+        text: "I can be cracked, made, told, and played. What am I? (Answer: A joke!) Now think of something funny to lighten the mood.",
+        category: "puzzle"
+      }
+    ];
+
+    let currentNightActivityIndex = 0;
+
+    function initNightActivities() {
+      const nextBtn = document.getElementById('next-activity-btn');
+      if (nextBtn) {
+        nextBtn.addEventListener('click', nextNightActivity);
+      }
+      renderNightActivity(0);
+    }
+
+    function renderNightActivity(index) {
+      const activity = NIGHT_ACTIVITIES[index];
+      const emojiEl = document.getElementById('night-activity-emoji');
+      const titleEl = document.getElementById('night-activity-title');
+      const textEl = document.getElementById('night-activity-text');
+      
+      if (!emojiEl || !activity) return;
+      
+      emojiEl.textContent = activity.emoji;
+      titleEl.textContent = activity.title;
+      textEl.textContent = activity.text;
+      currentNightActivityIndex = index;
+    }
+
+    function nextNightActivity() {
+      const nextIndex = (currentNightActivityIndex + 1) % NIGHT_ACTIVITIES.length;
+      renderNightActivity(nextIndex);
+    }
+
+    function showNightActivities() {
+      const section = document.getElementById('night-activity-section');
+      if (section) {
+        section.classList.add('active');
+        // Start with a random activity
+        renderNightActivity(Math.floor(Math.random() * NIGHT_ACTIVITIES.length));
+      }
+    }
+
+    function hideNightActivities() {
+      const section = document.getElementById('night-activity-section');
+      if (section) {
+        section.classList.remove('active');
+      }
+    }
+
+    // ===== ACTING PROMPTS SYSTEM =====
+    const ACTING_PROMPTS = [
+      { type: "Accusation Style", text: "Point dramatically at someone and say 'I saw something last night...' with a trembling voice." },
+      { type: "Defense Style", text: "Clutch your chest in offense and gasp 'How DARE you accuse me!' with righteous indignation." },
+      { type: "Body Language", text: "Cross your arms and narrow your eyes suspiciously at the person on your left." },
+      { type: "Reaction Challenge", text: "When someone is accused, gasp loudly and cover your mouth in shock!" },
+      { type: "Voice Work", text: "Speak in a slightly deeper, more mysterious voice for your next statement." },
+      { type: "Silent Acting", text: "Without speaking, show suspicion by glancing nervously between two players." },
+      { type: "Dramatic Pause", text: "Before your next accusation, pause for 3 full seconds while looking at the crowd." },
+      { type: "Emotional Range", text: "Start calm, then let your voice rise with emotion as you make your point." },
+      { type: "Trust Building", text: "Place your hand over your heart and make sincere eye contact while defending yourself." },
+      { type: "Villain Energy", text: "Let a small, knowing smile cross your face when no one is looking directly at you." },
+      { type: "Detective Mode", text: "Stroke your chin thoughtfully and say 'Interesting...' after someone speaks." },
+      { type: "Ally Support", text: "Nod enthusiastically when someone you trust speaks, showing your support." },
+      { type: "Misdirection", text: "Look worried when someone innocent is accused, then subtly change the subject." },
+      { type: "Power Move", text: "Stand up (if seated) or step forward when making your most important point." },
+      { type: "Final Words Prep", text: "If eliminated, prepare to point at your killer and whisper 'I'll remember this...'" }
+    ];
+
+    let currentActingPromptIndex = 0;
+
+    function initActingPrompts() {
+      const newPromptBtn = document.getElementById('new-prompt-btn');
+      if (newPromptBtn) {
+        newPromptBtn.addEventListener('click', newActingPrompt);
+      }
+    }
+
+    function renderActingPrompt(index) {
+      const prompt = ACTING_PROMPTS[index];
+      const typeEl = document.getElementById('acting-prompt-type');
+      const textEl = document.getElementById('acting-prompt-text');
+      
+      if (!typeEl || !prompt) return;
+      
+      typeEl.textContent = prompt.type;
+      textEl.textContent = prompt.text;
+      currentActingPromptIndex = index;
+    }
+
+    function newActingPrompt() {
+      // Get random prompt that's different from current
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * ACTING_PROMPTS.length);
+      } while (newIndex === currentActingPromptIndex && ACTING_PROMPTS.length > 1);
+      
+      renderActingPrompt(newIndex);
+    }
+
+    function showActingPrompts() {
+      const section = document.getElementById('acting-prompt-section');
+      if (section) {
+        section.classList.add('active');
+        // Start with a random prompt
+        renderActingPrompt(Math.floor(Math.random() * ACTING_PROMPTS.length));
+      }
+    }
+
+    function hideActingPrompts() {
+      const section = document.getElementById('acting-prompt-section');
+      if (section) {
+        section.classList.remove('active');
+      }
+    }
+
+    // ===== DEATH SCENE SUGGESTIONS =====
+    const DEATH_SCENES = [
+      {
+        prompt: "With my dying breath, I curse you all!",
+        tips: ["Point dramatically at someone suspicious", "Stagger and clutch your chest", "Collapse slowly to one knee first"]
+      },
+      {
+        prompt: "I knew... I always knew... but now it's too late...",
+        tips: ["Whisper mysteriously", "Reach toward someone as if to reveal a secret", "Let your voice trail off"]
+      },
+      {
+        prompt: "You haven't seen the last of me!",
+        tips: ["Shake your fist at the sky", "Die with defiant eyes open", "Fall backward dramatically"]
+      },
+      {
+        prompt: "Tell my family... I was innocent...",
+        tips: ["Speak with a trembling voice", "Reach out to no one in particular", "Close your eyes peacefully at the end"]
+      },
+      {
+        prompt: "This village... is doomed without me!",
+        tips: ["Gesture broadly at everyone", "Laugh bitterly before collapsing", "Turn your back as you fall"]
+      },
+      {
+        prompt: "The real villain is still among you...",
+        tips: ["Scan the crowd with knowing eyes", "Point at different people randomly", "Collapse mid-sentence"]
+      },
+      {
+        prompt: "I regret... nothing!",
+        tips: ["Stand proud even as you fall", "Cross your arms over your chest", "Fall forward dramatically"]
+      },
+      {
+        prompt: "Why? WHY?! I trusted you!",
+        tips: ["Look at specific people with betrayal", "Cry out in anguish", "Reach toward someone who voted for you"]
+      },
+      {
+        prompt: "In my next life... I shall have vengeance...",
+        tips: ["Speak in a low, threatening voice", "Make a dramatic hand gesture", "Die with an ominous smile"]
+      },
+      {
+        prompt: "The truth will come out... mark my words...",
+        tips: ["Point heavenward", "Speak with certainty", "Fade away slowly and peacefully"]
+      }
+    ];
+
+    function initDeathScene() {
+      const closeBtn = document.getElementById('death-scene-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', hideDeathScene);
+      }
+    }
+
+    function showDeathScene(characterDeathScene) {
+      const section = document.getElementById('death-scene-section');
+      const promptEl = document.getElementById('death-scene-prompt-text');
+      const tipsEl = document.getElementById('death-scene-tips-list');
+      
+      if (!section || !promptEl || !tipsEl) return;
+      
+      // If character has their own death scene, show it prominently
+      if (characterDeathScene) {
+        promptEl.textContent = `"${characterDeathScene}"`;
+        tipsEl.innerHTML = `
+          <li>This is YOUR character's signature death scene!</li>
+          <li>Make it personal and memorable</li>
+          <li>Point at someone dramatically as you fall</li>
+          <li>Take your time - this is YOUR moment!</li>
+        `;
+      } else {
+        // Pick a random death scene as fallback
+        const scene = DEATH_SCENES[Math.floor(Math.random() * DEATH_SCENES.length)];
+        promptEl.textContent = `"${scene.prompt}"`;
+        tipsEl.innerHTML = scene.tips.map(tip => `<li>${tip}</li>`).join('');
+      }
+      
+      section.classList.add('active');
+    }
+
+    function hideDeathScene() {
+      const section = document.getElementById('death-scene-section');
+      if (section) {
+        section.classList.remove('active');
+      }
+    }
+
+    // ===== ROLE-SPECIFIC TIPS =====
+    const ROLE_TIPS = {
+      villain: [
+        "Coordinate subtly with your evil teammates - a knowing glance can say a lot!",
+        "Blend in by occasionally defending good players. It builds trust.",
+        "If accused, act hurt and offended. Villains never admit guilt!",
+        "Target players who seem to have the most information.",
+        "Let someone else make the first accusation. Follow, don't lead."
+      ],
+      accomplice: [
+        "You know who the villains are - help them without being obvious.",
+        "Your one-time power is precious. Save it for the perfect moment!",
+        "If a villain is in danger, consider using your ability to help.",
+        "Act like a regular good player - your cover is your greatest asset.",
+        "Watch for opportunities where your power can swing the game."
+      ],
+      elder: [
+        "Your information is valuable - but sharing it reveals you as a target!",
+        "Wait for the right moment to reveal what you know.",
+        "Use your nightly information to build a picture over time.",
+        "Be cryptic at first. Too much detail can expose you.",
+        "Remember: the Pretender can fool you. Don't be overconfident!"
+      ],
+      hero: [
+        "You keep people alive! Try to predict who villains will target.",
+        "Don't protect the same person too predictably.",
+        "If your protection triggers, consider whether to reveal yourself.",
+        "Work with Elders if you can identify them safely.",
+        "Sometimes protecting yourself is the smartest move."
+      ],
+      sidekick: [
+        "Your dice power is a gamble - use it when the stakes are highest!",
+        "Know when to hold back. A failed roll can backfire badly.",
+        "Support your teammates with words before risking the dice.",
+        "Watch the voting closely to time your power perfectly.",
+        "Even if you fail, your dramatic moment entertains everyone!"
+      ],
+      damsel: [
+        "Your power triggers when things go wrong for you - that's your drama moment!",
+        "Don't reveal your special ability unless absolutely necessary.",
+        "If you're the Cursed, staying alive is crucial for everyone!",
+        "Twins should protect each other at all costs.",
+        "Use your unique abilities to create memorable moments!"
+      ]
+    };
+
+    function showRoleTip(characterType, team) {
+      const section = document.getElementById('role-tips-section');
+      const tipText = document.getElementById('role-tip-text');
+      
+      if (!section || !tipText || !characterType) return;
+      
+      const tips = ROLE_TIPS[characterType];
+      if (!tips || tips.length === 0) return;
+      
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      tipText.textContent = randomTip;
+      
+      // Set the team class for styling
+      section.className = 'role-tips-section';
+      section.classList.add(team || 'good');
+      section.style.display = 'block';
+    }
+
+    function hideRoleTip() {
+      const section = document.getElementById('role-tips-section');
+      if (section) {
+        section.style.display = 'none';
+      }
     }
 
     // Update handleBroadcastMessage to handle voting and dice roll messages
