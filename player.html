@@ -20,8 +20,96 @@
       --accent-evil: #f472b6;
       --accent-ui: #22d3ee;
       --border-color: #475569;
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --theme-accent: #22d3ee;
+      --theme-background: radial-gradient(circle at top, rgba(124, 58, 237, 0.15), transparent 60%), #0f172a;
+      --theme-card-bg: rgba(30, 41, 59, 0.8);
+      --theme-glow: 0 0 10px rgba(34, 211, 238, 0.3);
+      --theme-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: var(--theme-font);
       font-size: 18px;
+    }
+
+    /* Theme: Village */
+    body.theme-village {
+      --theme-accent: #d97706;
+      --theme-background: radial-gradient(circle at top, rgba(139, 92, 46, 0.15), transparent 60%), linear-gradient(180deg, #1a1410 0%, #2d1b0e 100%);
+      --theme-card-bg: rgba(41, 37, 36, 0.6);
+      --theme-glow: 0 0 10px rgba(217, 119, 6, 0.3);
+      --theme-font: 'Georgia', 'Times New Roman', serif;
+    }
+
+    /* Theme: Mansion */
+    body.theme-mansion {
+      --theme-accent: #eab308;
+      --theme-background: radial-gradient(circle at center, rgba(234, 179, 8, 0.12), transparent 70%), linear-gradient(180deg, #1c1917 0%, #292524 100%);
+      --theme-card-bg: rgba(68, 64, 60, 0.5);
+      --theme-glow: 0 0 12px rgba(234, 179, 8, 0.4);
+      --theme-font: 'Playfair Display', 'Didot', serif;
+    }
+
+    /* Theme: Haunted */
+    body.theme-haunted {
+      --theme-accent: #a855f7;
+      --theme-background: radial-gradient(ellipse at bottom, rgba(124, 58, 237, 0.2), transparent 60%), linear-gradient(180deg, #0a0118 0%, #1e0b37 100%);
+      --theme-card-bg: rgba(30, 11, 55, 0.7);
+      --theme-glow: 0 0 15px rgba(168, 85, 247, 0.5);
+      --theme-font: 'Courier New', monospace;
+    }
+
+    /* Theme: Castle */
+    body.theme-castle {
+      --theme-accent: #94a3b8;
+      --theme-background: radial-gradient(circle at top, rgba(71, 85, 105, 0.2), transparent 60%), linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      --theme-card-bg: rgba(51, 65, 85, 0.6);
+      --theme-glow: 0 0 10px rgba(148, 163, 184, 0.4);
+      --theme-font: 'Cinzel', 'Times New Roman', serif;
+    }
+
+    /* Theme: Theatre */
+    body.theme-theatre {
+      --theme-accent: #ec4899;
+      --theme-background: radial-gradient(ellipse at top, rgba(236, 72, 153, 0.15), transparent 50%), linear-gradient(180deg, #18181b 0%, #27272a 100%);
+      --theme-card-bg: rgba(39, 39, 42, 0.7);
+      --theme-glow: 0 0 20px rgba(236, 72, 153, 0.4);
+      --theme-font: 'Playfair Display', serif;
+    }
+
+    /* Theme: Space */
+    body.theme-space {
+      --theme-accent: #06b6d4;
+      --theme-background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.1), transparent 60%), linear-gradient(180deg, #020617 0%, #0c0a09 100%);
+      --theme-card-bg: rgba(15, 23, 42, 0.8);
+      --theme-glow: 0 0 15px rgba(6, 182, 212, 0.5);
+      --theme-font: 'Orbitron', 'Courier New', monospace;
+    }
+
+    /* Theme: Western */
+    body.theme-western {
+      --theme-accent: #f59e0b;
+      --theme-background: radial-gradient(circle at bottom, rgba(245, 158, 11, 0.1), transparent 60%), linear-gradient(180deg, #292524 0%, #1c1917 100%);
+      --theme-card-bg: rgba(68, 64, 60, 0.6);
+      --theme-glow: 0 0 10px rgba(245, 158, 11, 0.3);
+      --theme-font: 'Georgia', serif;
+    }
+
+    /* Theme: Pirate */
+    body.theme-pirate {
+      --theme-accent: #14b8a6;
+      --theme-background: radial-gradient(ellipse at bottom, rgba(20, 184, 166, 0.15), transparent 60%), linear-gradient(180deg, #042f2e 0%, #0f172a 100%);
+      --theme-card-bg: rgba(15, 23, 42, 0.7);
+      --theme-glow: 0 0 12px rgba(20, 184, 166, 0.4);
+      --theme-font: 'Georgia', serif;
+    }
+
+    /* Theme: Hospital */
+    body.theme-hospital {
+      --theme-accent: #f43f5e;
+      --theme-background: radial-gradient(circle at center, rgba(244, 63, 94, 0.08), transparent 60%), linear-gradient(180deg, #fafafa 0%, #e4e4e7 100%);
+      --theme-card-bg: rgba(255, 255, 255, 0.9);
+      --theme-glow: 0 0 15px rgba(244, 63, 94, 0.3);
+      --theme-font: 'Montserrat', 'Arial', sans-serif;
+      --text-primary: #18181b;
+      --text-secondary: #3f3f46;
     }
 
     * {
@@ -31,23 +119,26 @@
     body {
       margin: 0;
       padding: 0;
-      background: radial-gradient(circle at top, rgba(124, 58, 237, 0.15), transparent 60%), var(--bg-primary);
+      background: var(--theme-background);
       color: var(--text-primary);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      font-family: var(--theme-font);
+      transition: background 0.5s ease, color 0.3s ease;
     }
 
     header {
       padding: 1.5rem;
       text-align: center;
       border-bottom: 2px solid rgba(148, 163, 184, 0.2);
-      background: rgba(15, 23, 42, 0.8);
+      background: var(--theme-card-bg);
       backdrop-filter: blur(10px);
     }
 
     header h1 {
       margin: 0 0 0.25rem 0;
+      text-shadow: var(--theme-glow);
       font-size: clamp(1.5rem, 4vw, 2.5rem);
       letter-spacing: 0.05em;
     }
@@ -3145,6 +3236,9 @@
       initGameTips();
       initVoting();
       initDiceRoll();
+      initNightActivities();
+      initActingPrompts();
+      initDeathScene();
     };
 
     // Modify showGameSection to show dice roll for sidekicks
@@ -3158,6 +3252,11 @@
       // Show dice roll for sidekicks
       if (playerState.character && playerState.character.type === 'sidekick') {
         showDiceRoll('sidekick', playerState.character.name);
+      }
+      
+      // Show role-specific tips
+      if (playerState.character) {
+        showRoleTip(playerState.character.type, playerState.character.team);
       }
     };
 
