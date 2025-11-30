@@ -3947,11 +3947,34 @@
     }
 
     function broadcastThemeChange(theme) {
-      if (!projectorChannel) return;
-      projectorChannel.postMessage({
-        type: 'theme-change',
-        theme: theme
-      });
+      // Broadcast to projector
+      if (projectorChannel) {
+        projectorChannel.postMessage({
+          type: 'theme-change',
+          theme: theme
+        });
+      }
+      
+      // Broadcast to player devices via BroadcastChannel
+      if (playerChannel) {
+        playerChannel.postMessage({
+          type: 'theme-change',
+          theme: theme,
+          gameCode: state.gameCode
+        });
+      }
+      
+      // Broadcast to player devices via Firebase
+      if (window.firebaseDB && window.firebaseDB.initialized && state.gameCode) {
+        const db = window.firebaseDB;
+        const themeRef = db.ref(db.database, `games/${state.gameCode}/theme`);
+        db.set(themeRef, {
+          theme: theme,
+          timestamp: Date.now()
+        }).catch(error => {
+          console.warn('Failed to broadcast theme to Firebase:', error);
+        });
+      }
     }
 
     function broadcastVotingUpdate(active, phase, nominations) {
@@ -3967,6 +3990,67 @@
         phase: phase,
         nominations: nominationNames
       });
+      
+      // Also broadcast to players for laptop mode voting
+      broadcastVotingToPlayers(active, phase, nominations);
+    }
+
+    // Broadcast voting phase to players (laptop mode)
+    function broadcastVotingToPlayers(active, phase, nominations) {
+      if (!playerChannel || !state.gameCode) return;
+      
+      // Get list of alive players that can be voted for
+      const votablePlayers = state.players
+        .filter(p => !p.eliminated)
+        .map(p => ({
+          id: p.id,
+          name: p.name
+        }));
+      
+      playerChannel.postMessage({
+        type: active ? 'voting-start' : 'voting-end',
+        gameCode: state.gameCode,
+        phase: phase,
+        nominations: nominations || [],
+        players: votablePlayers
+      });
+      
+      // Also update Firebase for cross-device
+      if (window.firebaseDB && window.firebaseDB.initialized) {
+        const db = window.firebaseDB;
+        const votingRef = db.ref(db.database, `games/${state.gameCode}/voting`);
+        db.update(votingRef, {
+          active: active,
+          phase: phase,
+          nominations: nominations || [],
+          players: votablePlayers,
+          timestamp: Date.now()
+        }).catch(error => {
+          console.warn('Failed to update voting state in Firebase:', error);
+        });
+      }
+    }
+
+    // Broadcast dice roll availability to sidekick players
+    function broadcastDiceRollAvailable() {
+      if (!playerChannel || !state.gameCode) return;
+      
+      playerChannel.postMessage({
+        type: 'dice-roll-available',
+        gameCode: state.gameCode
+      });
+      
+      // Also update Firebase for cross-device
+      if (window.firebaseDB && window.firebaseDB.initialized) {
+        const db = window.firebaseDB;
+        const diceRef = db.ref(db.database, `games/${state.gameCode}/diceRollActive`);
+        db.set(diceRef, {
+          active: true,
+          timestamp: Date.now()
+        }).catch(error => {
+          console.warn('Failed to update dice roll state in Firebase:', error);
+        });
+      }
     }
 
     function broadcastRosterUpdate() {
@@ -4691,30 +4775,75 @@
           ],
           showWinCheckButton: true
         },
-        // ACCUSATION PHASE
+        // PHASE 1: INITIAL GROUP DISCUSSION (30 seconds)
         {
-          title: "Accusation Phase",
+          title: "Phase 1: Group Discussion",
           phase: "day",
           blocks: [
+            { type: "say", text: "You have 30 seconds to look around and discuss as a group!" },
+            { type: "narrator", text: "START THE 30-SECOND TIMER" },
+            { type: "narrator", text: "Everyone can speak freely during this time." },
+            { type: "narrator", text: "Watch for suspicious glances, nervous reactions, and early alliances forming." },
+            { type: "reminder", text: "Click 'Start Timer' below - use the 1 min preset or set custom 30 seconds" }
+          ],
+          showGroupDiscussionTimer: true
+        },
+        // PHASE 2: INDIVIDUAL SPEAKING TURNS (30 seconds each)
+        {
+          title: "Phase 2: Speaking Turns",
+          phase: "day",
+          blocks: [
+            { type: "say", text: "Now we'll hear from individuals. Only the chosen speaker may talk!" },
+            { type: "narrator", text: "INDIVIDUAL SPEAKING TURNS - 30 seconds each" },
+            { type: "narrator", text: "Click 'Pick Random Speaker' to select who speaks next." },
+            { type: "narrator", text: "That player has 30 seconds to speak, accuse, defend, or share observations." },
+            { type: "narrator", text: "All other players must remain SILENT during this time." },
+            { type: "reminder", text: "Repeat until 3-5 players have spoken (adjust based on class size)" }
+          ],
+          showSpeakerPicker: true
+        },
+        // PHASE 3: NOMINATION VOTE (30 seconds)
+        {
+          title: "Phase 3: Nomination Vote",
+          phase: "day",
+          blocks: [
+            { type: "say", text: "Time to vote! You have 30 seconds to nominate who should be eliminated." },
+            { type: "narrator", text: "NOMINATION VOTING - 30 seconds" },
+            { type: "narrator", text: "Option A (Physical): 'Point at who you want to eliminate on 3... 1, 2, 3, POINT!'" },
+            { type: "narrator", text: "Option B (Laptop Mode): Players vote on their devices" },
+            { type: "narrator", text: "Count votes for each player. Record the top 2 nominees below." },
+            { type: "reminder", text: "Remember: Corrupted Authority's vote counts as TWO!" }
             { type: "say", text: `${theme.script.accusationPrompt || "The floor is yours! Who do you suspect?"}\n\n${theme.script.discussionPrompt || "Encourage dramatic accusations!"}` },
             { type: "narrator", text: "**ACCUSATION RULES:**\n\n• Players take turns making accusations\n• Each accusation requires a **seconder** to be valid\n• At 30 seconds, announce **'Final accusations!'**\n\n**Watch for:** The Innocent can reveal once to prove their innocence!" }
           ],
           showNominationTracker: true
         },
-        // DEFENSE PHASE
+        // PHASE 4: DEFENSE SPEECHES (20 seconds each for top 2)
         {
-          title: "Defense Phase",
+          title: "Phase 4: Defense Speeches",
           phase: "day",
           blocks: [
+            { type: "say", text: "The accused shall speak in their defense! 20 seconds each." },
+            { type: "narrator", text: "DEFENSE PHASE - Top 2 nominated players speak" },
+            { type: "narrator", text: "First nominee gets 20 seconds to defend themselves." },
+            { type: "narrator", text: "Second nominee gets 20 seconds to defend themselves." },
+            { type: "narrator", text: "NO ONE ELSE may speak during defenses!" },
+            { type: "reminder", text: "Use the timer for each defense speech." }
             { type: "say", text: "**The accused shall speak in their defense!**\n\nEach nominated player gets **30 seconds** to defend themselves.\n\n**No interruptions** during defense speeches." }
           ],
           showDefenseTracker: true
         },
-        // VOTE PHASE
+        // PHASE 5: FINAL VOTE / CHANGE VOTES (20 seconds)
         {
-          title: "Vote Phase",
+          title: "Phase 5: Final Vote",
           phase: "day",
           blocks: [
+            { type: "say", text: "Last chance! You have 20 seconds to confirm or change your vote." },
+            { type: "narrator", text: "FINAL VOTE - 20 seconds" },
+            { type: "narrator", text: "Between the top 2 nominees only - who will be eliminated?" },
+            { type: "narrator", text: "Physical: 'Close eyes. Raise hand for [Name 1]... Now for [Name 2]... Eyes open!'" },
+            { type: "narrator", text: "Laptop Mode: Players submit final votes on devices" },
+            { type: "narrator", text: "Count the final votes and announce the result dramatically!" }
             { type: "say", text: theme.script.vote },
             { type: "narrator", text: "**VOTE PROCEDURE:**\n\n1. \"All players **close your eyes** and put your hands down\"\n2. \"On my count, raise your hand to vote for [nominee]\"\n3. Count: \"1... 2... 3... **VOTE!**\" (players raise hands)\n4. Count the votes quickly\n5. \"Hands down. Eyes open.\" and announce the count\n6. Repeat for each nominated player" }
           ],
@@ -5246,6 +5375,25 @@
           }
         }
         
+        // Play character type-specific atmospheric sound when entering a new step
+        // Detect the character type from the step title (e.g., "Step 1: Villain-Type")
+        if (step.title && state.sfxEnabled) {
+          const stepTitleLower = step.title.toLowerCase();
+          if (stepTitleLower.includes('villain') && !stepTitleLower.includes('introduction')) {
+            playVillainPhaseSound();
+          } else if (stepTitleLower.includes('accomplice') && !stepTitleLower.includes('introduction')) {
+            playAccomplicePhaseSound();
+          } else if (stepTitleLower.includes('elder') && !stepTitleLower.includes('introduction')) {
+            playElderPhaseSound();
+          } else if (stepTitleLower.includes('hero') && !stepTitleLower.includes('introduction')) {
+            playHeroPhaseSound();
+          } else if (stepTitleLower.includes('sidekick') && !stepTitleLower.includes('introduction')) {
+            playSidekickPhaseSound();
+          } else if (stepTitleLower.includes('damsel') || stepTitleLower.includes('twin') || stepTitleLower.includes('cursed')) {
+            playDamselPhaseSound();
+          }
+        }
+        
         step.blocks.forEach(block => {
           const div = document.createElement("div");
           div.className = `script-block block-${block.type}`;
@@ -5310,6 +5458,18 @@
           scriptStepsContainer.append(votePhaseTracker);
           // Broadcast voting phase to projector
           broadcastVotingUpdate(true, 'vote', state.voting.nominations);
+        }
+
+        // Add speaker picker if this step needs it
+        if (step.showSpeakerPicker) {
+          const speakerPicker = createSpeakerPicker();
+          scriptStepsContainer.append(speakerPicker);
+        }
+
+        // Add group discussion timer if this step needs it
+        if (step.showGroupDiscussionTimer) {
+          const timerSection = createGroupDiscussionTimer();
+          scriptStepsContainer.append(timerSection);
         }
 
         // Add vote tracker if this step needs it
@@ -5672,6 +5832,192 @@
       state.voting.accusedPlayer = null;
       persistState();
       renderScript();
+    }
+
+    // ===== STRUCTURED DAY PHASE FUNCTIONS =====
+    
+    // Track speakers who have already spoken
+    let spokenPlayers = [];
+    let currentSpeaker = null;
+
+    function createGroupDiscussionTimer() {
+      const section = document.createElement('div');
+      section.className = 'action-tracker';
+      section.innerHTML = `
+        <h4>⏱️ Group Discussion Timer</h4>
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">30 seconds for everyone to discuss freely</p>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button onclick="startCustomTimer(30)" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(56, 189, 248, 0.9)); flex: 1; min-width: 120px;">
+            ▶️ Start 30s Timer
+          </button>
+          <button onclick="broadcastDiscussionPhase()" style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.7), rgba(244, 114, 182, 0.8)); flex: 1; min-width: 120px;">
+            📢 Announce to Players
+          </button>
+        </div>
+      `;
+      return section;
+    }
+
+    function createSpeakerPicker() {
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      const availableSpeakers = alivePlayers.filter(p => !spokenPlayers.includes(p.id));
+      
+      const speakerHistory = spokenPlayers.map(id => {
+        const player = state.players.find(p => p.id === id);
+        return player ? `<span style="padding: 0.25rem 0.5rem; background: rgba(34, 197, 94, 0.2); border-radius: 999px; font-size: 0.8rem; margin: 0.1rem;">${player.name} ✓</span>` : '';
+      }).join(' ');
+
+      const currentSpeakerDisplay = currentSpeaker ? 
+        `<div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(251, 113, 133, 0.2)); border-radius: 12px; margin-bottom: 1rem; border: 2px solid var(--accent-evil);">
+          <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--accent-evil); letter-spacing: 0.1em; margin-bottom: 0.5rem;">🎤 NOW SPEAKING</div>
+          <div style="font-size: 1.8rem; font-weight: bold; color: var(--text-primary);">${currentSpeaker.name}</div>
+          <div style="color: var(--text-secondary); font-size: 0.9rem;">${currentSpeaker.roleName}</div>
+          <button onclick="endCurrentSpeaker()" style="margin-top: 1rem; background: rgba(148, 163, 184, 0.3); padding: 0.5rem 1.5rem; border-radius: 8px; cursor: pointer; border: 1px solid rgba(148, 163, 184, 0.5);">
+            ✓ Done Speaking
+          </button>
+        </div>` : '';
+
+      const section = document.createElement('div');
+      section.className = 'action-tracker';
+      section.innerHTML = `
+        <h4>🎤 Individual Speaking Turns</h4>
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Select random speakers - 30 seconds each, only they may speak!</p>
+        
+        ${currentSpeakerDisplay}
+        
+        ${speakerHistory ? `<div style="margin-bottom: 1rem;">
+          <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Already spoken:</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">${speakerHistory}</div>
+        </div>` : ''}
+        
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
+          <button onclick="pickRandomSpeaker()" ${availableSpeakers.length === 0 ? 'disabled' : ''} style="background: linear-gradient(135deg, rgba(244, 114, 182, 0.8), rgba(251, 113, 133, 0.9)); flex: 1; min-width: 140px; ${availableSpeakers.length === 0 ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+            🎲 Pick Random Speaker
+          </button>
+          <button onclick="startCustomTimer(30)" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(56, 189, 248, 0.9)); flex: 1; min-width: 100px;">
+            ⏱️ Start 30s
+          </button>
+        </div>
+        
+        <div style="display: flex; gap: 0.75rem;">
+          <button onclick="resetSpeakers()" style="background: rgba(148, 163, 184, 0.3); border: 1px solid rgba(148, 163, 184, 0.5); flex: 1;">
+            🔄 Reset All
+          </button>
+        </div>
+        
+        <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(15, 23, 42, 0.5); border-radius: 8px; font-size: 0.85rem; color: var(--text-secondary);">
+          <strong>Remaining speakers:</strong> ${availableSpeakers.length} of ${alivePlayers.length}
+        </div>
+      `;
+      return section;
+    }
+
+    function pickRandomSpeaker() {
+      const alivePlayers = state.players.filter(p => !p.eliminated);
+      const availableSpeakers = alivePlayers.filter(p => !spokenPlayers.includes(p.id));
+      
+      if (availableSpeakers.length === 0) {
+        alert('All players have already spoken!');
+        return;
+      }
+      
+      // Pick random speaker
+      const randomIndex = Math.floor(Math.random() * availableSpeakers.length);
+      currentSpeaker = availableSpeakers[randomIndex];
+      
+      // Broadcast to projector and player pages
+      broadcastCurrentSpeaker(currentSpeaker);
+      
+      // Re-render
+      renderScript();
+    }
+
+    function endCurrentSpeaker() {
+      if (currentSpeaker) {
+        spokenPlayers.push(currentSpeaker.id);
+        currentSpeaker = null;
+        
+        // Broadcast that no one is speaking
+        broadcastCurrentSpeaker(null);
+        
+        // Re-render
+        renderScript();
+      }
+    }
+
+    function resetSpeakers() {
+      spokenPlayers = [];
+      currentSpeaker = null;
+      broadcastCurrentSpeaker(null);
+      renderScript();
+    }
+
+    function startCustomTimer(seconds) {
+      // Set timer to the specified seconds
+      state.timer.seconds = seconds;
+      state.timer.initialSeconds = seconds;
+      state.timer.running = true;
+      renderTimer();
+      
+      // Start the timer interval if not already running
+      if (!timerInterval) {
+        timerInterval = setInterval(() => {
+          if (state.timer.running && state.timer.seconds > 0) {
+            state.timer.seconds--;
+            renderTimer();
+            
+            // Play warning sounds at key moments
+            if (state.timer.seconds === 10) {
+              playTimerWarningSound();
+            } else if (state.timer.seconds === 5) {
+              playTimerUrgentSound();
+            } else if (state.timer.seconds <= 3 && state.timer.seconds > 0) {
+              playTimerFinalCountdown();
+            } else if (state.timer.seconds === 0) {
+              playTimerEndSound();
+              state.timer.running = false;
+            }
+          }
+        }, 1000);
+      }
+    }
+
+    function broadcastCurrentSpeaker(speaker) {
+      // Broadcast to projector
+      if (projectorChannel) {
+        projectorChannel.postMessage({
+          type: 'current-speaker',
+          speaker: speaker ? { name: speaker.name, roleName: speaker.roleName } : null
+        });
+      }
+      
+      // Broadcast to players
+      if (playerChannel && state.gameCode) {
+        playerChannel.postMessage({
+          type: 'current-speaker',
+          gameCode: state.gameCode,
+          speaker: speaker ? { name: speaker.name } : null
+        });
+      }
+    }
+
+    function broadcastDiscussionPhase() {
+      // Broadcast to projector
+      if (projectorChannel) {
+        projectorChannel.postMessage({
+          type: 'discussion-phase',
+          message: 'Group Discussion - Everyone may speak!'
+        });
+      }
+      
+      // Broadcast to players
+      if (playerChannel && state.gameCode) {
+        playerChannel.postMessage({
+          type: 'discussion-phase',
+          gameCode: state.gameCode,
+          message: 'Group Discussion - Everyone may speak!'
+        });
+      }
     }
 
     function createVotePhaseTracker() {
@@ -6324,13 +6670,17 @@
           state.timer.remaining -= 1;
           renderTimer();
           broadcastTimerUpdate(state.timer.remaining, state.timer.running);
-          // Play warning sound at 30 seconds and when timer completes
+          // Play warning sounds at key moments
           if (state.timer.remaining === 30) {
             playTimerWarningSound();
-          }
-          if (state.timer.remaining === 0) {
+          } else if (state.timer.remaining === 10) {
             playTimerWarningSound();
-            setTimeout(() => playTimerWarningSound(), 300); // Double ding
+          } else if (state.timer.remaining === 5) {
+            playTimerUrgentSound();
+          } else if (state.timer.remaining <= 3 && state.timer.remaining > 0) {
+            playTimerFinalCountdown();
+          } else if (state.timer.remaining === 0) {
+            playTimerEndSound();
             alert("⏰ Timer complete! Time for a dramatic decision.");
           }
         }
@@ -6576,6 +6926,27 @@
       playSound(800, 0.2, 'sine');
     }
 
+    function playTimerUrgentSound() {
+      if (!state.sfxEnabled) return;
+      // More urgent beeping for final seconds
+      playSound(880, 0.25, 'square');
+    }
+
+    function playTimerFinalCountdown() {
+      if (!state.sfxEnabled) return;
+      // Dramatic final countdown pulse
+      playSound(1000, 0.3, 'sine');
+      setTimeout(() => playSound(500, 0.15, 'sine'), 100);
+    }
+
+    function playTimerEndSound() {
+      if (!state.sfxEnabled) return;
+      // Dramatic end sound - descending then ascending
+      playSound(600, 0.2, 'sine');
+      setTimeout(() => playSound(400, 0.2, 'sine'), 200);
+      setTimeout(() => playSound(600, 0.3, 'sine'), 400);
+    }
+
     // NEW: Game Event Sound Effects
     function playNightStartSound() {
       if (!state.sfxEnabled) return;
@@ -6636,6 +7007,86 @@
       // Shield-like chime
       playSound(700, 0.15, 'sine');
       setTimeout(() => playSound(880, 0.2, 'sine'), 150);
+    }
+
+    // ===== PHASE-SPECIFIC ATMOSPHERIC SOUNDS =====
+    
+    // Nefarious sound for villain phase
+    function playVillainPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Sinister low rumble with dissonance
+      playSound(110, 0.4, 'sawtooth');
+      setTimeout(() => playSound(116, 0.3, 'sawtooth'), 200); // Slight dissonance
+      setTimeout(() => playSound(82, 0.5, 'sawtooth'), 400);
+    }
+
+    // Mysterious sound for accomplice phase
+    function playAccomplicePhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Sneaky, quiet tension
+      playSound(220, 0.2, 'sine');
+      setTimeout(() => playSound(277, 0.15, 'sine'), 150);
+      setTimeout(() => playSound(220, 0.3, 'sine'), 300);
+    }
+
+    // Wise/mystical sound for elder phase
+    function playElderPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Ethereal, wise tones
+      playSound(440, 0.2, 'sine');
+      setTimeout(() => playSound(554, 0.2, 'sine'), 200);
+      setTimeout(() => playSound(659, 0.25, 'sine'), 400);
+    }
+
+    // Heroic sound for hero phase
+    function playHeroPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Bold, uplifting tones
+      playSound(330, 0.15, 'sine');
+      setTimeout(() => playSound(392, 0.15, 'sine'), 100);
+      setTimeout(() => playSound(494, 0.2, 'sine'), 200);
+      setTimeout(() => playSound(659, 0.25, 'sine'), 350);
+    }
+
+    // Playful sound for sidekick phase
+    function playSidekickPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Quirky, bouncy tones
+      playSound(523, 0.1, 'square');
+      setTimeout(() => playSound(659, 0.1, 'square'), 100);
+      setTimeout(() => playSound(523, 0.15, 'square'), 200);
+    }
+
+    // Dramatic tension sound for damsel phase
+    function playDamselPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Dramatic, suspenseful
+      playSound(329, 0.3, 'sine');
+      setTimeout(() => playSound(311, 0.3, 'sine'), 300);
+    }
+
+    // Function to play phase-specific sound based on current script step
+    function playPhaseSound(phaseType) {
+      switch(phaseType) {
+        case 'villain':
+          playVillainPhaseSound();
+          break;
+        case 'accomplice':
+          playAccomplicePhaseSound();
+          break;
+        case 'elder':
+          playElderPhaseSound();
+          break;
+        case 'hero':
+          playHeroPhaseSound();
+          break;
+        case 'sidekick':
+          playSidekickPhaseSound();
+          break;
+        case 'damsel':
+          playDamselPhaseSound();
+          break;
+      }
     }
 
     // Win Condition Functions

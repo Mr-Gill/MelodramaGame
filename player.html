@@ -20,8 +20,96 @@
       --accent-evil: #f472b6;
       --accent-ui: #22d3ee;
       --border-color: #475569;
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --theme-accent: #22d3ee;
+      --theme-background: radial-gradient(circle at top, rgba(124, 58, 237, 0.15), transparent 60%), #0f172a;
+      --theme-card-bg: rgba(30, 41, 59, 0.8);
+      --theme-glow: 0 0 10px rgba(34, 211, 238, 0.3);
+      --theme-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: var(--theme-font);
       font-size: 18px;
+    }
+
+    /* Theme: Village */
+    body.theme-village {
+      --theme-accent: #d97706;
+      --theme-background: radial-gradient(circle at top, rgba(139, 92, 46, 0.15), transparent 60%), linear-gradient(180deg, #1a1410 0%, #2d1b0e 100%);
+      --theme-card-bg: rgba(41, 37, 36, 0.6);
+      --theme-glow: 0 0 10px rgba(217, 119, 6, 0.3);
+      --theme-font: 'Georgia', 'Times New Roman', serif;
+    }
+
+    /* Theme: Mansion */
+    body.theme-mansion {
+      --theme-accent: #eab308;
+      --theme-background: radial-gradient(circle at center, rgba(234, 179, 8, 0.12), transparent 70%), linear-gradient(180deg, #1c1917 0%, #292524 100%);
+      --theme-card-bg: rgba(68, 64, 60, 0.5);
+      --theme-glow: 0 0 12px rgba(234, 179, 8, 0.4);
+      --theme-font: 'Playfair Display', 'Didot', serif;
+    }
+
+    /* Theme: Haunted */
+    body.theme-haunted {
+      --theme-accent: #a855f7;
+      --theme-background: radial-gradient(ellipse at bottom, rgba(124, 58, 237, 0.2), transparent 60%), linear-gradient(180deg, #0a0118 0%, #1e0b37 100%);
+      --theme-card-bg: rgba(30, 11, 55, 0.7);
+      --theme-glow: 0 0 15px rgba(168, 85, 247, 0.5);
+      --theme-font: 'Courier New', monospace;
+    }
+
+    /* Theme: Castle */
+    body.theme-castle {
+      --theme-accent: #94a3b8;
+      --theme-background: radial-gradient(circle at top, rgba(71, 85, 105, 0.2), transparent 60%), linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      --theme-card-bg: rgba(51, 65, 85, 0.6);
+      --theme-glow: 0 0 10px rgba(148, 163, 184, 0.4);
+      --theme-font: 'Cinzel', 'Times New Roman', serif;
+    }
+
+    /* Theme: Theatre */
+    body.theme-theatre {
+      --theme-accent: #ec4899;
+      --theme-background: radial-gradient(ellipse at top, rgba(236, 72, 153, 0.15), transparent 50%), linear-gradient(180deg, #18181b 0%, #27272a 100%);
+      --theme-card-bg: rgba(39, 39, 42, 0.7);
+      --theme-glow: 0 0 20px rgba(236, 72, 153, 0.4);
+      --theme-font: 'Playfair Display', serif;
+    }
+
+    /* Theme: Space */
+    body.theme-space {
+      --theme-accent: #06b6d4;
+      --theme-background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.1), transparent 60%), linear-gradient(180deg, #020617 0%, #0c0a09 100%);
+      --theme-card-bg: rgba(15, 23, 42, 0.8);
+      --theme-glow: 0 0 15px rgba(6, 182, 212, 0.5);
+      --theme-font: 'Orbitron', 'Courier New', monospace;
+    }
+
+    /* Theme: Western */
+    body.theme-western {
+      --theme-accent: #f59e0b;
+      --theme-background: radial-gradient(circle at bottom, rgba(245, 158, 11, 0.1), transparent 60%), linear-gradient(180deg, #292524 0%, #1c1917 100%);
+      --theme-card-bg: rgba(68, 64, 60, 0.6);
+      --theme-glow: 0 0 10px rgba(245, 158, 11, 0.3);
+      --theme-font: 'Georgia', serif;
+    }
+
+    /* Theme: Pirate */
+    body.theme-pirate {
+      --theme-accent: #14b8a6;
+      --theme-background: radial-gradient(ellipse at bottom, rgba(20, 184, 166, 0.15), transparent 60%), linear-gradient(180deg, #042f2e 0%, #0f172a 100%);
+      --theme-card-bg: rgba(15, 23, 42, 0.7);
+      --theme-glow: 0 0 12px rgba(20, 184, 166, 0.4);
+      --theme-font: 'Georgia', serif;
+    }
+
+    /* Theme: Hospital */
+    body.theme-hospital {
+      --theme-accent: #f43f5e;
+      --theme-background: radial-gradient(circle at center, rgba(244, 63, 94, 0.08), transparent 60%), linear-gradient(180deg, #fafafa 0%, #e4e4e7 100%);
+      --theme-card-bg: rgba(255, 255, 255, 0.9);
+      --theme-glow: 0 0 15px rgba(244, 63, 94, 0.3);
+      --theme-font: 'Montserrat', 'Arial', sans-serif;
+      --text-primary: #18181b;
+      --text-secondary: #3f3f46;
     }
 
     * {
@@ -31,23 +119,26 @@
     body {
       margin: 0;
       padding: 0;
-      background: radial-gradient(circle at top, rgba(124, 58, 237, 0.15), transparent 60%), var(--bg-primary);
+      background: var(--theme-background);
       color: var(--text-primary);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      font-family: var(--theme-font);
+      transition: background 0.5s ease, color 0.3s ease;
     }
 
     header {
       padding: 1.5rem;
       text-align: center;
       border-bottom: 2px solid rgba(148, 163, 184, 0.2);
-      background: rgba(15, 23, 42, 0.8);
+      background: var(--theme-card-bg);
       backdrop-filter: blur(10px);
     }
 
     header h1 {
       margin: 0 0 0.25rem 0;
+      text-shadow: var(--theme-glow);
       font-size: clamp(1.5rem, 4vw, 2.5rem);
       letter-spacing: 0.05em;
     }
@@ -316,6 +407,66 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--text-secondary);
+    }
+
+    /* Voice/Accent Suggestion */
+    .voice-suggestion {
+      background: linear-gradient(135deg, rgba(244, 114, 182, 0.15), rgba(251, 113, 133, 0.1));
+      border: 2px solid rgba(244, 114, 182, 0.3);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .voice-suggestion h5 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #f472b6;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .voice-suggestion-text {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .acting-tips {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .acting-tips-title {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .acting-tips-content {
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .acting-tip-item {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+
+    .acting-tip-item strong {
+      color: var(--accent-ui);
+      min-width: 50px;
     }
 
     /* Night/Day Instructions */
@@ -590,6 +741,16 @@
       to { transform: rotate(360deg); }
     }
 
+    /* Game Tips Section */
+    .game-tips-section {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(124, 58, 237, 0.1));
+      border: 2px solid rgba(56, 189, 248, 0.3);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
     /* Lobby/Waiting Section */
     .lobby-section {
       display: none;
@@ -846,6 +1007,1194 @@
       databaseURL: "https://melodrama-game-default-rtdb.asia-southeast1.firebasedatabase.app"
     };
 
+    .game-tips-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      color: var(--accent-ui);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .tip-card {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 1.25rem;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      animation: tipFade 0.5s ease-out;
+    }
+
+    @keyframes tipFade {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    // Expose Firebase functions to global scope for use in main script
+    window.firebaseDB = {
+      initialized: firebaseInitialized,
+      database: database,
+      ref: ref,
+      set: set,
+      onValue: onValue,
+      remove: remove,
+      update: update,
+      push: push,
+      onDisconnect: onDisconnect
+    };
+    
+    // Dispatch a custom event to signal that Firebase is ready
+    window.dispatchEvent(new CustomEvent('firebaseReady', { 
+      detail: { initialized: firebaseInitialized } 
+    }));
+  </script>
+</head>
+<body>
+  <!-- Win notification overlay -->
+  <div class="win-overlay" id="win-overlay">
+    <div class="win-content">
+      <div class="win-emoji" id="win-emoji">🎭</div>
+      <div class="win-title" id="win-title">Victory!</div>
+      <div class="win-subtitle" id="win-subtitle">The game has ended</div>
+    </div>
+  </div>
+
+    .tip-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent-ui);
+      margin-bottom: 0.5rem;
+    }
+
+    .tip-text {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .tip-category {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.75rem;
+    }
+
+    .tip-category.strategy { 
+      background: rgba(34, 197, 94, 0.2); 
+      color: #86efac; 
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    .tip-category.acting { 
+      background: rgba(244, 114, 182, 0.2); 
+      color: #f9a8d4; 
+      border: 1px solid rgba(244, 114, 182, 0.4);
+    }
+    .tip-category.rules { 
+      background: rgba(56, 189, 248, 0.2); 
+      color: #7dd3fc; 
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+    .tip-category.fun { 
+      background: rgba(250, 204, 21, 0.2); 
+      color: #fde047; 
+      border: 1px solid rgba(250, 204, 21, 0.4);
+    }
+    <!-- Lobby/Waiting Section (shown after joining, before role assignment) -->
+    <section class="lobby-section" id="lobby-section">
+      <div class="lobby-card">
+        <div class="lobby-icon">🎭</div>
+        <div class="lobby-title" id="lobby-player-name">Welcome!</div>
+        <div class="lobby-subtitle">You've joined the game</div>
+        <div class="lobby-waiting-text">
+          <span class="spinner"></span>
+          <span>Waiting for the narrator to assign roles...</span>
+        </div>
+        <div class="lobby-player-count" id="lobby-player-count">
+          Other players are joining...
+        </div>
+      </div>
+    </section>
+
+    <!-- Role Reveal Overlay -->
+    <div class="role-reveal-overlay" id="role-reveal-overlay">
+      <div class="role-reveal-content">
+        <div class="reveal-card good" id="reveal-card">
+          <div class="reveal-intro">You are...</div>
+          <div class="reveal-role-name" id="reveal-role-name">The Oracle</div>
+          <div class="reveal-team good" id="reveal-team">👼 Good Team</div>
+          <div class="reveal-ability" id="reveal-ability">
+            Check one player each night to learn if they are good or evil.
+          </div>
+          <button class="reveal-continue-btn" id="reveal-continue-btn">Continue to Game</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Section (shown after joining) -->
+    <section class="game-section" id="game-section">
+      <!-- Phase Indicator -->
+      <div class="phase-indicator night" id="phase-indicator">
+        <div class="phase-label" id="phase-label">Waiting for game...</div>
+      </div>
+
+    .tip-navigation {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tip-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(148, 163, 184, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tip-dot.active {
+      background: var(--accent-ui);
+      transform: scale(1.3);
+    }
+
+    .tip-dot:hover {
+      background: rgba(148, 163, 184, 0.7);
+    }
+
+    /* Voting Section */
+    .voting-section {
+      background: linear-gradient(135deg, rgba(244, 114, 182, 0.1), rgba(239, 68, 68, 0.1));
+      border: 2px solid rgba(244, 114, 182, 0.4);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+
+    .voting-section.active {
+      display: block;
+      animation: voteAppear 0.3s ease-out;
+    }
+  <script>
+    // Constants - defined at the top to avoid reference errors
+    const JOIN_TIMEOUT_MS = 5000;
+    const CONNECTION_CHECK_INTERVAL_MS = 10000;
+    
+    // BroadcastChannel for same-device fallback communication
+    const CHANNEL_NAME = 'melodrama-player-channel';
+    let channel = null;
+    let retryTimeout = null;
+    
+    // Firebase readiness state
+    let firebaseReady = false;
+    
+    // Firebase listeners for cleanup
+    let firebasePlayerUnsubscribe = null;
+    let firebaseGameStateUnsubscribe = null;
+    let firebaseConnectionUnsubscribe = null;
+
+    @keyframes voteAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .voting-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.2rem;
+      color: var(--accent-evil);
+      text-align: center;
+    }
+
+    .voting-instruction {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .vote-options {
+      display: grid;
+      gap: 0.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .vote-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .vote-option:hover {
+      border-color: rgba(244, 114, 182, 0.5);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .vote-option.selected {
+      border-color: var(--accent-evil);
+      background: rgba(244, 114, 182, 0.2);
+    }
+
+    .vote-option-name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .vote-option-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid rgba(148, 163, 184, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .vote-option.selected .vote-option-check {
+      background: var(--accent-evil);
+      border-color: var(--accent-evil);
+      color: white;
+    }
+
+    .submit-vote-btn {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, rgba(244, 114, 182, 0.8), rgba(239, 68, 68, 0.9));
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .submit-vote-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(244, 114, 182, 0.4);
+    }
+
+    .submit-vote-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .vote-submitted {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--accent-good);
+      font-size: 1.1rem;
+    }
+
+    /* Dice Roll Section */
+    .dice-roll-section {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(56, 189, 248, 0.1));
+      border: 2px solid rgba(34, 197, 94, 0.4);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      display: none;
+    }
+
+    .dice-roll-section.active {
+      display: block;
+      animation: diceAppear 0.3s ease-out;
+    }
+
+    @keyframes diceAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .dice-roll-section h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.2rem;
+      color: var(--accent-good);
+    }
+
+    .dice-roll-section .dice-info {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .roll-dice-btn {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(56, 189, 248, 0.9));
+      border: none;
+      border-radius: 12px;
+      color: #0f172a;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .roll-dice-btn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+    }
+
+    .roll-dice-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .dice-result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .dice-result.active {
+      display: block;
+      animation: resultAppear 0.5s ease-out;
+    }
+
+    @keyframes resultAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .dice-face {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+      animation: diceRoll 0.5s ease-out;
+    }
+
+    @keyframes diceRoll {
+      0%, 20%, 40%, 60%, 80% {
+        transform: rotate(0deg) scale(1);
+      }
+      10%, 30%, 50%, 70%, 90% {
+        transform: rotate(180deg) scale(1.2);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+    .dice-result.success {
+      background: rgba(34, 197, 94, 0.2);
+      border: 2px solid rgba(34, 197, 94, 0.5);
+    }
+
+    .dice-result.failure {
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid rgba(239, 68, 68, 0.5);
+    }
+
+    .dice-result-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .dice-result.success .dice-result-text {
+      color: #86efac;
+    }
+
+    .dice-result.failure .dice-result-text {
+      color: #fca5a5;
+    }
+
+    .dice-result-description {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* Elimination Notification */
+    .elimination-notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(185, 28, 28, 0.95));
+      border: 3px solid #ef4444;
+      border-radius: 20px;
+      padding: 2rem 3rem;
+      text-align: center;
+      z-index: 3000;
+      box-shadow: 0 20px 60px rgba(239, 68, 68, 0.5);
+      opacity: 0;
+      transition: all 0.4s ease-out;
+    }
+
+    .elimination-notification.active {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .elimination-notification .skull-icon {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+      animation: skullShake 0.5s ease-in-out;
+    }
+
+    @keyframes skullShake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg); }
+      75% { transform: rotate(10deg); }
+    }
+
+    .elimination-notification .elimination-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+
+    .elimination-notification .elimination-name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fecaca;
+      text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .elimination-notification .elimination-subtitle {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
+    /* Role-Specific Tips */
+    .role-tips-section {
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--accent-ui);
+    }
+
+    .role-tips-section.good {
+      border-left-color: var(--accent-good);
+    }
+
+    .role-tips-section.evil {
+      border-left-color: var(--accent-evil);
+    }
+
+    .role-tips-section h4 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      color: var(--accent-ui);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .role-tips-section.good h4 {
+      color: var(--accent-good);
+    }
+
+    .role-tips-section.evil h4 {
+      color: var(--accent-evil);
+    }
+
+    .role-tip-text {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Tutorial Section */
+    .tutorial-section {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(56, 189, 248, 0.15));
+      border: 2px solid rgba(124, 58, 237, 0.4);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .tutorial-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.2rem;
+      color: var(--accent-ui);
+      text-align: center;
+    }
+
+    .tutorial-step {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--accent-ui);
+    }
+
+    .tutorial-step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tutorial-step-number {
+      width: 28px;
+      height: 28px;
+      background: var(--accent-ui);
+      color: #0f172a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .tutorial-step-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+
+    .tutorial-step-content {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .tutorial-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .tutorial-nav-btn {
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .tutorial-nav-btn.prev {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--text-secondary);
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+
+    .tutorial-nav-btn.next {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.8), rgba(124, 58, 237, 0.8));
+      color: white;
+    }
+
+    .tutorial-nav-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .tutorial-nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .tutorial-progress {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tutorial-progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(148, 163, 184, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .tutorial-progress-dot.active {
+      background: var(--accent-ui);
+      transform: scale(1.2);
+    }
+
+    .tutorial-progress-dot.completed {
+      background: rgba(34, 197, 94, 0.6);
+    }
+
+    .tutorial-complete {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .tutorial-complete-icon {
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tutorial-complete-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-good);
+      margin-bottom: 0.5rem;
+    }
+
+    .tutorial-complete-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .start-tutorial-btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.7), rgba(56, 189, 248, 0.8));
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .start-tutorial-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+    }
+
+    /* Quiz Mini-Game Section */
+    .quiz-game-section {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(56, 189, 248, 0.15));
+      border: 2px solid rgba(34, 197, 94, 0.4);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .quiz-game-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      color: var(--accent-good);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .quiz-score-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .quiz-score {
+      color: var(--accent-good);
+      font-weight: 700;
+    }
+
+    .quiz-streak {
+      color: #fbbf24;
+    }
+
+    .quiz-question-card {
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-question-text {
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .quiz-option {
+      padding: 0.75rem 1rem;
+      background: rgba(56, 189, 248, 0.1);
+      border: 2px solid rgba(56, 189, 248, 0.3);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .quiz-option:hover:not(.disabled) {
+      border-color: var(--accent-ui);
+      background: rgba(56, 189, 248, 0.2);
+      transform: translateX(5px);
+    }
+
+    .quiz-option.correct {
+      background: rgba(34, 197, 94, 0.3);
+      border-color: #22c55e;
+      color: #86efac;
+    }
+
+    .quiz-option.incorrect {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    .quiz-option.disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .quiz-feedback {
+      text-align: center;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    .quiz-feedback.correct {
+      display: block;
+      background: rgba(34, 197, 94, 0.2);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .quiz-feedback.incorrect {
+      display: block;
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .quiz-tip-reveal {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .quiz-next-btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 1rem;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(56, 189, 248, 0.9));
+      border: none;
+      border-radius: 10px;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .quiz-next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+    }
+
+    .quiz-complete {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .quiz-complete-icon {
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .quiz-complete-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent-good);
+      margin-bottom: 0.5rem;
+    }
+
+    .quiz-complete-score {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .quiz-restart-btn {
+      padding: 0.6rem 1.5rem;
+      background: rgba(56, 189, 248, 0.2);
+      border: 2px solid rgba(56, 189, 248, 0.4);
+      border-radius: 10px;
+      color: var(--accent-ui);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .quiz-restart-btn:hover {
+      background: rgba(56, 189, 248, 0.3);
+    }
+
+    .quiz-toggle-btn {
+      display: block;
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.75rem;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 8px;
+      color: #86efac;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .quiz-toggle-btn:hover {
+      background: rgba(34, 197, 94, 0.25);
+    }
+
+    /* Night Activity Section */
+    .night-activity-section {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(79, 70, 229, 0.15));
+      border: 2px solid rgba(124, 58, 237, 0.5);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      display: none;
+    }
+
+    .night-activity-section.active {
+      display: block;
+      animation: nightFade 0.5s ease-out;
+    }
+
+    @keyframes nightFade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .night-activity-section h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.2rem;
+      color: #a78bfa;
+    }
+
+    .night-activity-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+
+    .night-activity-card {
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .night-activity-emoji {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .night-activity-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #c4b5fd;
+      margin-bottom: 0.5rem;
+    }
+
+    .night-activity-text {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .night-activity-timer {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: rgba(124, 58, 237, 0.3);
+      border-radius: 999px;
+      color: #c4b5fd;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 0.75rem;
+    }
+
+    .next-activity-btn {
+      padding: 0.6rem 1.5rem;
+      background: rgba(124, 58, 237, 0.4);
+      border: 2px solid rgba(124, 58, 237, 0.6);
+      border-radius: 10px;
+      color: #c4b5fd;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0.5rem;
+    }
+
+    .next-activity-btn:hover {
+      background: rgba(124, 58, 237, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* Acting Prompts Section */
+    .acting-prompt-section {
+      background: linear-gradient(135deg, rgba(244, 114, 182, 0.15), rgba(251, 113, 133, 0.15));
+      border: 2px solid rgba(244, 114, 182, 0.4);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+
+    .acting-prompt-section.active {
+      display: block;
+      animation: promptAppear 0.4s ease-out;
+    }
+
+    @keyframes promptAppear {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .acting-prompt-section h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 1rem;
+      color: #f472b6;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .acting-prompt-card {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .acting-prompt-type {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(244, 114, 182, 0.8);
+      margin-bottom: 0.5rem;
+    }
+
+    .acting-prompt-text {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .new-prompt-btn {
+      display: block;
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.75rem;
+      background: rgba(244, 114, 182, 0.2);
+      border: 1px solid rgba(244, 114, 182, 0.4);
+      border-radius: 8px;
+      color: #f9a8d4;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .new-prompt-btn:hover {
+      background: rgba(244, 114, 182, 0.3);
+    }
+
+    /* Death Scene Suggestions */
+    .death-scene-section {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 4000;
+      padding: 1.5rem;
+    }
+
+    .death-scene-section.active {
+      display: flex;
+      animation: deathFade 0.5s ease-out;
+    }
+
+    @keyframes deathFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .death-scene-card {
+      background: linear-gradient(135deg, rgba(127, 29, 29, 0.9), rgba(153, 27, 27, 0.9));
+      border: 3px solid #dc2626;
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(220, 38, 38, 0.4);
+    }
+
+    .death-scene-icon {
+      font-size: 4rem;
+      margin-bottom: 0.75rem;
+      animation: deathPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes deathPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .death-scene-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fecaca;
+      margin-bottom: 0.5rem;
+    }
+
+    .death-scene-subtitle {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .death-scene-prompt {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .death-scene-prompt-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(254, 202, 202, 0.7);
+      margin-bottom: 0.5rem;
+    }
+
+    .death-scene-prompt-text {
+      font-size: 1.15rem;
+      color: white;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .death-scene-tips {
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .death-scene-tips h5 {
+      font-size: 0.85rem;
+      color: #fca5a5;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .death-scene-tips ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .death-scene-close {
+      padding: 0.75rem 2rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .death-scene-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+  </style>
+  <!-- Firebase SDK for cross-device communication -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
+    import { getDatabase, ref, set, onValue, remove, update, push, onDisconnect } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js';
+
+    // Firebase configuration - these credentials are safe to expose in client-side code.
+    // Security is managed through Firebase Realtime Database security rules.
+    // See: https://firebase.google.com/docs/projects/api-keys
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfZEDGBi99t3u9GlS78ifRmDM4-eJSdYg",
+      authDomain: "melodrama-game.firebaseapp.com",
+      projectId: "melodrama-game",
+      storageBucket: "melodrama-game.firebasestorage.app",
+      messagingSenderId: "656912364218",
+      appId: "1:656912364218:web:7a9b44d4f3e9e89c550883",
+      measurementId: "G-0S4D9SFEFH",
+      databaseURL: "https://melodrama-game-default-rtdb.firebaseio.com"
+    };
+
     // Initialize Firebase
     let firebaseApp = null;
     let database = null;
@@ -872,14 +2221,33 @@
       push: push,
       onDisconnect: onDisconnect
     };
-    
-    // Dispatch a custom event to signal that Firebase is ready
-    window.dispatchEvent(new CustomEvent('firebaseReady', { 
-      detail: { initialized: firebaseInitialized } 
-    }));
   </script>
 </head>
 <body>
+  <!-- Death Scene Overlay (shown when player is eliminated) -->
+  <div class="death-scene-section" id="death-scene-section">
+    <div class="death-scene-card">
+      <div class="death-scene-icon">💀</div>
+      <div class="death-scene-title">You Have Been Eliminated!</div>
+      <div class="death-scene-subtitle">Time for your dramatic exit...</div>
+      <div class="death-scene-prompt">
+        <div class="death-scene-prompt-label">Your Death Scene</div>
+        <div class="death-scene-prompt-text" id="death-scene-prompt-text">
+          "With my dying breath, I curse you all!"
+        </div>
+      </div>
+      <div class="death-scene-tips">
+        <h5>🎭 Performance Tips:</h5>
+        <ul id="death-scene-tips-list">
+          <li>Point dramatically at someone suspicious</li>
+          <li>Clutch your chest and stagger</li>
+          <li>Deliver your final words with passion</li>
+        </ul>
+      </div>
+      <button class="death-scene-close" id="death-scene-close">I'm Ready to Perform! 🎭</button>
+    </div>
+  </div>
+
   <!-- Win notification overlay -->
   <div class="win-overlay" id="win-overlay">
     <div class="win-content">
@@ -931,44 +2299,105 @@
           Invalid game code. Please check with your narrator.
         </div>
       </div>
-    </section>
-
-    <!-- Lobby/Waiting Section (shown after joining, before role assignment) -->
-    <section class="lobby-section" id="lobby-section">
-      <div class="lobby-card">
-        <div class="lobby-icon">🎭</div>
-        <div class="lobby-title" id="lobby-player-name">Welcome!</div>
-        <div class="lobby-subtitle">You've joined the game</div>
-        <div class="lobby-waiting-text">
-          <span class="spinner"></span>
-          <span>Waiting for the narrator to assign roles...</span>
+      
+      <!-- Game Tips Section (shown while waiting to join) -->
+      <div class="game-tips-section" id="login-tips">
+        <h3>💡 Game Tips</h3>
+        <div class="tip-card" id="login-tip-card">
+          <div class="tip-title" id="login-tip-title">Loading tip...</div>
+          <div class="tip-text" id="login-tip-text">Get ready to play!</div>
+          <span class="tip-category strategy" id="login-tip-category">Tip</span>
         </div>
-        <div class="lobby-player-count" id="lobby-player-count">
-          Other players are joining...
-        </div>
+        <div class="tip-navigation" id="login-tip-nav"></div>
+        <button class="quiz-toggle-btn" id="quiz-toggle-btn">🎮 Play the Tips Quiz!</button>
       </div>
-    </section>
-
-    <!-- Role Reveal Overlay -->
-    <div class="role-reveal-overlay" id="role-reveal-overlay">
-      <div class="role-reveal-content">
-        <div class="reveal-card good" id="reveal-card">
-          <div class="reveal-intro">You are...</div>
-          <div class="reveal-role-name" id="reveal-role-name">The Oracle</div>
-          <div class="reveal-team good" id="reveal-team">👼 Good Team</div>
-          <div class="reveal-ability" id="reveal-ability">
-            Check one player each night to learn if they are good or evil.
+      
+      <!-- Quiz Mini-Game Section -->
+      <div class="quiz-game-section" id="quiz-game-section" style="display: none;">
+        <h3>🧠 Tips Quiz Challenge</h3>
+        <div class="quiz-score-bar">
+          <span>Score: <span class="quiz-score" id="quiz-score">0</span></span>
+          <span>🔥 Streak: <span class="quiz-streak" id="quiz-streak">0</span></span>
+        </div>
+        <div class="quiz-question-card" id="quiz-question-card">
+          <div class="quiz-question-text" id="quiz-question-text">Loading question...</div>
+          <div class="quiz-options" id="quiz-options">
+            <!-- Options will be populated dynamically -->
           </div>
-          <button class="reveal-continue-btn" id="reveal-continue-btn">Continue to Game</button>
         </div>
+        <div class="quiz-feedback" id="quiz-feedback">
+          <div id="quiz-feedback-text"></div>
+          <div class="quiz-tip-reveal" id="quiz-tip-reveal"></div>
+        </div>
+        <button class="quiz-next-btn" id="quiz-next-btn" style="display: none;">Next Question →</button>
+        <div class="quiz-complete" id="quiz-complete" style="display: none;">
+          <div class="quiz-complete-icon">🏆</div>
+          <div class="quiz-complete-title">Quiz Complete!</div>
+          <div class="quiz-complete-score" id="quiz-final-score">You scored 0/0</div>
+          <button class="quiz-restart-btn" id="quiz-restart-btn">Play Again</button>
+        </div>
+        <button class="quiz-toggle-btn" id="quiz-back-btn" style="margin-top: 0.75rem;">← Back to Tips</button>
       </div>
-    </div>
+    </section>
 
     <!-- Game Section (shown after joining) -->
     <section class="game-section" id="game-section">
       <!-- Phase Indicator -->
       <div class="phase-indicator night" id="phase-indicator">
         <div class="phase-label" id="phase-label">Waiting for game...</div>
+      </div>
+
+      <!-- Voting Section (shown when voting is active in laptop mode) -->
+      <div class="voting-section" id="voting-section">
+        <h3>🗳️ Cast Your Vote</h3>
+        <div class="voting-instruction" id="voting-instruction">Select the player you want to eliminate</div>
+        <div class="vote-options" id="vote-options">
+          <!-- Vote options will be populated dynamically -->
+        </div>
+        <button class="submit-vote-btn" id="submit-vote-btn" disabled>Submit Vote</button>
+        <div class="vote-submitted hidden" id="vote-submitted">
+          ✅ Your vote has been submitted!
+        </div>
+      </div>
+
+      <!-- Dice Roll Section (shown for Sidekick-type characters) -->
+      <div class="dice-roll-section" id="dice-roll-section">
+        <h3>🎲 Sidekick Power</h3>
+        <div class="dice-info" id="dice-info">Roll the dice to use your special ability!</div>
+        <button class="roll-dice-btn" id="roll-dice-btn">🎲 Roll Dice</button>
+        <div class="dice-result" id="dice-result">
+          <div class="dice-face" id="dice-face">⚀</div>
+          <div class="dice-result-text" id="dice-result-text">Result</div>
+          <div class="dice-result-description" id="dice-result-description">Description</div>
+        </div>
+      </div>
+
+      <!-- Night Activity Section (shown during night phase) -->
+      <div class="night-activity-section" id="night-activity-section">
+        <h3>🌙 Night Phase</h3>
+        <div class="night-activity-subtitle">While you wait with eyes closed or turned around...</div>
+        <div class="night-activity-card">
+          <div class="night-activity-emoji" id="night-activity-emoji">🧘</div>
+          <div class="night-activity-title" id="night-activity-title">Loading activity...</div>
+          <div class="night-activity-text" id="night-activity-text">Get ready for the next round!</div>
+        </div>
+        <button class="next-activity-btn" id="next-activity-btn">Next Activity →</button>
+      </div>
+
+      <!-- Acting Prompt Section (shown during day phase) -->
+      <div class="acting-prompt-section" id="acting-prompt-section">
+        <h4>🎭 Acting Challenge</h4>
+        <div class="acting-prompt-card">
+          <div class="acting-prompt-type" id="acting-prompt-type">Performance Tip</div>
+          <div class="acting-prompt-text" id="acting-prompt-text">Loading prompt...</div>
+        </div>
+        <button class="new-prompt-btn" id="new-prompt-btn">🎲 New Challenge</button>
+      </div>
+
+      <!-- Role-Specific Tips Section -->
+      <div class="role-tips-section" id="role-tips-section" style="display: none;">
+        <h4>💡 Strategy Tip</h4>
+        <div class="role-tip-text" id="role-tip-text">Loading tip...</div>
       </div>
 
       <!-- Character Card -->
@@ -981,6 +2410,16 @@
         <div class="character-ability">
           <h4>Your Ability</h4>
           <p id="character-ability-text">Loading character information...</p>
+        </div>
+        
+        <!-- Voice/Accent Suggestion -->
+        <div class="voice-suggestion" id="voice-suggestion" style="display: none;">
+          <h5>🎭 Your Character Voice</h5>
+          <div class="voice-suggestion-text" id="voice-suggestion-text"></div>
+          <div class="acting-tips" id="acting-tips">
+            <div class="acting-tips-title">Acting Tips</div>
+            <div class="acting-tips-content" id="acting-tips-content"></div>
+          </div>
         </div>
       </div>
 
@@ -1015,17 +2454,10 @@
   </main>
 
   <script>
-    // Constants - defined at the top to avoid reference errors
-    const JOIN_TIMEOUT_MS = 5000;
-    const CONNECTION_CHECK_INTERVAL_MS = 10000;
-    
     // BroadcastChannel for same-device fallback communication
     const CHANNEL_NAME = 'melodrama-player-channel';
     let channel = null;
     let retryTimeout = null;
-    
-    // Firebase readiness state
-    let firebaseReady = false;
     
     // Firebase listeners for cleanup
     let firebasePlayerUnsubscribe = null;
@@ -1410,6 +2842,15 @@
         const isConnected = connected === true && (playerState.inLobby || playerState.character !== null);
         updateConnectionStatus(isConnected);
       });
+      
+      // Listen for theme changes
+      const themeRef = db.ref(db.database, `games/${playerState.gameCode}/theme`);
+      db.onValue(themeRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.theme) {
+          applyTheme(data.theme);
+        }
+      });
     }
 
     function cleanupFirebaseListeners() {
@@ -1569,8 +3010,46 @@
       // Update ability text
       characterAbilityText.textContent = char.power || char.short || 'No ability description available.';
       
+      // Update voice/accent suggestion
+      updateVoiceSuggestion(char);
+      
       // Update instructions based on character
       updateInstructions(char);
+    }
+
+    function updateVoiceSuggestion(char) {
+      const voiceSection = document.getElementById('voice-suggestion');
+      const voiceText = document.getElementById('voice-suggestion-text');
+      const actingTips = document.getElementById('acting-tips-content');
+      
+      if (!voiceSection || !voiceText || !actingTips) return;
+      
+      // Check if character has acting info
+      if (char.actingA) {
+        voiceSection.style.display = 'block';
+        
+        // Set voice suggestion
+        voiceText.textContent = char.actingA.voice || 'Speak naturally in character!';
+        
+        // Set acting tips
+        let tipsHTML = '';
+        if (char.actingA.body) {
+          tipsHTML += `<div class="acting-tip-item"><strong>Body:</strong> ${char.actingA.body}</div>`;
+        }
+        if (char.actingA.face) {
+          tipsHTML += `<div class="acting-tip-item"><strong>Face:</strong> ${char.actingA.face}</div>`;
+        }
+        if (char.actingA.death) {
+          tipsHTML += `<div class="acting-tip-item"><strong>Death:</strong> ${char.actingA.death}</div>`;
+        }
+        
+        actingTips.innerHTML = tipsHTML;
+        
+        // Show acting tips section only if there are tips
+        document.getElementById('acting-tips').style.display = tipsHTML ? 'block' : 'none';
+      } else {
+        voiceSection.style.display = 'none';
+      }
     }
 
     function updateInstructions(char) {
@@ -1792,6 +3271,1117 @@
       console.log('Firebase ready event received, initialized:', firebaseReady);
       updateInitializationStatus();
     });
+
+    // ===== GAME TIPS SYSTEM =====
+    const GAME_TIPS = [
+      {
+        title: "Stay in Character",
+        text: "The more dramatic your performance, the more fun everyone has! Don't be afraid to overact.",
+        category: "acting"
+      },
+      {
+        title: "Trust Your Instincts",
+        text: "If someone seems too helpful or too quiet, there might be a reason. Pay attention to behavior changes.",
+        category: "strategy"
+      },
+      {
+        title: "Take Notes",
+        text: "Write down who accused whom, who defended whom, and any suspicious behavior. Notes help you spot patterns.",
+        category: "strategy"
+      },
+      {
+        title: "The Power of Silence",
+        text: "Sometimes saying nothing is the best strategy. Let others reveal themselves through their accusations.",
+        category: "strategy"
+      },
+      {
+        title: "Dramatic Deaths",
+        text: "When you're eliminated, give a memorable death scene! Point at someone, gasp dramatically, or deliver a final monologue.",
+        category: "acting"
+      },
+      {
+        title: "Night Phase Rules",
+        text: "Keep your eyes CLOSED during night unless the narrator calls your role. Peeking ruins the mystery!",
+        category: "rules"
+      },
+      {
+        title: "Day Phase Discussion",
+        text: "During the day, discuss openly but remember - evil players will lie to survive. Question everything!",
+        category: "rules"
+      },
+      {
+        title: "Claim Strategically",
+        text: "You can claim to be any role, but be careful - if the real player is alive, they might call you out!",
+        category: "strategy"
+      },
+      {
+        title: "Evil Team Coordination",
+        text: "Evil players know each other. They might subtly defend or redirect suspicion from teammates.",
+        category: "strategy"
+      },
+      {
+        title: "Watch the Reactions",
+        text: "When someone is eliminated, watch how others react. Genuine surprise vs. fake surprise can be revealing.",
+        category: "strategy"
+      },
+      {
+        title: "Have Fun!",
+        text: "Win or lose, the goal is entertainment! Embrace the drama, enjoy the twists, and celebrate great performances.",
+        category: "fun"
+      },
+      {
+        title: "The Art of Misdirection",
+        text: "Point suspicion elsewhere subtly. Too aggressive makes you a target; too quiet makes you suspicious.",
+        category: "strategy"
+      },
+      {
+        title: "Character Voice",
+        text: "Try giving your character a unique voice, accent, or speech pattern. It makes the game more immersive!",
+        category: "acting"
+      },
+      {
+        title: "Vote Carefully",
+        text: "Your vote matters! Consider the evidence carefully, but also trust your gut feeling about who's lying.",
+        category: "rules"
+      },
+      {
+        title: "The Final Showdown",
+        text: "When it's down to the last few players, every word and gesture matters. This is where champions are made!",
+        category: "fun"
+      }
+    ];
+
+    let currentTipIndex = 0;
+    let tipRotationInterval = null;
+
+    function initGameTips() {
+      renderTip(0);
+      renderTipNavigation();
+      startTipRotation();
+    }
+
+    function renderTip(index) {
+      const tip = GAME_TIPS[index];
+      const titleEl = document.getElementById('login-tip-title');
+      const textEl = document.getElementById('login-tip-text');
+      const categoryEl = document.getElementById('login-tip-category');
+      const cardEl = document.getElementById('login-tip-card');
+      
+      if (!titleEl || !tip) return;
+      
+      // Trigger animation
+      cardEl.style.animation = 'none';
+      cardEl.offsetHeight; // Force reflow
+      cardEl.style.animation = 'tipFade 0.5s ease-out';
+      
+      titleEl.textContent = tip.title;
+      textEl.textContent = tip.text;
+      categoryEl.textContent = tip.category.charAt(0).toUpperCase() + tip.category.slice(1);
+      categoryEl.className = `tip-category ${tip.category}`;
+      
+      currentTipIndex = index;
+      updateTipNavigation();
+    }
+
+    function renderTipNavigation() {
+      const navEl = document.getElementById('login-tip-nav');
+      if (!navEl) return;
+      
+      navEl.innerHTML = '';
+      GAME_TIPS.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.className = `tip-dot ${index === currentTipIndex ? 'active' : ''}`;
+        dot.onclick = () => {
+          renderTip(index);
+          restartTipRotation();
+        };
+        navEl.appendChild(dot);
+      });
+    }
+
+    function updateTipNavigation() {
+      const dots = document.querySelectorAll('#login-tip-nav .tip-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentTipIndex);
+      });
+    }
+
+    function startTipRotation() {
+      tipRotationInterval = setInterval(() => {
+        const nextIndex = (currentTipIndex + 1) % GAME_TIPS.length;
+        renderTip(nextIndex);
+      }, 8000); // Rotate every 8 seconds
+    }
+
+    function restartTipRotation() {
+      if (tipRotationInterval) {
+        clearInterval(tipRotationInterval);
+      }
+      startTipRotation();
+    }
+
+    function stopTipRotation() {
+      if (tipRotationInterval) {
+        clearInterval(tipRotationInterval);
+        tipRotationInterval = null;
+      }
+    }
+
+    // ===== QUIZ MINI-GAME =====
+    const QUIZ_QUESTIONS = [
+      {
+        question: "What should you do when someone is eliminated?",
+        options: ["Look away quickly", "Watch everyone's reactions carefully", "Start talking immediately", "Close your eyes"],
+        correct: 1,
+        tip: "When someone is eliminated, watch how others react. Genuine surprise vs. fake surprise can be revealing."
+      },
+      {
+        question: "During the night phase, what should you do?",
+        options: ["Peek at other players", "Keep your eyes closed unless called", "Whisper to your neighbor", "Stand up and stretch"],
+        correct: 1,
+        tip: "Keep your eyes CLOSED during night unless the narrator calls your role. Peeking ruins the mystery!"
+      },
+      {
+        question: "What's the best way to be a memorable player?",
+        options: ["Stay completely silent", "Play it safe and blend in", "Embrace drama and give great performances", "Always accuse the same person"],
+        correct: 2,
+        tip: "Win or lose, the goal is entertainment! Embrace the drama, enjoy the twists, and celebrate great performances."
+      },
+      {
+        question: "If you're accused, what's a good strategy?",
+        options: ["Immediately admit guilt", "Stay completely silent", "Act hurt and offended dramatically", "Leave the game"],
+        correct: 2,
+        tip: "The more dramatic your performance, the more fun everyone has! Don't be afraid to overact."
+      },
+      {
+        question: "What makes evil players harder to spot?",
+        options: ["They always stay quiet", "They subtly defend each other", "They never participate", "They wear different clothes"],
+        correct: 1,
+        tip: "Evil players know each other. They might subtly defend or redirect suspicion from teammates."
+      },
+      {
+        question: "When is the best time to reveal important information?",
+        options: ["As soon as you get it", "Never reveal anything", "Wait for the right dramatic moment", "Only when directly asked"],
+        correct: 2,
+        tip: "Your information is valuable - but sharing it reveals you as a target! Wait for the right moment."
+      },
+      {
+        question: "What should you do to prepare during downtime?",
+        options: ["Check your phone", "Take notes about suspicious behavior", "Sleep", "Talk to eliminated players"],
+        correct: 1,
+        tip: "Write down who accused whom, who defended whom, and any suspicious behavior. Notes help you spot patterns."
+      },
+      {
+        question: "How can you make your character more interesting?",
+        options: ["Use a monotone voice", "Give them a unique voice or accent", "Never speak in character", "Copy someone else exactly"],
+        correct: 1,
+        tip: "Try giving your character a unique voice, accent, or speech pattern. It makes the game more immersive!"
+      },
+      {
+        question: "What's a sign someone might be lying?",
+        options: ["They blink normally", "They're too defensive or too quiet", "They sit still", "They participate actively"],
+        correct: 1,
+        tip: "Point suspicion elsewhere subtly. Too aggressive makes you a target; too quiet makes you suspicious."
+      },
+      {
+        question: "In the final showdown with few players left, what matters most?",
+        options: ["Previous alliances only", "Every word and gesture", "Who spoke first", "Random guessing"],
+        correct: 1,
+        tip: "When it's down to the last few players, every word and gesture matters. This is where champions are made!"
+      }
+    ];
+
+    const quizState = {
+      currentQuestion: 0,
+      score: 0,
+      streak: 0,
+      maxStreak: 0,
+      answered: false,
+      questionsOrder: []
+    };
+
+    function initQuiz() {
+      const toggleBtn = document.getElementById('quiz-toggle-btn');
+      const backBtn = document.getElementById('quiz-back-btn');
+      const nextBtn = document.getElementById('quiz-next-btn');
+      const restartBtn = document.getElementById('quiz-restart-btn');
+      
+      if (toggleBtn) toggleBtn.addEventListener('click', showQuiz);
+      if (backBtn) backBtn.addEventListener('click', hideQuiz);
+      if (nextBtn) nextBtn.addEventListener('click', nextQuestion);
+      if (restartBtn) restartBtn.addEventListener('click', restartQuiz);
+    }
+
+    function showQuiz() {
+      const tipsSection = document.getElementById('login-tips');
+      const quizSection = document.getElementById('quiz-game-section');
+      
+      if (tipsSection) tipsSection.style.display = 'none';
+      if (quizSection) quizSection.style.display = 'block';
+      
+      stopTipRotation();
+      restartQuiz();
+    }
+
+    function hideQuiz() {
+      const tipsSection = document.getElementById('login-tips');
+      const quizSection = document.getElementById('quiz-game-section');
+      
+      if (tipsSection) tipsSection.style.display = 'block';
+      if (quizSection) quizSection.style.display = 'none';
+      
+      startTipRotation();
+    }
+
+    function restartQuiz() {
+      quizState.currentQuestion = 0;
+      quizState.score = 0;
+      quizState.streak = 0;
+      quizState.maxStreak = 0;
+      quizState.answered = false;
+      
+      // Shuffle questions
+      quizState.questionsOrder = [...Array(QUIZ_QUESTIONS.length).keys()];
+      for (let i = quizState.questionsOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [quizState.questionsOrder[i], quizState.questionsOrder[j]] = [quizState.questionsOrder[j], quizState.questionsOrder[i]];
+      }
+      
+      // Reset UI
+      document.getElementById('quiz-complete').style.display = 'none';
+      document.getElementById('quiz-question-card').style.display = 'block';
+      document.getElementById('quiz-next-btn').style.display = 'none';
+      document.getElementById('quiz-feedback').className = 'quiz-feedback';
+      
+      updateQuizScore();
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const questionIndex = quizState.questionsOrder[quizState.currentQuestion];
+      const question = QUIZ_QUESTIONS[questionIndex];
+      
+      document.getElementById('quiz-question-text').textContent = question.question;
+      
+      const optionsContainer = document.getElementById('quiz-options');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const optionEl = document.createElement('div');
+        optionEl.className = 'quiz-option';
+        optionEl.textContent = option;
+        optionEl.onclick = () => selectAnswer(index);
+        optionsContainer.appendChild(optionEl);
+      });
+      
+      quizState.answered = false;
+      document.getElementById('quiz-feedback').className = 'quiz-feedback';
+      document.getElementById('quiz-next-btn').style.display = 'none';
+    }
+
+    function selectAnswer(selectedIndex) {
+      if (quizState.answered) return;
+      quizState.answered = true;
+      
+      const questionIndex = quizState.questionsOrder[quizState.currentQuestion];
+      const question = QUIZ_QUESTIONS[questionIndex];
+      const isCorrect = selectedIndex === question.correct;
+      
+      // Update score and streak
+      if (isCorrect) {
+        quizState.score++;
+        quizState.streak++;
+        if (quizState.streak > quizState.maxStreak) {
+          quizState.maxStreak = quizState.streak;
+        }
+      } else {
+        quizState.streak = 0;
+      }
+      
+      updateQuizScore();
+      
+      // Highlight options
+      const options = document.querySelectorAll('.quiz-option');
+      options.forEach((opt, index) => {
+        opt.classList.add('disabled');
+        if (index === question.correct) {
+          opt.classList.add('correct');
+        } else if (index === selectedIndex && !isCorrect) {
+          opt.classList.add('incorrect');
+        }
+      });
+      
+      // Show feedback
+      const feedback = document.getElementById('quiz-feedback');
+      const feedbackText = document.getElementById('quiz-feedback-text');
+      const tipReveal = document.getElementById('quiz-tip-reveal');
+      
+      if (isCorrect) {
+        feedback.className = 'quiz-feedback correct';
+        feedbackText.textContent = quizState.streak > 1 ? `🔥 Correct! ${quizState.streak} in a row!` : '✅ Correct!';
+      } else {
+        feedback.className = 'quiz-feedback incorrect';
+        feedbackText.textContent = '❌ Not quite! Here\'s the tip:';
+      }
+      
+      tipReveal.textContent = `💡 ${question.tip}`;
+      
+      // Show next button or complete
+      if (quizState.currentQuestion < Math.min(QUIZ_QUESTIONS.length - 1, 9)) {
+        document.getElementById('quiz-next-btn').style.display = 'block';
+      } else {
+        setTimeout(showQuizComplete, 1500);
+      }
+    }
+
+    function nextQuestion() {
+      quizState.currentQuestion++;
+      renderQuestion();
+    }
+
+    function showQuizComplete() {
+      document.getElementById('quiz-question-card').style.display = 'none';
+      document.getElementById('quiz-next-btn').style.display = 'none';
+      document.getElementById('quiz-feedback').className = 'quiz-feedback';
+      
+      const totalQuestions = Math.min(QUIZ_QUESTIONS.length, 10);
+      const percentage = Math.round((quizState.score / totalQuestions) * 100);
+      
+      let message = '';
+      if (percentage === 100) {
+        message = '🏆 Perfect Score! You\'re ready to play!';
+      } else if (percentage >= 80) {
+        message = '🌟 Excellent! You know your stuff!';
+      } else if (percentage >= 60) {
+        message = '👍 Good job! Keep learning!';
+      } else {
+        message = '📚 Keep practicing! Play again to learn more.';
+      }
+      
+      document.getElementById('quiz-final-score').innerHTML = `
+        You scored <strong>${quizState.score}/${totalQuestions}</strong> (${percentage}%)<br>
+        <span style="color: #fbbf24;">Best streak: ${quizState.maxStreak} 🔥</span><br>
+        <span style="font-size: 0.9rem; margin-top: 0.5rem; display: block;">${message}</span>
+      `;
+      
+      document.getElementById('quiz-complete').style.display = 'block';
+    }
+
+    function updateQuizScore() {
+      document.getElementById('quiz-score').textContent = quizState.score;
+      document.getElementById('quiz-streak').textContent = quizState.streak;
+    }
+
+    // ===== VOTING SYSTEM =====
+    const votingState = {
+      active: false,
+      selectedPlayer: null,
+      submitted: false,
+      players: []
+    };
+
+    // Voting DOM elements (initialized in initVoting)
+    let votingSection = null;
+    let voteOptions = null;
+    let submitVoteBtn = null;
+    let voteSubmitted = null;
+
+    function initVoting() {
+      votingSection = document.getElementById('voting-section');
+      voteOptions = document.getElementById('vote-options');
+      submitVoteBtn = document.getElementById('submit-vote-btn');
+      voteSubmitted = document.getElementById('vote-submitted');
+      
+      if (submitVoteBtn) {
+        submitVoteBtn.addEventListener('click', handleVoteSubmit);
+      }
+    }
+
+    function showVoting(players) {
+      if (!votingSection || !voteOptions) return;
+      
+      votingState.active = true;
+      votingState.players = players;
+      votingState.selectedPlayer = null;
+      votingState.submitted = false;
+      
+      // Render vote options
+      voteOptions.innerHTML = '';
+      players.forEach(player => {
+        if (player.name === playerState.playerName) return; // Can't vote for yourself
+        
+        const option = document.createElement('div');
+        option.className = 'vote-option';
+        option.innerHTML = `
+          <span class="vote-option-name">${escapeHtml(player.name)}</span>
+          <span class="vote-option-check"></span>
+        `;
+        option.onclick = () => selectVoteOption(player.id, option);
+        voteOptions.appendChild(option);
+      });
+      
+      votingSection.classList.add('active');
+      submitVoteBtn.disabled = true;
+      submitVoteBtn.classList.remove('hidden');
+      voteSubmitted.classList.add('hidden');
+    }
+
+    function selectVoteOption(playerId, optionEl) {
+      if (votingState.submitted) return;
+      
+      // Clear previous selection
+      document.querySelectorAll('.vote-option').forEach(el => {
+        el.classList.remove('selected');
+      });
+      
+      // Select new option
+      optionEl.classList.add('selected');
+      optionEl.querySelector('.vote-option-check').textContent = '✓';
+      votingState.selectedPlayer = playerId;
+      submitVoteBtn.disabled = false;
+    }
+
+    function handleVoteSubmit() {
+      if (!votingState.selectedPlayer || votingState.submitted) return;
+      
+      votingState.submitted = true;
+      submitVoteBtn.disabled = true;
+      
+      // Send vote to Firebase
+      if (window.firebaseDB && window.firebaseDB.initialized && playerState.gameCode && playerState.playerId) {
+        const db = window.firebaseDB;
+        const voteRef = db.ref(db.database, `games/${playerState.gameCode}/votes/${playerState.playerId}`);
+        db.set(voteRef, {
+          votedFor: votingState.selectedPlayer,
+          voterName: playerState.playerName,
+          timestamp: Date.now()
+        }).then(() => {
+          console.log('Vote submitted successfully');
+        }).catch((error) => {
+          console.error('Failed to submit vote:', error);
+        });
+      }
+      
+      // Send via BroadcastChannel as well
+      if (channel) {
+        channel.postMessage({
+          type: 'player-vote',
+          gameCode: playerState.gameCode,
+          playerName: playerState.playerName,
+          playerId: playerState.playerId,
+          votedFor: votingState.selectedPlayer
+        });
+      }
+      
+      // Show confirmation
+      submitVoteBtn.classList.add('hidden');
+      voteSubmitted.classList.remove('hidden');
+    }
+
+    function hideVoting() {
+      if (votingSection) {
+        votingSection.classList.remove('active');
+      }
+      votingState.active = false;
+    }
+
+    // ===== DICE ROLL SYSTEM =====
+    const diceState = {
+      available: false,
+      used: false,
+      lastResult: null
+    };
+
+    const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+    let diceRollSection = null;
+    let rollDiceBtn = null;
+    let diceResult = null;
+    let diceFace = null;
+    let diceResultText = null;
+    let diceResultDescription = null;
+    let diceInfo = null;
+
+    function initDiceRoll() {
+      diceRollSection = document.getElementById('dice-roll-section');
+      rollDiceBtn = document.getElementById('roll-dice-btn');
+      diceResult = document.getElementById('dice-result');
+      diceFace = document.getElementById('dice-face');
+      diceResultText = document.getElementById('dice-result-text');
+      diceResultDescription = document.getElementById('dice-result-description');
+      diceInfo = document.getElementById('dice-info');
+      
+      if (rollDiceBtn) {
+        rollDiceBtn.addEventListener('click', handleDiceRoll);
+      }
+    }
+
+    function showDiceRoll(characterType, characterName) {
+      if (!diceRollSection || characterType !== 'sidekick') return;
+      
+      diceState.available = true;
+      diceState.used = false;
+      
+      // Set info text based on character
+      if (diceInfo) {
+        diceInfo.textContent = `As ${characterName}, roll 4-6 to succeed, 1-3 to fail!`;
+      }
+      
+      diceRollSection.classList.add('active');
+      rollDiceBtn.disabled = false;
+      diceResult.classList.remove('active', 'success', 'failure');
+    }
+
+    function hideDiceRoll() {
+      if (diceRollSection) {
+        diceRollSection.classList.remove('active');
+      }
+      diceState.available = false;
+    }
+
+    function handleDiceRoll() {
+      if (!diceState.available || diceState.used) return;
+      
+      diceState.used = true;
+      rollDiceBtn.disabled = true;
+      
+      // Animate dice roll
+      let rollCount = 0;
+      const rollAnimation = setInterval(() => {
+        diceFace.textContent = DICE_FACES[Math.floor(Math.random() * 6)];
+        rollCount++;
+        
+        if (rollCount >= 10) {
+          clearInterval(rollAnimation);
+          
+          // Final result
+          const result = Math.floor(Math.random() * 6) + 1;
+          diceFace.textContent = DICE_FACES[result - 1];
+          diceState.lastResult = result;
+          
+          // Determine success/failure
+          const success = result >= 4;
+          
+          diceResult.classList.add('active');
+          diceResult.classList.add(success ? 'success' : 'failure');
+          
+          if (success) {
+            diceResultText.textContent = `🎉 Success! You rolled a ${result}!`;
+            diceResultDescription.textContent = 'Your power activates! Announce your action to the narrator.';
+          } else {
+            diceResultText.textContent = `💥 Failed! You rolled a ${result}!`;
+            diceResultDescription.textContent = 'Your power misfires! Tell the narrator what happened.';
+          }
+          
+          // Send result to Firebase
+          if (window.firebaseDB && window.firebaseDB.initialized && playerState.gameCode && playerState.playerId) {
+            const db = window.firebaseDB;
+            const diceRef = db.ref(db.database, `games/${playerState.gameCode}/diceRolls/${playerState.playerId}`);
+            db.set(diceRef, {
+              playerName: playerState.playerName,
+              result: result,
+              success: success,
+              timestamp: Date.now()
+            });
+          }
+          
+          // Send via BroadcastChannel
+          if (channel) {
+            channel.postMessage({
+              type: 'player-dice-roll',
+              gameCode: playerState.gameCode,
+              playerName: playerState.playerName,
+              playerId: playerState.playerId,
+              result: result,
+              success: success
+            });
+          }
+        }
+      }, 100);
+    }
+
+    // Utility function to escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ===== NIGHT ACTIVITIES SYSTEM =====
+    const NIGHT_ACTIVITIES = [
+      // SUSPICION JOURNAL - Explicit note-taking prompts
+      {
+        emoji: "📝",
+        title: "Suspicion Journal",
+        text: "WRITE THIS DOWN NOW: List 3 players you're most suspicious of and WHY. Be specific - what did they say or do?",
+        category: "journal"
+      },
+      {
+        emoji: "📋",
+        title: "Alliance Tracker",
+        text: "WRITE THIS DOWN: Who defended whom today? Draw lines between players who seem to be working together.",
+        category: "journal"
+      },
+      {
+        emoji: "🔍",
+        title: "Evidence Log",
+        text: "WRITE THIS DOWN: What concrete evidence do you have? 'Player X accused Y when...' 'Player Z stayed quiet when...'",
+        category: "journal"
+      },
+      {
+        emoji: "❓",
+        title: "Unanswered Questions",
+        text: "WRITE THIS DOWN: What questions do you want to ask tomorrow? Who hasn't explained themselves? What doesn't add up?",
+        category: "journal"
+      },
+      // OBSERVATION TASKS - Mental exercises
+      {
+        emoji: "🔢",
+        title: "Counting Exercise",
+        text: "Count slowly to 30 in your head. At each number, think of one thing you noticed today about any player.",
+        category: "observation"
+      },
+      {
+        emoji: "🎯",
+        title: "Accusation Prep",
+        text: "Think of 3 reasons to accuse the person sitting to your LEFT. Then 3 reasons for the person on your RIGHT.",
+        category: "observation"
+      },
+      {
+        emoji: "👥",
+        title: "Behavior Recall",
+        text: "Picture each player's face. How did they react when votes were counted? Who looked relieved? Who looked worried?",
+        category: "observation"
+      },
+      // MINDFULNESS/FOCUS - Breathing and strategy
+      {
+        emoji: "🧘",
+        title: "Deep Breathing",
+        text: "Breathe in for 4 counts... hold for 4... exhale for 4. Repeat 5 times. Clear your mind for strategic thinking.",
+        category: "mindfulness"
+      },
+      {
+        emoji: "💭",
+        title: "Strategy Planning",
+        text: "Eyes closed, plan your next move: What will you say first? Who will you watch? What's your backup plan?",
+        category: "mindfulness"
+      },
+      {
+        emoji: "🎭",
+        title: "Character Focus",
+        text: "Get into character: How does your role feel right now? Confident? Scared? Calculating? Let that emotion guide you.",
+        category: "mindfulness"
+      },
+      // MINI PUZZLES/TRIVIA - Fun activities
+      {
+        emoji: "🧩",
+        title: "Word Puzzle",
+        text: "How many words can you make from the letters in 'MELODRAMA'? (Example: drama, lame, dome, roam...)",
+        category: "puzzle"
+      },
+      {
+        emoji: "🎲",
+        title: "Math Challenge",
+        text: "Without looking: How many players started the game? How many are left? What percentage has been eliminated?",
+        category: "puzzle"
+      },
+      {
+        emoji: "🌟",
+        title: "Memory Test",
+        text: "Can you name every player still alive in clockwise order? Test your memory before eyes open!",
+        category: "puzzle"
+      },
+      {
+        emoji: "🎬",
+        title: "Movie Quote",
+        text: "Think of a dramatic movie quote you could use today: 'I see dead people...' 'May the odds be ever in your favor...'",
+        category: "puzzle"
+      },
+      {
+        emoji: "🎭",
+        title: "Accent Challenge",
+        text: "Pick an accent for your next statement: British detective? Southern drawl? News reporter? Practice silently!",
+        category: "puzzle"
+      },
+      {
+        emoji: "🤔",
+        title: "Riddle Time",
+        text: "I can be cracked, made, told, and played. What am I? (Answer: A joke!) Now think of something funny to lighten the mood.",
+        category: "puzzle"
+      }
+    ];
+
+    let currentNightActivityIndex = 0;
+
+    function initNightActivities() {
+      const nextBtn = document.getElementById('next-activity-btn');
+      if (nextBtn) {
+        nextBtn.addEventListener('click', nextNightActivity);
+      }
+      renderNightActivity(0);
+    }
+
+    function renderNightActivity(index) {
+      const activity = NIGHT_ACTIVITIES[index];
+      const emojiEl = document.getElementById('night-activity-emoji');
+      const titleEl = document.getElementById('night-activity-title');
+      const textEl = document.getElementById('night-activity-text');
+      
+      if (!emojiEl || !activity) return;
+      
+      emojiEl.textContent = activity.emoji;
+      titleEl.textContent = activity.title;
+      textEl.textContent = activity.text;
+      currentNightActivityIndex = index;
+    }
+
+    function nextNightActivity() {
+      const nextIndex = (currentNightActivityIndex + 1) % NIGHT_ACTIVITIES.length;
+      renderNightActivity(nextIndex);
+    }
+
+    function showNightActivities() {
+      const section = document.getElementById('night-activity-section');
+      if (section) {
+        section.classList.add('active');
+        // Start with a random activity
+        renderNightActivity(Math.floor(Math.random() * NIGHT_ACTIVITIES.length));
+      }
+    }
+
+    function hideNightActivities() {
+      const section = document.getElementById('night-activity-section');
+      if (section) {
+        section.classList.remove('active');
+      }
+    }
+
+    // ===== ACTING PROMPTS SYSTEM =====
+    const ACTING_PROMPTS = [
+      { type: "Accusation Style", text: "Point dramatically at someone and say 'I saw something last night...' with a trembling voice." },
+      { type: "Defense Style", text: "Clutch your chest in offense and gasp 'How DARE you accuse me!' with righteous indignation." },
+      { type: "Body Language", text: "Cross your arms and narrow your eyes suspiciously at the person on your left." },
+      { type: "Reaction Challenge", text: "When someone is accused, gasp loudly and cover your mouth in shock!" },
+      { type: "Voice Work", text: "Speak in a slightly deeper, more mysterious voice for your next statement." },
+      { type: "Silent Acting", text: "Without speaking, show suspicion by glancing nervously between two players." },
+      { type: "Dramatic Pause", text: "Before your next accusation, pause for 3 full seconds while looking at the crowd." },
+      { type: "Emotional Range", text: "Start calm, then let your voice rise with emotion as you make your point." },
+      { type: "Trust Building", text: "Place your hand over your heart and make sincere eye contact while defending yourself." },
+      { type: "Villain Energy", text: "Let a small, knowing smile cross your face when no one is looking directly at you." },
+      { type: "Detective Mode", text: "Stroke your chin thoughtfully and say 'Interesting...' after someone speaks." },
+      { type: "Ally Support", text: "Nod enthusiastically when someone you trust speaks, showing your support." },
+      { type: "Misdirection", text: "Look worried when someone innocent is accused, then subtly change the subject." },
+      { type: "Power Move", text: "Stand up (if seated) or step forward when making your most important point." },
+      { type: "Final Words Prep", text: "If eliminated, prepare to point at your killer and whisper 'I'll remember this...'" }
+    ];
+
+    let currentActingPromptIndex = 0;
+
+    function initActingPrompts() {
+      const newPromptBtn = document.getElementById('new-prompt-btn');
+      if (newPromptBtn) {
+        newPromptBtn.addEventListener('click', newActingPrompt);
+      }
+    }
+
+    function renderActingPrompt(index) {
+      const prompt = ACTING_PROMPTS[index];
+      const typeEl = document.getElementById('acting-prompt-type');
+      const textEl = document.getElementById('acting-prompt-text');
+      
+      if (!typeEl || !prompt) return;
+      
+      typeEl.textContent = prompt.type;
+      textEl.textContent = prompt.text;
+      currentActingPromptIndex = index;
+    }
+
+    function newActingPrompt() {
+      // Get random prompt that's different from current
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * ACTING_PROMPTS.length);
+      } while (newIndex === currentActingPromptIndex && ACTING_PROMPTS.length > 1);
+      
+      renderActingPrompt(newIndex);
+    }
+
+    function showActingPrompts() {
+      const section = document.getElementById('acting-prompt-section');
+      if (section) {
+        section.classList.add('active');
+        // Start with a random prompt
+        renderActingPrompt(Math.floor(Math.random() * ACTING_PROMPTS.length));
+      }
+    }
+
+    function hideActingPrompts() {
+      const section = document.getElementById('acting-prompt-section');
+      if (section) {
+        section.classList.remove('active');
+      }
+    }
+
+    // ===== DEATH SCENE SUGGESTIONS =====
+    const DEATH_SCENES = [
+      {
+        prompt: "With my dying breath, I curse you all!",
+        tips: ["Point dramatically at someone suspicious", "Stagger and clutch your chest", "Collapse slowly to one knee first"]
+      },
+      {
+        prompt: "I knew... I always knew... but now it's too late...",
+        tips: ["Whisper mysteriously", "Reach toward someone as if to reveal a secret", "Let your voice trail off"]
+      },
+      {
+        prompt: "You haven't seen the last of me!",
+        tips: ["Shake your fist at the sky", "Die with defiant eyes open", "Fall backward dramatically"]
+      },
+      {
+        prompt: "Tell my family... I was innocent...",
+        tips: ["Speak with a trembling voice", "Reach out to no one in particular", "Close your eyes peacefully at the end"]
+      },
+      {
+        prompt: "This village... is doomed without me!",
+        tips: ["Gesture broadly at everyone", "Laugh bitterly before collapsing", "Turn your back as you fall"]
+      },
+      {
+        prompt: "The real villain is still among you...",
+        tips: ["Scan the crowd with knowing eyes", "Point at different people randomly", "Collapse mid-sentence"]
+      },
+      {
+        prompt: "I regret... nothing!",
+        tips: ["Stand proud even as you fall", "Cross your arms over your chest", "Fall forward dramatically"]
+      },
+      {
+        prompt: "Why? WHY?! I trusted you!",
+        tips: ["Look at specific people with betrayal", "Cry out in anguish", "Reach toward someone who voted for you"]
+      },
+      {
+        prompt: "In my next life... I shall have vengeance...",
+        tips: ["Speak in a low, threatening voice", "Make a dramatic hand gesture", "Die with an ominous smile"]
+      },
+      {
+        prompt: "The truth will come out... mark my words...",
+        tips: ["Point heavenward", "Speak with certainty", "Fade away slowly and peacefully"]
+      }
+    ];
+
+    function initDeathScene() {
+      const closeBtn = document.getElementById('death-scene-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', hideDeathScene);
+      }
+    }
+
+    function showDeathScene(characterDeathScene) {
+      const section = document.getElementById('death-scene-section');
+      const promptEl = document.getElementById('death-scene-prompt-text');
+      const tipsEl = document.getElementById('death-scene-tips-list');
+      
+      if (!section || !promptEl || !tipsEl) return;
+      
+      // If character has their own death scene, show it prominently
+      if (characterDeathScene) {
+        promptEl.textContent = `"${characterDeathScene}"`;
+        tipsEl.innerHTML = `
+          <li>This is YOUR character's signature death scene!</li>
+          <li>Make it personal and memorable</li>
+          <li>Point at someone dramatically as you fall</li>
+          <li>Take your time - this is YOUR moment!</li>
+        `;
+      } else {
+        // Pick a random death scene as fallback
+        const scene = DEATH_SCENES[Math.floor(Math.random() * DEATH_SCENES.length)];
+        promptEl.textContent = `"${scene.prompt}"`;
+        tipsEl.innerHTML = scene.tips.map(tip => `<li>${tip}</li>`).join('');
+      }
+      
+      section.classList.add('active');
+    }
+
+    function hideDeathScene() {
+      const section = document.getElementById('death-scene-section');
+      if (section) {
+        section.classList.remove('active');
+      }
+    }
+
+    // ===== ROLE-SPECIFIC TIPS =====
+    const ROLE_TIPS = {
+      villain: [
+        "Coordinate subtly with your evil teammates - a knowing glance can say a lot!",
+        "Blend in by occasionally defending good players. It builds trust.",
+        "If accused, act hurt and offended. Villains never admit guilt!",
+        "Target players who seem to have the most information.",
+        "Let someone else make the first accusation. Follow, don't lead."
+      ],
+      accomplice: [
+        "You know who the villains are - help them without being obvious.",
+        "Your one-time power is precious. Save it for the perfect moment!",
+        "If a villain is in danger, consider using your ability to help.",
+        "Act like a regular good player - your cover is your greatest asset.",
+        "Watch for opportunities where your power can swing the game."
+      ],
+      elder: [
+        "Your information is valuable - but sharing it reveals you as a target!",
+        "Wait for the right moment to reveal what you know.",
+        "Use your nightly information to build a picture over time.",
+        "Be cryptic at first. Too much detail can expose you.",
+        "Remember: the Pretender can fool you. Don't be overconfident!"
+      ],
+      hero: [
+        "You keep people alive! Try to predict who villains will target.",
+        "Don't protect the same person too predictably.",
+        "If your protection triggers, consider whether to reveal yourself.",
+        "Work with Elders if you can identify them safely.",
+        "Sometimes protecting yourself is the smartest move."
+      ],
+      sidekick: [
+        "Your dice power is a gamble - use it when the stakes are highest!",
+        "Know when to hold back. A failed roll can backfire badly.",
+        "Support your teammates with words before risking the dice.",
+        "Watch the voting closely to time your power perfectly.",
+        "Even if you fail, your dramatic moment entertains everyone!"
+      ],
+      damsel: [
+        "Your power triggers when things go wrong for you - that's your drama moment!",
+        "Don't reveal your special ability unless absolutely necessary.",
+        "If you're the Cursed, staying alive is crucial for everyone!",
+        "Twins should protect each other at all costs.",
+        "Use your unique abilities to create memorable moments!"
+      ]
+    };
+
+    function showRoleTip(characterType, team) {
+      const section = document.getElementById('role-tips-section');
+      const tipText = document.getElementById('role-tip-text');
+      
+      if (!section || !tipText || !characterType) return;
+      
+      const tips = ROLE_TIPS[characterType];
+      if (!tips || tips.length === 0) return;
+      
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      tipText.textContent = randomTip;
+      
+      // Set the team class for styling
+      section.className = 'role-tips-section';
+      section.classList.add(team || 'good');
+      section.style.display = 'block';
+    }
+
+    function hideRoleTip() {
+      const section = document.getElementById('role-tips-section');
+      if (section) {
+        section.style.display = 'none';
+      }
+    }
+
+    // Update handleBroadcastMessage to handle voting and dice roll messages
+    const originalHandleBroadcastMessage = handleBroadcastMessage;
+    handleBroadcastMessage = function(data) {
+      // Handle theme changes
+      if (data.type === 'theme-change') {
+        applyTheme(data.theme);
+        return;
+      }
+      
+      // Handle voting messages
+      if (data.type === 'voting-start' && data.gameCode === playerState.gameCode) {
+        showVoting(data.players);
+        return;
+      }
+      
+      if (data.type === 'voting-end' && data.gameCode === playerState.gameCode) {
+        hideVoting();
+        return;
+      }
+      
+      if (data.type === 'dice-roll-available' && data.gameCode === playerState.gameCode) {
+        if (playerState.character && playerState.character.type === 'sidekick') {
+          showDiceRoll('sidekick', playerState.character.name);
+        }
+        return;
+      }
+      
+      // Handle phase changes for night activities
+      if (data.type === 'phase-change' && data.gameCode === playerState.gameCode) {
+        if (data.phase === 'night') {
+          showNightActivities();
+          hideActingPrompts();
+        } else if (data.phase === 'day') {
+          hideNightActivities();
+          showActingPrompts();
+        }
+        return;
+      }
+      
+      // Call original handler
+      if (typeof originalHandleBroadcastMessage === 'function') {
+        originalHandleBroadcastMessage(data);
+      }
+    };
+
+    // ===== THEME SYSTEM =====
+    const THEME_MAP = {
+      'village': 'theme-village',
+      'mansion': 'theme-mansion', 
+      'haunted': 'theme-haunted',
+      'castle': 'theme-castle',
+      'theatre': 'theme-theatre',
+      'space': 'theme-space',
+      'western': 'theme-western',
+      'pirate': 'theme-pirate',
+      'hospital': 'theme-hospital'
+    };
+
+    function applyTheme(themeId) {
+      // Remove all theme classes
+      Object.values(THEME_MAP).forEach(cls => {
+        document.body.classList.remove(cls);
+      });
+      
+      // Add new theme class
+      if (themeId && THEME_MAP[themeId]) {
+        document.body.classList.add(THEME_MAP[themeId]);
+        console.log('Applied theme:', themeId);
+      }
+    }
+
+    // Modify init to include new features
+    const originalInit = init;
+    init = function() {
+      // Call original init
+      originalInit();
+      
+      // Initialize new features
+      initGameTips();
+      initQuiz();
+      initVoting();
+      initDiceRoll();
+      initNightActivities();
+      initActingPrompts();
+      initDeathScene();
+    };
+
+    // Modify showGameSection to show dice roll for sidekicks
+    const originalShowGameSection = showGameSection;
+    showGameSection = function() {
+      originalShowGameSection();
+      
+      // Stop tip rotation when game starts
+      stopTipRotation();
+      
+      // Show dice roll for sidekicks
+      if (playerState.character && playerState.character.type === 'sidekick') {
+        showDiceRoll('sidekick', playerState.character.name);
+      }
+      
+      // Show role-specific tips
+      if (playerState.character) {
+        showRoleTip(playerState.character.type, playerState.character.team);
+      }
+    };
 
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
