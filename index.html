@@ -1020,6 +1020,95 @@
     .game-code-hint strong {
       color: var(--accent-ui);
     }
+    
+    /* Player Connection Status Summary */
+    .player-connection-summary {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 8px;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+    }
+    
+    .player-connection-summary .connection-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    
+    .player-connection-summary .connection-dot.connected {
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+    }
+    
+    .player-connection-summary .connection-dot.partial {
+      background: #eab308;
+      box-shadow: 0 0 8px rgba(234, 179, 8, 0.5);
+    }
+    
+    .player-connection-summary .connection-dot.none {
+      background: #6b7280;
+    }
+    
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    
+    .player-connection-summary .connection-count {
+      font-weight: 600;
+    }
+    
+    .player-connection-summary .connection-count.all-connected {
+      color: #22c55e;
+    }
+    
+    .player-connection-summary .connection-count.partial {
+      color: #eab308;
+    }
+    
+    /* Player Card Connection Indicator */
+    .player-connection-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+    
+    .player-connection-indicator.connected {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    
+    .player-connection-indicator.disconnected {
+      background: rgba(107, 114, 128, 0.2);
+      color: #9ca3af;
+      border: 1px solid rgba(107, 114, 128, 0.4);
+    }
+    
+    .player-connection-indicator .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    
+    .player-connection-indicator.connected .status-dot {
+      background: #22c55e;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    
+    .player-connection-indicator.disconnected .status-dot {
+      background: #6b7280;
+    }
 
     body.light .game-code-card {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(244, 114, 182, 0.08));
@@ -1881,6 +1970,10 @@
               <span class="game-code-value" id="game-code-value">----</span>
             </div>
             <small class="game-code-hint">Students can join at <strong>player.html</strong> with this code</small>
+            <div class="player-connection-summary" id="player-connection-summary">
+              <span class="connection-dot none" id="connection-dot"></span>
+              <span class="connection-count" id="connection-count">0/0 players connected</span>
+            </div>
           </div>
           
           <div class="stat">
@@ -2160,11 +2253,17 @@
   </div>
 
   <template id="player-card-template">
-    <article class="player-card" data-status="alive">
+    <article class="player-card" data-status="alive" data-connected="false">
       <header>
         <div>
           <div class="player-name"></div>
-          <div class="player-meta"></div>
+          <div class="player-meta">
+            <span class="player-role-info"></span>
+            <span class="player-connection-indicator disconnected">
+              <span class="status-dot"></span>
+              <span class="status-text">Offline</span>
+            </span>
+          </div>
         </div>
         <span class="badge"></span>
       </header>
@@ -2656,6 +2755,9 @@
     
     // Track Firebase listeners for cleanup
     let firebasePlayersUnsubscribe = null;
+    
+    // Track connected players (transient state - not persisted)
+    const connectedPlayers = new Map(); // Map<firebasePlayerId, { name: string, gamePlayerId: number, joinedAt: number }>
 
     function initProjectorChannel() {
       if ('BroadcastChannel' in window) {
@@ -2766,15 +2868,97 @@
       
       firebasePlayersUnsubscribe = db.onValue(playersRef, (snapshot) => {
         const playersData = snapshot.val();
-        if (!playersData) return;
         
-        // Check for new players that need character assignment
+        // Clear and rebuild connected players map
+        connectedPlayers.clear();
+        
+        if (!playersData) {
+          updatePlayerConnectionUI();
+          return;
+        }
+        
+        // Track connected players and check for new players needing assignment
         Object.entries(playersData).forEach(([playerId, playerData]) => {
           if (playerData.name && !playerData.character) {
             // Player is waiting for character assignment
             handleFirebasePlayerJoin(playerId, playerData);
+          } else if (playerData.status === 'assigned' && playerData.gamePlayerId) {
+            // Player is connected and has character assigned
+            connectedPlayers.set(playerId, {
+              name: playerData.name,
+              gamePlayerId: playerData.gamePlayerId,
+              joinedAt: playerData.joinedAt || Date.now()
+            });
           }
         });
+        
+        // Update the UI to show connection status
+        updatePlayerConnectionUI();
+      });
+    }
+    
+    // Update UI to show which players are connected
+    function updatePlayerConnectionUI() {
+      const connectionCount = document.getElementById('connection-count');
+      const connectionDot = document.getElementById('connection-dot');
+      
+      if (!connectionCount || !connectionDot) return;
+      
+      const totalPlayers = state.players.length;
+      const connectedCount = connectedPlayers.size;
+      
+      // Update the summary count
+      connectionCount.textContent = `${connectedCount}/${totalPlayers} players connected`;
+      
+      // Update the dot color based on connection status
+      connectionDot.classList.remove('connected', 'partial', 'none');
+      connectionCount.classList.remove('all-connected', 'partial');
+      
+      if (connectedCount === 0) {
+        connectionDot.classList.add('none');
+      } else if (connectedCount === totalPlayers) {
+        connectionDot.classList.add('connected');
+        connectionCount.classList.add('all-connected');
+      } else {
+        connectionDot.classList.add('partial');
+        connectionCount.classList.add('partial');
+      }
+      
+      // Update individual player cards
+      updatePlayerCardConnectionStatus();
+    }
+    
+    // Update connection status on individual player cards
+    function updatePlayerCardConnectionStatus() {
+      const playerCards = document.querySelectorAll('.player-card[data-id]');
+      
+      playerCards.forEach(card => {
+        const playerId = parseInt(card.dataset.id, 10);
+        const indicator = card.querySelector('.player-connection-indicator');
+        
+        if (!indicator) return;
+        
+        // Check if this player is connected
+        let isConnected = false;
+        connectedPlayers.forEach((connectedPlayer) => {
+          if (connectedPlayer.gamePlayerId === playerId) {
+            isConnected = true;
+          }
+        });
+        
+        const statusDot = indicator.querySelector('.status-dot');
+        const statusText = indicator.querySelector('.status-text');
+        
+        indicator.classList.remove('connected', 'disconnected');
+        card.dataset.connected = isConnected ? 'true' : 'false';
+        
+        if (isConnected) {
+          indicator.classList.add('connected');
+          if (statusText) statusText.textContent = 'Online';
+        } else {
+          indicator.classList.add('disconnected');
+          if (statusText) statusText.textContent = 'Offline';
+        }
       });
     }
 
@@ -2888,6 +3072,10 @@
         firebasePlayersUnsubscribe();
         firebasePlayersUnsubscribe = null;
       }
+      
+      // Clear connected players tracking
+      connectedPlayers.clear();
+      updatePlayerConnectionUI();
       
       const db = window.firebaseDB;
       const gameRef = db.ref(db.database, `games/${state.gameCode}`);
@@ -5531,8 +5719,15 @@
         const card = clone.querySelector(".player-card");
         card.dataset.status = player.eliminated ? "eliminated" : player.protected ? "protected" : "alive";
         card.dataset.id = player.id;
+        card.dataset.connected = "false"; // Will be updated by updatePlayerCardConnectionStatus
         clone.querySelector(".player-name").textContent = player.name;
-        clone.querySelector(".player-meta").textContent = `${player.roleName} • ${TYPE_DETAILS[player.type].label}`;
+        
+        // Set role info in the meta section
+        const roleInfoEl = clone.querySelector(".player-role-info");
+        if (roleInfoEl) {
+          roleInfoEl.textContent = `${player.roleName} • ${TYPE_DETAILS[player.type].label}`;
+        }
+        
         const badge = clone.querySelector(".badge");
         badge.classList.add(player.team);
         badge.textContent = player.team.toUpperCase();
@@ -5548,6 +5743,9 @@
         });
         playerList.append(clone);
       });
+      
+      // Update connection status after rendering
+      updatePlayerCardConnectionStatus();
     }
 
     function handlePlayerAction(id, action) {

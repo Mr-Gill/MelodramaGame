@@ -635,6 +635,11 @@
       push: push,
       onDisconnect: onDisconnect
     };
+    
+    // Dispatch a custom event to signal that Firebase is ready
+    window.dispatchEvent(new CustomEvent('firebaseReady', { 
+      detail: { initialized: firebaseInitialized } 
+    }));
   </script>
 </head>
 <body>
@@ -742,10 +747,17 @@
   </main>
 
   <script>
+    // Constants - defined at the top to avoid reference errors
+    const JOIN_TIMEOUT_MS = 5000;
+    const CONNECTION_CHECK_INTERVAL_MS = 10000;
+    
     // BroadcastChannel for same-device fallback communication
     const CHANNEL_NAME = 'melodrama-player-channel';
     let channel = null;
     let retryTimeout = null;
+    
+    // Firebase readiness state
+    let firebaseReady = false;
     
     // Firebase listeners for cleanup
     let firebasePlayerUnsubscribe = null;
@@ -870,9 +882,7 @@
     }
 
     function validateForm() {
-      const code = gameCodeInput.value.trim();
-      const name = playerNameInput.value.trim();
-      joinBtn.disabled = code.length !== 4 || name.length === 0;
+      joinBtn.disabled = !validateFormInputs();
     }
 
     function initBroadcastChannel() {
@@ -1328,10 +1338,10 @@
       errorMessage.textContent = message;
       errorMessage.classList.add('visible');
     }
-
-    // Constants
-    const JOIN_TIMEOUT_MS = 5000;
-    const CONNECTION_CHECK_INTERVAL_MS = 10000;
+    
+    function hideError() {
+      errorMessage.classList.remove('visible');
+    }
 
     // Interval handle for cleanup
     let connectionCheckInterval = null;
@@ -1367,9 +1377,47 @@
         connectionCheckInterval = null;
       }
     }
+    
+    // Check if Firebase is ready (already loaded or will load)
+    function checkFirebaseReady() {
+      if (window.firebaseDB && window.firebaseDB.initialized) {
+        firebaseReady = true;
+        console.log('Firebase is ready for player communication');
+        updateInitializationStatus();
+      }
+    }
+    
+    // Update UI based on initialization status
+    function updateInitializationStatus() {
+      if (firebaseReady) {
+        hideError();
+        joinBtn.disabled = !validateFormInputs();
+      } else {
+        // Firebase not ready yet - show a gentle warning but allow BroadcastChannel
+        console.log('Firebase not ready - will use BroadcastChannel fallback if needed');
+      }
+    }
+    
+    // Validate form inputs
+    function validateFormInputs() {
+      const code = gameCodeInput.value.trim();
+      const name = playerNameInput.value.trim();
+      return code.length === 4 && name.length > 0;
+    }
+    
+    // Listen for Firebase ready event
+    window.addEventListener('firebaseReady', (event) => {
+      firebaseReady = event.detail.initialized;
+      console.log('Firebase ready event received, initialized:', firebaseReady);
+      updateInitializationStatus();
+    });
 
     // Initialize when DOM is ready
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      // Check if Firebase was already initialized (module may have loaded first)
+      checkFirebaseReady();
+    });
 
     // Cleanup on unload
     window.addEventListener('beforeunload', () => {
