@@ -5900,6 +5900,8 @@
       renderGameCode();
       // Create Firebase game session for cross-device player communication
       createFirebaseGameSession();
+      // Initialize player connection status UI (even if Firebase isn't available)
+      updatePlayerConnectionUI();
     }
 
     function renderDownloadLink() {
@@ -6433,6 +6435,8 @@
         updateCounts();
         notesArea.value = state.notes;
         renderDownloadLink();
+        // Update player connection status
+        updatePlayerConnectionUI();
         // Update quick reference abilities if panel is open
         if (quickRefPanel.classList.contains("open")) {
           updateQuickRefAbilities();
