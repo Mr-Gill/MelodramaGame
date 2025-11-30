@@ -1,10 +1,9 @@
-const CACHE_NAME = 'melodrama-werewolf-v2';
+const CACHE_NAME = 'melodrama-werewolf-v3';
 const ASSETS = [
   './',
   './index.html',
   './characters.js',
   './V4.html',
-  './manifest.json'
   './manifest.json',
   './audio/village-night.mp3',
   './audio/village-day.mp3'
@@ -28,6 +27,15 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    fetch(event.request)
+      .then((response) => {
+        // Only cache successful responses
+        if (response.ok) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request)) // Fall back to cache if offline
   );
 });
