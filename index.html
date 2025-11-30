@@ -3715,8 +3715,7 @@
           blocks: [
             { type: "say", text: villainScript },
             { type: "info", text: `Villains alive: ${villains || "None"}` }
-          ],
-          showVillainTargetPicker: true
+          ]
         });
       }
 
@@ -3927,8 +3926,7 @@
           blocks: [
             { type: "say", text: `**Build suspense:** "Last night was... eventful..."\n\n**If anyone was eliminated:** Announce dramatically with theme-appropriate language!\n\n**If no one died:** ${theme.script.noDeaths || "Miraculously, everyone survived the night!"}\n\n**Death Scene Cue:** ${theme.script.deathScene}` },
             { type: "info", text: "Give each eliminated player 5-10 seconds for their melodramatic death scene.\n\nCheck for linked deaths: If Twins died, both perform death scenes. If Cursed died, additional victims die too." }
-          ],
-          showEliminationAnnouncement: true
+          ]
         },
         {
           title: "Check Win Condition",
