@@ -1911,6 +1911,34 @@
           <span class="tip-category strategy" id="login-tip-category">Tip</span>
         </div>
         <div class="tip-navigation" id="login-tip-nav"></div>
+        <button class="quiz-toggle-btn" id="quiz-toggle-btn">🎮 Play the Tips Quiz!</button>
+      </div>
+      
+      <!-- Quiz Mini-Game Section -->
+      <div class="quiz-game-section" id="quiz-game-section" style="display: none;">
+        <h3>🧠 Tips Quiz Challenge</h3>
+        <div class="quiz-score-bar">
+          <span>Score: <span class="quiz-score" id="quiz-score">0</span></span>
+          <span>🔥 Streak: <span class="quiz-streak" id="quiz-streak">0</span></span>
+        </div>
+        <div class="quiz-question-card" id="quiz-question-card">
+          <div class="quiz-question-text" id="quiz-question-text">Loading question...</div>
+          <div class="quiz-options" id="quiz-options">
+            <!-- Options will be populated dynamically -->
+          </div>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback">
+          <div id="quiz-feedback-text"></div>
+          <div class="quiz-tip-reveal" id="quiz-tip-reveal"></div>
+        </div>
+        <button class="quiz-next-btn" id="quiz-next-btn" style="display: none;">Next Question →</button>
+        <div class="quiz-complete" id="quiz-complete" style="display: none;">
+          <div class="quiz-complete-icon">🏆</div>
+          <div class="quiz-complete-title">Quiz Complete!</div>
+          <div class="quiz-complete-score" id="quiz-final-score">You scored 0/0</div>
+          <button class="quiz-restart-btn" id="quiz-restart-btn">Play Again</button>
+        </div>
+        <button class="quiz-toggle-btn" id="quiz-back-btn" style="margin-top: 0.75rem;">← Back to Tips</button>
       </div>
     </section>
 
@@ -2799,6 +2827,251 @@
       }
     }
 
+    // ===== QUIZ MINI-GAME =====
+    const QUIZ_QUESTIONS = [
+      {
+        question: "What should you do when someone is eliminated?",
+        options: ["Look away quickly", "Watch everyone's reactions carefully", "Start talking immediately", "Close your eyes"],
+        correct: 1,
+        tip: "When someone is eliminated, watch how others react. Genuine surprise vs. fake surprise can be revealing."
+      },
+      {
+        question: "During the night phase, what should you do?",
+        options: ["Peek at other players", "Keep your eyes closed unless called", "Whisper to your neighbor", "Stand up and stretch"],
+        correct: 1,
+        tip: "Keep your eyes CLOSED during night unless the narrator calls your role. Peeking ruins the mystery!"
+      },
+      {
+        question: "What's the best way to be a memorable player?",
+        options: ["Stay completely silent", "Play it safe and blend in", "Embrace drama and give great performances", "Always accuse the same person"],
+        correct: 2,
+        tip: "Win or lose, the goal is entertainment! Embrace the drama, enjoy the twists, and celebrate great performances."
+      },
+      {
+        question: "If you're accused, what's a good strategy?",
+        options: ["Immediately admit guilt", "Stay completely silent", "Act hurt and offended dramatically", "Leave the game"],
+        correct: 2,
+        tip: "The more dramatic your performance, the more fun everyone has! Don't be afraid to overact."
+      },
+      {
+        question: "What makes evil players harder to spot?",
+        options: ["They always stay quiet", "They subtly defend each other", "They never participate", "They wear different clothes"],
+        correct: 1,
+        tip: "Evil players know each other. They might subtly defend or redirect suspicion from teammates."
+      },
+      {
+        question: "When is the best time to reveal important information?",
+        options: ["As soon as you get it", "Never reveal anything", "Wait for the right dramatic moment", "Only when directly asked"],
+        correct: 2,
+        tip: "Your information is valuable - but sharing it reveals you as a target! Wait for the right moment."
+      },
+      {
+        question: "What should you do to prepare during downtime?",
+        options: ["Check your phone", "Take notes about suspicious behavior", "Sleep", "Talk to eliminated players"],
+        correct: 1,
+        tip: "Write down who accused whom, who defended whom, and any suspicious behavior. Notes help you spot patterns."
+      },
+      {
+        question: "How can you make your character more interesting?",
+        options: ["Use a monotone voice", "Give them a unique voice or accent", "Never speak in character", "Copy someone else exactly"],
+        correct: 1,
+        tip: "Try giving your character a unique voice, accent, or speech pattern. It makes the game more immersive!"
+      },
+      {
+        question: "What's a sign someone might be lying?",
+        options: ["They blink normally", "They're too defensive or too quiet", "They sit still", "They participate actively"],
+        correct: 1,
+        tip: "Point suspicion elsewhere subtly. Too aggressive makes you a target; too quiet makes you suspicious."
+      },
+      {
+        question: "In the final showdown with few players left, what matters most?",
+        options: ["Previous alliances only", "Every word and gesture", "Who spoke first", "Random guessing"],
+        correct: 1,
+        tip: "When it's down to the last few players, every word and gesture matters. This is where champions are made!"
+      }
+    ];
+
+    const quizState = {
+      currentQuestion: 0,
+      score: 0,
+      streak: 0,
+      maxStreak: 0,
+      answered: false,
+      questionsOrder: []
+    };
+
+    function initQuiz() {
+      const toggleBtn = document.getElementById('quiz-toggle-btn');
+      const backBtn = document.getElementById('quiz-back-btn');
+      const nextBtn = document.getElementById('quiz-next-btn');
+      const restartBtn = document.getElementById('quiz-restart-btn');
+      
+      if (toggleBtn) toggleBtn.addEventListener('click', showQuiz);
+      if (backBtn) backBtn.addEventListener('click', hideQuiz);
+      if (nextBtn) nextBtn.addEventListener('click', nextQuestion);
+      if (restartBtn) restartBtn.addEventListener('click', restartQuiz);
+    }
+
+    function showQuiz() {
+      const tipsSection = document.getElementById('login-tips');
+      const quizSection = document.getElementById('quiz-game-section');
+      
+      if (tipsSection) tipsSection.style.display = 'none';
+      if (quizSection) quizSection.style.display = 'block';
+      
+      stopTipRotation();
+      restartQuiz();
+    }
+
+    function hideQuiz() {
+      const tipsSection = document.getElementById('login-tips');
+      const quizSection = document.getElementById('quiz-game-section');
+      
+      if (tipsSection) tipsSection.style.display = 'block';
+      if (quizSection) quizSection.style.display = 'none';
+      
+      startTipRotation();
+    }
+
+    function restartQuiz() {
+      quizState.currentQuestion = 0;
+      quizState.score = 0;
+      quizState.streak = 0;
+      quizState.maxStreak = 0;
+      quizState.answered = false;
+      
+      // Shuffle questions
+      quizState.questionsOrder = [...Array(QUIZ_QUESTIONS.length).keys()];
+      for (let i = quizState.questionsOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [quizState.questionsOrder[i], quizState.questionsOrder[j]] = [quizState.questionsOrder[j], quizState.questionsOrder[i]];
+      }
+      
+      // Reset UI
+      document.getElementById('quiz-complete').style.display = 'none';
+      document.getElementById('quiz-question-card').style.display = 'block';
+      document.getElementById('quiz-next-btn').style.display = 'none';
+      document.getElementById('quiz-feedback').className = 'quiz-feedback';
+      
+      updateQuizScore();
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const questionIndex = quizState.questionsOrder[quizState.currentQuestion];
+      const question = QUIZ_QUESTIONS[questionIndex];
+      
+      document.getElementById('quiz-question-text').textContent = question.question;
+      
+      const optionsContainer = document.getElementById('quiz-options');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const optionEl = document.createElement('div');
+        optionEl.className = 'quiz-option';
+        optionEl.textContent = option;
+        optionEl.onclick = () => selectAnswer(index);
+        optionsContainer.appendChild(optionEl);
+      });
+      
+      quizState.answered = false;
+      document.getElementById('quiz-feedback').className = 'quiz-feedback';
+      document.getElementById('quiz-next-btn').style.display = 'none';
+    }
+
+    function selectAnswer(selectedIndex) {
+      if (quizState.answered) return;
+      quizState.answered = true;
+      
+      const questionIndex = quizState.questionsOrder[quizState.currentQuestion];
+      const question = QUIZ_QUESTIONS[questionIndex];
+      const isCorrect = selectedIndex === question.correct;
+      
+      // Update score and streak
+      if (isCorrect) {
+        quizState.score++;
+        quizState.streak++;
+        if (quizState.streak > quizState.maxStreak) {
+          quizState.maxStreak = quizState.streak;
+        }
+      } else {
+        quizState.streak = 0;
+      }
+      
+      updateQuizScore();
+      
+      // Highlight options
+      const options = document.querySelectorAll('.quiz-option');
+      options.forEach((opt, index) => {
+        opt.classList.add('disabled');
+        if (index === question.correct) {
+          opt.classList.add('correct');
+        } else if (index === selectedIndex && !isCorrect) {
+          opt.classList.add('incorrect');
+        }
+      });
+      
+      // Show feedback
+      const feedback = document.getElementById('quiz-feedback');
+      const feedbackText = document.getElementById('quiz-feedback-text');
+      const tipReveal = document.getElementById('quiz-tip-reveal');
+      
+      if (isCorrect) {
+        feedback.className = 'quiz-feedback correct';
+        feedbackText.textContent = quizState.streak > 1 ? `🔥 Correct! ${quizState.streak} in a row!` : '✅ Correct!';
+      } else {
+        feedback.className = 'quiz-feedback incorrect';
+        feedbackText.textContent = '❌ Not quite! Here\'s the tip:';
+      }
+      
+      tipReveal.textContent = `💡 ${question.tip}`;
+      
+      // Show next button or complete
+      if (quizState.currentQuestion < Math.min(QUIZ_QUESTIONS.length - 1, 9)) {
+        document.getElementById('quiz-next-btn').style.display = 'block';
+      } else {
+        setTimeout(showQuizComplete, 1500);
+      }
+    }
+
+    function nextQuestion() {
+      quizState.currentQuestion++;
+      renderQuestion();
+    }
+
+    function showQuizComplete() {
+      document.getElementById('quiz-question-card').style.display = 'none';
+      document.getElementById('quiz-next-btn').style.display = 'none';
+      document.getElementById('quiz-feedback').className = 'quiz-feedback';
+      
+      const totalQuestions = Math.min(QUIZ_QUESTIONS.length, 10);
+      const percentage = Math.round((quizState.score / totalQuestions) * 100);
+      
+      let message = '';
+      if (percentage === 100) {
+        message = '🏆 Perfect Score! You\'re ready to play!';
+      } else if (percentage >= 80) {
+        message = '🌟 Excellent! You know your stuff!';
+      } else if (percentage >= 60) {
+        message = '👍 Good job! Keep learning!';
+      } else {
+        message = '📚 Keep practicing! Play again to learn more.';
+      }
+      
+      document.getElementById('quiz-final-score').innerHTML = `
+        You scored <strong>${quizState.score}/${totalQuestions}</strong> (${percentage}%)<br>
+        <span style="color: #fbbf24;">Best streak: ${quizState.maxStreak} 🔥</span><br>
+        <span style="font-size: 0.9rem; margin-top: 0.5rem; display: block;">${message}</span>
+      `;
+      
+      document.getElementById('quiz-complete').style.display = 'block';
+    }
+
+    function updateQuizScore() {
+      document.getElementById('quiz-score').textContent = quizState.score;
+      document.getElementById('quiz-streak').textContent = quizState.streak;
+    }
+
     // ===== VOTING SYSTEM =====
     const votingState = {
       active: false,
@@ -3483,6 +3756,7 @@
       
       // Initialize new features
       initGameTips();
+      initQuiz();
       initVoting();
       initDiceRoll();
       initNightActivities();
