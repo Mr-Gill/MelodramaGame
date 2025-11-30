@@ -953,6 +953,82 @@
       margin-left: 0.5rem;
     }
 
+    /* Game Code Card for Player Access */
+    .game-code-card {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(244, 114, 182, 0.1));
+      border: 2px solid rgba(56, 189, 248, 0.4);
+      border-radius: var(--panel-radius);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .game-code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .game-code-header .pill {
+      font-size: 0.75rem;
+    }
+
+    .open-player-link {
+      font-size: 0.75rem;
+      color: var(--accent-ui);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .open-player-link:hover {
+      color: var(--accent-good);
+      text-decoration: underline;
+    }
+
+    .game-code-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .game-code-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .game-code-value {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      font-family: 'Courier New', Courier, monospace;
+      background: linear-gradient(135deg, var(--accent-good), var(--accent-evil));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+    }
+
+    .game-code-hint {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .game-code-hint strong {
+      color: var(--accent-ui);
+    }
+
+    body.light .game-code-card {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(244, 114, 182, 0.08));
+    }
+
+    body.light .game-code-value {
+      text-shadow: none;
+    }
+
     /* Win Modal */
     .modal-overlay {
       position: fixed;
@@ -1746,6 +1822,20 @@
               <div>Evil: <strong id="evil-count">0</strong></div>
             </div>
           </div>
+          
+          <!-- Game Code for Players -->
+          <div class="game-code-card" id="game-code-card">
+            <div class="game-code-header">
+              <span class="pill">📱 Player Access</span>
+              <a href="player.html" target="_blank" class="open-player-link" title="Open player view">Open Player Page →</a>
+            </div>
+            <div class="game-code-display">
+              <span class="game-code-label">Game Code:</span>
+              <span class="game-code-value" id="game-code-value">----</span>
+            </div>
+            <small class="game-code-hint">Students can join at <strong>player.html</strong> with this code</small>
+          </div>
+          
           <div class="stat">
             <span>Notes</span>
             <textarea id="narrator-notes" class="name-list" placeholder="Quick reminders, dramatic twists, or classroom cues."></textarea>
@@ -2390,6 +2480,7 @@
       nameList: "",
       notes: "",
       mode: "dark",
+      gameCode: null, // 4-character game code for player devices
       audio: {
         enabled: false,
         volume: 0.5,
@@ -2486,9 +2577,16 @@
     const downloadNotesLink = document.getElementById("download-notes");
     const openProjectorButton = document.getElementById("open-projector");
 
+    // Game code display element
+    const gameCodeValue = document.getElementById("game-code-value");
+
     // BroadcastChannel for projector synchronization
     let projectorChannel = null;
     const CHANNEL_NAME = 'melodrama-narrator-projector';
+
+    // BroadcastChannel for player device synchronization
+    let playerChannel = null;
+    const PLAYER_CHANNEL_NAME = 'melodrama-player-channel';
 
     function initProjectorChannel() {
       if ('BroadcastChannel' in window) {
@@ -2507,6 +2605,156 @@
           console.error('Failed to initialize projector channel:', error);
         }
       }
+    }
+
+    // Render game code display
+    function renderGameCode() {
+      if (gameCodeValue) {
+        gameCodeValue.textContent = state.gameCode || '----';
+      }
+    }
+
+    // Generate a random 4-character game code
+    function generateGameCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Excludes 0, O, 1, I to avoid confusion
+      let code = '';
+      for (let i = 0; i < 4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+
+    function initPlayerChannel() {
+      if ('BroadcastChannel' in window) {
+        try {
+          playerChannel = new BroadcastChannel(PLAYER_CHANNEL_NAME);
+          
+          playerChannel.onmessage = (event) => {
+            handlePlayerMessage(event.data);
+          };
+
+          console.log('Player BroadcastChannel initialized');
+        } catch (error) {
+          console.error('Failed to initialize player channel:', error);
+        }
+      }
+    }
+
+    function handlePlayerMessage(data) {
+      // Only handle messages for our game code
+      if (data.gameCode && data.gameCode !== state.gameCode) {
+        return;
+      }
+
+      switch (data.type) {
+        case 'player-join':
+          handlePlayerJoin(data);
+          break;
+        case 'player-leave':
+          handlePlayerLeave(data);
+          break;
+        case 'player-request-state':
+          sendStateToPlayer(data.playerName);
+          break;
+      }
+    }
+
+    function handlePlayerJoin(data) {
+      // Check if game code matches
+      if (data.gameCode !== state.gameCode) {
+        playerChannel.postMessage({
+          type: 'join-rejected',
+          gameCode: data.gameCode,
+          playerName: data.playerName,
+          reason: 'Invalid game code'
+        });
+        return;
+      }
+
+      // Check if game has started
+      if (state.phase === 'setup' || state.players.length === 0) {
+        playerChannel.postMessage({
+          type: 'join-rejected',
+          gameCode: data.gameCode,
+          playerName: data.playerName,
+          reason: 'Game has not started yet. Please wait for the narrator.'
+        });
+        return;
+      }
+
+      // Find the player by name
+      const player = state.players.find(p => 
+        p.name.toLowerCase().trim() === data.playerName.toLowerCase().trim()
+      );
+
+      if (!player) {
+        playerChannel.postMessage({
+          type: 'join-rejected',
+          gameCode: data.gameCode,
+          playerName: data.playerName,
+          reason: 'Player name not found. Check with your narrator that your name is entered correctly.'
+        });
+        return;
+      }
+
+      // Get full character data
+      const character = CHARACTERS.find(c => c.id === player.charId);
+      
+      // Send player assignment
+      playerChannel.postMessage({
+        type: 'player-assigned',
+        gameCode: state.gameCode,
+        playerName: data.playerName,
+        playerId: player.id,
+        character: character ? {
+          id: character.id,
+          name: character.name,
+          team: character.team,
+          type: character.type,
+          typeLabel: character.typeLabel || character.type,
+          power: character.power,
+          short: character.short,
+          nightB: character.nightB,
+          dayB: character.dayB
+        } : null
+      });
+
+      // Also send current game state
+      setTimeout(() => sendStateToPlayer(data.playerName), 100);
+
+      console.log(`Player joined: ${data.playerName} as ${character ? character.name : 'Unknown'}`);
+    }
+
+    function handlePlayerLeave(data) {
+      console.log(`Player left: ${data.playerName}`);
+      // Could add tracking here if needed
+    }
+
+    function sendStateToPlayer(playerName) {
+      if (!playerChannel || !state.gameCode) return;
+
+      playerChannel.postMessage({
+        type: 'game-state',
+        gameCode: state.gameCode,
+        phase: state.phase,
+        night: state.night
+      });
+    }
+
+    function broadcastToPlayers(message) {
+      if (!playerChannel || !state.gameCode) return;
+      playerChannel.postMessage({
+        ...message,
+        gameCode: state.gameCode
+      });
+    }
+
+    function broadcastGameResetToPlayers() {
+      if (!playerChannel) return;
+      playerChannel.postMessage({
+        type: 'game-reset',
+        gameCode: state.gameCode
+      });
     }
 
     // Helper function to calculate player counts
@@ -2574,8 +2822,15 @@
     }
 
     function broadcastPhaseChange(phase, night) {
-      if (!projectorChannel) return;
-      projectorChannel.postMessage({
+      if (projectorChannel) {
+        projectorChannel.postMessage({
+          type: 'phase-change',
+          phase: phase,
+          night: night
+        });
+      }
+      // Also broadcast to player devices
+      broadcastToPlayers({
         type: 'phase-change',
         phase: phase,
         night: night
@@ -2624,10 +2879,13 @@
     }
 
     function broadcastGameReset() {
-      if (!projectorChannel) return;
-      projectorChannel.postMessage({
-        type: 'reset-game'
-      });
+      if (projectorChannel) {
+        projectorChannel.postMessage({
+          type: 'reset-game'
+        });
+      }
+      // Also reset player devices
+      broadcastGameResetToPlayers();
     }
 
     function broadcastThemeChange(theme) {
@@ -5106,6 +5364,8 @@
       state.stepIndex = 0;
       state.notes = notesArea.value;
       state.audio.phase = "night";
+      // Generate a game code for player devices
+      state.gameCode = generateGameCode();
       persistState();
       setupSection.classList.add("hidden");
       gameSection.classList.remove("hidden");
@@ -5124,6 +5384,8 @@
       renderAll();
       // Update quick reference abilities
       updateQuickRefAbilities();
+      // Update game code display
+      renderGameCode();
     }
 
     function renderDownloadLink() {
@@ -5464,6 +5726,12 @@
           night: state.night
         });
       }
+      // Also broadcast to player devices
+      broadcastToPlayers({
+        type: "WIN",
+        team: winningTeam,
+        night: state.night
+      });
     }
 
     // Dice Roll System
@@ -5853,6 +6121,8 @@
     initAudioSystem();
     // Initialize projector channel
     initProjectorChannel();
+    // Initialize player channel for player devices
+    initPlayerChannel();
     // Setup help modal
     setupHelpModal();
 
@@ -5861,6 +6131,8 @@
     updatePlayerCountDisplays();
     updateRoleSelectionUI();
     renderAll();
+    // Render game code if we have one (for resumed games)
+    renderGameCode();
     
     // Initialize SFX toggle state
     sfxToggle.checked = state.sfxEnabled;
