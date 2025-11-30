@@ -1128,6 +1128,191 @@
       text-shadow: none;
     }
 
+    /* Game Mode Selector */
+    .game-mode-selector {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .game-mode-card {
+      flex: 1;
+      padding: 1.5rem;
+      border-radius: var(--panel-radius);
+      border: 3px solid var(--border-color);
+      background: rgba(15, 23, 42, 0.5);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .game-mode-card:hover {
+      border-color: var(--accent-ui);
+      transform: translateY(-2px);
+    }
+
+    .game-mode-card.selected {
+      border-color: var(--accent-good);
+      background: rgba(56, 189, 248, 0.1);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    }
+
+    .game-mode-card .mode-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .game-mode-card .mode-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .game-mode-card .mode-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    body.light .game-mode-card {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    body.light .game-mode-card.selected {
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* Setup Game Code Display */
+    .setup-game-code {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(244, 114, 182, 0.15));
+      border: 2px solid rgba(56, 189, 248, 0.5);
+      border-radius: var(--panel-radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .setup-game-code h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .setup-game-code .code-display {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 0.4em;
+      font-family: 'Courier New', Courier, monospace;
+      background: linear-gradient(135deg, var(--accent-good), var(--accent-evil));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+    }
+
+    .setup-game-code .code-hint {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Lobby Players Panel */
+    .lobby-panel {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .lobby-panel h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .lobby-panel .lobby-count {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-left: auto;
+    }
+
+    .lobby-players-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      min-height: 50px;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+
+    .lobby-player-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      font-size: 0.9rem;
+    }
+
+    .lobby-player-chip.manual {
+      background: rgba(250, 204, 21, 0.2);
+      border-color: rgba(250, 204, 21, 0.4);
+    }
+
+    .lobby-player-chip .remove-player {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .lobby-player-chip .remove-player:hover {
+      color: #ef4444;
+    }
+
+    .lobby-empty {
+      color: var(--text-secondary);
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    .add-manual-player {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .add-manual-player input {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: rgba(15, 23, 42, 0.6);
+      color: inherit;
+      font-size: 0.95rem;
+    }
+
+    .add-manual-player button {
+      white-space: nowrap;
+    }
+
+    body.light .lobby-panel {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    body.light .lobby-players-list {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
     /* Win Modal */
     .modal-overlay {
       position: fixed;
@@ -1839,6 +2024,46 @@
       <h2>Game Setup</h2>
       <p>Build tonight's cast, assign names, and choose a theme. The tool will auto-balance good and evil roles and guide you through every beat of the drama.</p>
 
+      <!-- Game Mode Selector -->
+      <div id="game-mode-section" style="margin-bottom: 1.5rem;">
+        <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--accent-ui);">Choose Game Mode</h3>
+        <div class="game-mode-selector">
+          <div id="mode-physical" class="game-mode-card selected" onclick="selectGameMode('physical')">
+            <div class="mode-icon">🃏</div>
+            <div class="mode-title">Physical Cards</div>
+            <div class="mode-desc">Hand out physical character cards to players. No devices needed - the narrator runs the script while students use printed cards.</div>
+          </div>
+          <div id="mode-digital" class="game-mode-card" onclick="selectGameMode('digital')">
+            <div class="mode-icon">📱</div>
+            <div class="mode-title">Digital Player View</div>
+            <div class="mode-desc">Players join via their devices using a game code. They see their role on screen and get a dramatic reveal when roles are assigned.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Digital Mode: Game Code + Lobby (hidden by default) -->
+      <div id="digital-lobby-section" class="hidden">
+        <div class="setup-game-code">
+          <h3>📱 Share This Code With Players</h3>
+          <div class="code-display" id="setup-game-code">----</div>
+          <div class="code-hint">Players go to <strong>player.html</strong> and enter this code to join the lobby</div>
+        </div>
+
+        <div class="lobby-panel">
+          <h3>
+            <span>👥 Player Lobby</span>
+            <span class="lobby-count" id="lobby-count">0 players waiting</span>
+          </h3>
+          <div class="lobby-players-list" id="lobby-players-list">
+            <span class="lobby-empty">Waiting for players to join...</span>
+          </div>
+          <div class="add-manual-player">
+            <input type="text" id="manual-player-name" placeholder="Add player without device..." maxlength="30" />
+            <button type="button" onclick="addManualPlayer()">➕ Add Manual Player</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Quick Start Presets -->
       <div style="background: var(--bg-secondary); padding: 1.25rem; border-radius: var(--panel-radius); margin-bottom: 1.5rem; border: 2px solid var(--accent-good);">
         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
@@ -1923,6 +2148,7 @@
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
           <button id="preview-shuffle" type="button" disabled style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.7), rgba(56, 189, 248, 0.9));">🎲 Preview Assignments</button>
           <button id="start-game" type="button" disabled>Enter Narrator View</button>
+          <button id="assign-roles-btn" type="button" class="hidden" disabled>✨ Confirm Players &amp; Assign Roles</button>
         </div>
       </div>
     </section>
@@ -2655,6 +2881,10 @@
       notes: "",
       mode: "dark",
       gameCode: null, // 4-character game code for player devices
+      gameMode: "physical", // 'physical' or 'digital'
+      lobbyPlayers: [], // Players who joined the lobby before role assignment
+      manualPlayers: [], // Manually added players (physical card recipients)
+      rolesAssigned: false, // Whether roles have been assigned in digital mode
       audio: {
         enabled: false,
         volume: 0.5,
@@ -2827,6 +3057,342 @@
       } else {
         console.warn('Firebase not available - cross-device player communication disabled');
       }
+    }
+
+    // ===== GAME MODE SELECTION =====
+    
+    // DOM elements for game mode
+    const digitalLobbySection = document.getElementById('digital-lobby-section');
+    const setupGameCode = document.getElementById('setup-game-code');
+    const lobbyPlayersList = document.getElementById('lobby-players-list');
+    const lobbyCount = document.getElementById('lobby-count');
+    const manualPlayerInput = document.getElementById('manual-player-name');
+    const assignRolesBtn = document.getElementById('assign-roles-btn');
+    
+    // Select game mode
+    function selectGameMode(mode) {
+      state.gameMode = mode;
+      
+      // Update UI
+      document.getElementById('mode-physical').classList.toggle('selected', mode === 'physical');
+      document.getElementById('mode-digital').classList.toggle('selected', mode === 'digital');
+      
+      // Show/hide digital lobby section
+      if (digitalLobbySection) {
+        digitalLobbySection.classList.toggle('hidden', mode !== 'digital');
+      }
+      
+      // Show/hide appropriate buttons
+      if (startButton) {
+        startButton.classList.toggle('hidden', mode === 'digital');
+      }
+      if (assignRolesBtn) {
+        assignRolesBtn.classList.toggle('hidden', mode !== 'digital');
+      }
+      
+      // For digital mode, generate game code immediately
+      if (mode === 'digital' && !state.gameCode) {
+        state.gameCode = generateGameCode();
+        createFirebaseLobbySession();
+      }
+      
+      // Update the setup game code display
+      updateSetupGameCode();
+      
+      // Update button states
+      updateGameModeUI();
+      
+      persistState();
+    }
+    
+    // Update the game code displayed during setup
+    function updateSetupGameCode() {
+      if (setupGameCode) {
+        setupGameCode.textContent = state.gameCode || '----';
+      }
+    }
+    
+    // Update UI based on game mode and lobby state
+    function updateGameModeUI() {
+      const totalLobbyPlayers = state.lobbyPlayers.length + state.manualPlayers.length;
+      const selectedRolesCount = state.selectedRoles.length;
+      
+      if (state.gameMode === 'digital') {
+        // In digital mode, enable assign roles button when we have enough players
+        if (assignRolesBtn) {
+          const canAssign = totalLobbyPlayers > 0 && totalLobbyPlayers === selectedRolesCount;
+          assignRolesBtn.disabled = !canAssign;
+        }
+      }
+      
+      // Update lobby count display
+      if (lobbyCount) {
+        lobbyCount.textContent = `${totalLobbyPlayers} player${totalLobbyPlayers !== 1 ? 's' : ''} waiting`;
+      }
+    }
+    
+    // Render the lobby players list
+    function renderLobbyPlayers() {
+      if (!lobbyPlayersList) return;
+      
+      const allPlayers = [
+        ...state.lobbyPlayers.map(p => ({ ...p, isManual: false })),
+        ...state.manualPlayers.map(p => ({ ...p, isManual: true }))
+      ];
+      
+      if (allPlayers.length === 0) {
+        lobbyPlayersList.innerHTML = '<span class="lobby-empty">Waiting for players to join...</span>';
+      } else {
+        lobbyPlayersList.innerHTML = allPlayers.map((player, index) => `
+          <div class="lobby-player-chip ${player.isManual ? 'manual' : ''}" data-id="${player.id}">
+            ${player.isManual ? '🃏 ' : '📱 '}${player.name}
+            <button class="remove-player" onclick="removeLobbyPlayer('${player.id}', ${player.isManual})" title="Remove player">×</button>
+          </div>
+        `).join('');
+      }
+      
+      updateGameModeUI();
+    }
+    
+    // Add a manual player (physical card recipient)
+    function addManualPlayer() {
+      if (!manualPlayerInput) return;
+      
+      const name = manualPlayerInput.value.trim();
+      if (!name) return;
+      
+      // Generate a unique ID for the manual player
+      const id = 'manual_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      
+      state.manualPlayers.push({
+        id: id,
+        name: name,
+        joinedAt: Date.now()
+      });
+      
+      manualPlayerInput.value = '';
+      renderLobbyPlayers();
+      persistState();
+    }
+    
+    // Remove a player from the lobby
+    function removeLobbyPlayer(playerId, isManual) {
+      if (isManual) {
+        state.manualPlayers = state.manualPlayers.filter(p => p.id !== playerId);
+      } else {
+        state.lobbyPlayers = state.lobbyPlayers.filter(p => p.id !== playerId);
+        // Also remove from Firebase if applicable
+        removePlayerFromFirebaseLobby(playerId);
+      }
+      renderLobbyPlayers();
+      persistState();
+    }
+    
+    // Remove player from Firebase lobby
+    function removePlayerFromFirebaseLobby(playerId) {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) return;
+      
+      const db = window.firebaseDB;
+      const playerRef = db.ref(db.database, `games/${state.gameCode}/players/${playerId}`);
+      db.remove(playerRef).catch(err => console.warn('Failed to remove player from Firebase:', err));
+    }
+    
+    // Create Firebase lobby session for digital mode (during setup, before roles assigned)
+    function createFirebaseLobbySession() {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) {
+        console.log('Firebase not available for lobby session creation');
+        return;
+      }
+      
+      const db = window.firebaseDB;
+      const gameRef = db.ref(db.database, `games/${state.gameCode}`);
+      
+      // Create game session with lobby mode
+      const gameData = {
+        gameState: {
+          phase: 'lobby',
+          night: 0,
+          theme: state.theme,
+          winTeam: null,
+          rolesAssigned: false
+        },
+        players: {},
+        createdAt: Date.now()
+      };
+      
+      db.set(gameRef, gameData)
+        .then(() => {
+          console.log(`Firebase lobby session created: ${state.gameCode}`);
+          // Listen for player joins
+          setupFirebaseLobbyListener();
+        })
+        .catch((error) => {
+          console.error('Failed to create Firebase lobby session:', error);
+        });
+    }
+    
+    // Listen for players joining the lobby via Firebase
+    function setupFirebaseLobbyListener() {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) return;
+      
+      const db = window.firebaseDB;
+      const playersRef = db.ref(db.database, `games/${state.gameCode}/players`);
+      
+      // Clean up any existing listener
+      if (firebasePlayersUnsubscribe) {
+        firebasePlayersUnsubscribe();
+      }
+      
+      firebasePlayersUnsubscribe = db.onValue(playersRef, (snapshot) => {
+        const playersData = snapshot.val();
+        
+        if (!playersData) {
+          // No players yet
+          state.lobbyPlayers = [];
+          renderLobbyPlayers();
+          return;
+        }
+        
+        // Update lobby players list
+        const newLobbyPlayers = [];
+        Object.entries(playersData).forEach(([playerId, playerData]) => {
+          // Only add players who haven't been assigned a role yet
+          if (playerData.name && playerData.status !== 'assigned') {
+            newLobbyPlayers.push({
+              id: playerId,
+              name: playerData.name,
+              joinedAt: playerData.joinedAt || Date.now()
+            });
+          }
+        });
+        
+        state.lobbyPlayers = newLobbyPlayers;
+        renderLobbyPlayers();
+        persistState();
+      });
+    }
+    
+    // Assign roles to all lobby players and transition to game
+    function handleAssignRoles() {
+      const allLobbyPlayers = [
+        ...state.lobbyPlayers,
+        ...state.manualPlayers
+      ];
+      
+      if (allLobbyPlayers.length === 0) {
+        alert('No players have joined the lobby yet.');
+        return;
+      }
+      
+      if (allLobbyPlayers.length !== state.selectedRoles.length) {
+        alert(`Player count (${allLobbyPlayers.length}) doesn't match selected roles (${state.selectedRoles.length}). Please adjust.`);
+        return;
+      }
+      
+      // Prepare player names from lobby
+      const names = allLobbyPlayers.map(p => p.name);
+      
+      // Shuffle roles
+      const shuffledRoles = [...state.selectedRoles].sort(() => Math.random() - 0.5);
+      
+      // Create players with assigned roles
+      state.players = shuffledRoles.map((charId, index) => {
+        const char = CHARACTERS.find(c => c.id === charId);
+        const lobbyPlayer = allLobbyPlayers[index];
+        return {
+          id: index,
+          charId: char.id,
+          name: names[index] || `Player ${index + 1}`,
+          roleName: char.name,
+          team: char.team,
+          type: char.type,
+          ability: char.short,
+          eliminated: false,
+          protected: false,
+          notes: "",
+          firebasePlayerId: lobbyPlayer.id,
+          isManualPlayer: lobbyPlayer.id.startsWith('manual_')
+        };
+      });
+      
+      // Mark roles as assigned
+      state.rolesAssigned = true;
+      
+      // Broadcast role assignments to all digital players
+      broadcastRoleAssignments();
+      
+      // Now start the game
+      state.phase = "night";
+      state.night = 1;
+      state.stepIndex = 0;
+      state.audio.phase = "night";
+      persistState();
+      
+      setupSection.classList.add("hidden");
+      gameSection.classList.remove("hidden");
+      audioControls.classList.remove("hidden");
+      quickRefToggle.classList.remove("hidden");
+      
+      applyThemeVisuals();
+      broadcastPhaseChange(state.phase, state.night);
+      
+      // Update Firebase game state
+      updateFirebaseGameStateForRoleAssignment();
+      
+      playNightStartSound();
+      renderAll();
+      updateQuickRefAbilities();
+      renderGameCode();
+    }
+    
+    // Broadcast role assignments to all connected players via Firebase
+    function broadcastRoleAssignments() {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) return;
+      
+      const db = window.firebaseDB;
+      
+      // Update each player's Firebase node with their assigned character
+      state.players.forEach(player => {
+        if (player.isManualPlayer) return; // Skip manual players
+        
+        const character = CHARACTERS.find(c => c.id === player.charId);
+        if (!character || !player.firebasePlayerId) return;
+        
+        const playerRef = db.ref(db.database, `games/${state.gameCode}/players/${player.firebasePlayerId}`);
+        
+        const characterData = {
+          id: character.id,
+          name: character.name,
+          team: character.team,
+          type: character.type,
+          typeLabel: character.typeLabel || character.type,
+          power: character.power,
+          short: character.short,
+          nightB: character.nightB,
+          dayB: character.dayB
+        };
+        
+        db.update(playerRef, {
+          status: 'assigned',
+          gamePlayerId: player.id,
+          character: characterData
+        }).catch(err => console.error('Failed to assign role to player:', err));
+      });
+    }
+    
+    // Update Firebase game state after role assignment
+    function updateFirebaseGameStateForRoleAssignment() {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) return;
+      
+      const db = window.firebaseDB;
+      const gameStateRef = db.ref(db.database, `games/${state.gameCode}/gameState`);
+      
+      db.update(gameStateRef, {
+        phase: state.phase,
+        night: state.night,
+        theme: state.theme,
+        rolesAssigned: true
+      }).catch(err => console.error('Failed to update game state:', err));
     }
 
     // Create Firebase game session when game starts
@@ -5796,8 +6362,12 @@
       state.stepIndex = 0;
       state.notes = notesArea.value;
       state.audio.phase = "night";
-      // Generate a game code for player devices
-      state.gameCode = generateGameCode();
+      
+      // Only generate game code for physical mode (digital mode already has one from lobby)
+      if (state.gameMode === 'physical') {
+        state.gameCode = generateGameCode();
+      }
+      
       persistState();
       setupSection.classList.add("hidden");
       gameSection.classList.remove("hidden");
@@ -5818,10 +6388,13 @@
       updateQuickRefAbilities();
       // Update game code display
       renderGameCode();
-      // Create Firebase game session for cross-device player communication
-      createFirebaseGameSession();
-      // Initialize player connection status UI (even if Firebase isn't available)
-      updatePlayerConnectionUI();
+      
+      // Only create Firebase session and show connection UI for physical mode
+      // (Digital mode already set this up during lobby phase)
+      if (state.gameMode === 'physical') {
+        createFirebaseGameSession();
+        updatePlayerConnectionUI();
+      }
     }
 
     function renderDownloadLink() {
@@ -6344,6 +6917,11 @@
         // Hide quick reference toggle during setup
         quickRefToggle.classList.add("hidden");
         quickRefPanel.classList.remove("open");
+        
+        // Initialize game mode UI
+        selectGameMode(state.gameMode || 'physical');
+        renderLobbyPlayers();
+        updateSetupGameCode();
       } else {
         setupSection.classList.add("hidden");
         gameSection.classList.remove("hidden");
@@ -6456,6 +7034,17 @@
     shuffleAssignmentsBtn.addEventListener("click", shuffleAgain);
 
     startButton.addEventListener("click", handleStartGame);
+    if (assignRolesBtn) {
+      assignRolesBtn.addEventListener("click", handleAssignRoles);
+    }
+    // Manual player input enter key
+    if (manualPlayerInput) {
+      manualPlayerInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          addManualPlayer();
+        }
+      });
+    }
     prevStepButton.addEventListener("click", goToPrevStep);
     nextStepButton.addEventListener("click", goToNextStep);
 

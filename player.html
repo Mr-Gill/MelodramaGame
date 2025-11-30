@@ -589,6 +589,243 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* Lobby/Waiting Section */
+    .lobby-section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .lobby-section.active {
+      display: flex;
+    }
+
+    .lobby-card {
+      background: rgba(30, 41, 59, 0.8);
+      padding: 2.5rem;
+      border-radius: 24px;
+      border: 2px solid rgba(148, 163, 184, 0.3);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .lobby-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .lobby-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--accent-ui);
+    }
+
+    .lobby-subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .lobby-waiting-text {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .lobby-waiting-text .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(148, 163, 184, 0.3);
+      border-top-color: var(--accent-ui);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .lobby-player-count {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.25rem;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Role Reveal Animation */
+    .role-reveal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 1));
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+    }
+
+    .role-reveal-overlay.active {
+      display: flex;
+    }
+
+    .role-reveal-content {
+      text-align: center;
+      animation: reveal-appear 1s ease-out;
+    }
+
+    @keyframes reveal-appear {
+      0% {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .reveal-card {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+      border-radius: 24px;
+      padding: 2.5rem;
+      border: 3px solid;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: card-glow 2s ease-in-out infinite alternate;
+      max-width: 400px;
+      width: 90vw;
+    }
+
+    .reveal-card.good {
+      border-color: var(--accent-good);
+    }
+
+    .reveal-card.evil {
+      border-color: var(--accent-evil);
+    }
+
+    @keyframes card-glow {
+      from {
+        box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+      }
+      to {
+        box-shadow: 0 0 60px rgba(56, 189, 248, 0.5);
+      }
+    }
+
+    .reveal-card.evil {
+      animation-name: card-glow-evil;
+    }
+
+    @keyframes card-glow-evil {
+      from {
+        box-shadow: 0 0 30px rgba(244, 114, 182, 0.3);
+      }
+      to {
+        box-shadow: 0 0 60px rgba(244, 114, 182, 0.5);
+      }
+    }
+
+    .reveal-intro {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      animation: fade-in 0.5s ease-out 0.3s both;
+    }
+
+    .reveal-role-name {
+      font-size: clamp(1.8rem, 6vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      animation: fade-in 0.5s ease-out 0.6s both;
+    }
+
+    .reveal-card.good .reveal-role-name {
+      color: var(--accent-good);
+      text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+    }
+
+    .reveal-card.evil .reveal-role-name {
+      color: var(--accent-evil);
+      text-shadow: 0 0 20px rgba(244, 114, 182, 0.5);
+    }
+
+    .reveal-team {
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      border-radius: 999px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+      animation: fade-in 0.5s ease-out 0.9s both;
+    }
+
+    .reveal-team.good {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent-good);
+      border: 2px solid var(--accent-good);
+    }
+
+    .reveal-team.evil {
+      background: rgba(244, 114, 182, 0.2);
+      color: var(--accent-evil);
+      border: 2px solid var(--accent-evil);
+    }
+
+    .reveal-ability {
+      font-size: 1rem;
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      text-align: left;
+      animation: fade-in 0.5s ease-out 1.2s both;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .reveal-continue-btn {
+      margin-top: 1.5rem;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.8), rgba(244, 114, 182, 0.9));
+      border: none;
+      border-radius: 12px;
+      color: #0f172a;
+      cursor: pointer;
+      animation: fade-in 0.5s ease-out 1.5s both;
+      transition: transform 0.2s ease;
+    }
+
+    .reveal-continue-btn:hover {
+      transform: scale(1.05);
+    }
   </style>
   <!-- Firebase SDK for cross-device communication -->
   <script type="module">
@@ -696,6 +933,37 @@
       </div>
     </section>
 
+    <!-- Lobby/Waiting Section (shown after joining, before role assignment) -->
+    <section class="lobby-section" id="lobby-section">
+      <div class="lobby-card">
+        <div class="lobby-icon">🎭</div>
+        <div class="lobby-title" id="lobby-player-name">Welcome!</div>
+        <div class="lobby-subtitle">You've joined the game</div>
+        <div class="lobby-waiting-text">
+          <span class="spinner"></span>
+          <span>Waiting for the narrator to assign roles...</span>
+        </div>
+        <div class="lobby-player-count" id="lobby-player-count">
+          Other players are joining...
+        </div>
+      </div>
+    </section>
+
+    <!-- Role Reveal Overlay -->
+    <div class="role-reveal-overlay" id="role-reveal-overlay">
+      <div class="role-reveal-content">
+        <div class="reveal-card good" id="reveal-card">
+          <div class="reveal-intro">You are...</div>
+          <div class="reveal-role-name" id="reveal-role-name">The Oracle</div>
+          <div class="reveal-team good" id="reveal-team">👼 Good Team</div>
+          <div class="reveal-ability" id="reveal-ability">
+            Check one player each night to learn if they are good or evil.
+          </div>
+          <button class="reveal-continue-btn" id="reveal-continue-btn">Continue to Game</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Game Section (shown after joining) -->
     <section class="game-section" id="game-section">
       <!-- Phase Indicator -->
@@ -774,18 +1042,33 @@
       phase: 'setup',
       night: 0,
       connected: false,
-      notes: ''
+      notes: '',
+      inLobby: false, // True when waiting for role assignment
+      roleRevealed: false // True after role reveal animation completed
     };
 
     // DOM Elements
     const loginSection = document.getElementById('login-section');
     const gameSection = document.getElementById('game-section');
+    const lobbySection = document.getElementById('lobby-section');
+    const roleRevealOverlay = document.getElementById('role-reveal-overlay');
     const gameCodeInput = document.getElementById('game-code');
     const playerNameInput = document.getElementById('player-name');
     const joinBtn = document.getElementById('join-btn');
     const errorMessage = document.getElementById('error-message');
     const connectionStatus = document.getElementById('connection-status');
     const statusText = connectionStatus.querySelector('.status-text');
+    
+    // Lobby elements
+    const lobbyPlayerName = document.getElementById('lobby-player-name');
+    const lobbyPlayerCount = document.getElementById('lobby-player-count');
+    
+    // Role reveal elements
+    const revealCard = document.getElementById('reveal-card');
+    const revealRoleName = document.getElementById('reveal-role-name');
+    const revealTeam = document.getElementById('reveal-team');
+    const revealAbility = document.getElementById('reveal-ability');
+    const revealContinueBtn = document.getElementById('reveal-continue-btn');
     
     // Game section elements
     const phaseIndicator = document.getElementById('phase-indicator');
@@ -818,6 +1101,11 @@
       leaveBtn.addEventListener('click', handleLeave);
       notesTextarea.addEventListener('input', saveNotes);
       
+      // Role reveal continue button
+      if (revealContinueBtn) {
+        revealContinueBtn.addEventListener('click', completeRoleReveal);
+      }
+      
       // Set up BroadcastChannel for same-device fallback
       initBroadcastChannel();
       
@@ -832,6 +1120,10 @@
       if (playerState.gameCode && playerState.character && playerState.playerId) {
         showGameSection();
         // Try to reconnect via Firebase
+        setupFirebaseListeners();
+      } else if (playerState.gameCode && playerState.playerId && playerState.inLobby) {
+        // Player was in lobby, try to reconnect
+        showLobbySection();
         setupFirebaseListeners();
       }
     }
@@ -976,6 +1268,14 @@
           // Set up disconnect cleanup
           db.onDisconnect(playerRef).remove();
           
+          // Check if this is a lobby game (roles not yet assigned)
+          const isLobbyPhase = gameData.gameState && (gameData.gameState.phase === 'lobby' || !gameData.gameState.rolesAssigned);
+          
+          if (isLobbyPhase) {
+            // Show lobby section and wait for role assignment
+            showLobbySection();
+          }
+          
           // Set up listeners for character assignment and game state
           setupFirebaseListeners();
           
@@ -1044,13 +1344,31 @@
           // Character was assigned!
           clearTimeout(retryTimeout);
           playerState.gamePlayerId = playerData.gamePlayerId;
+          
+          // Check if this is a new assignment (trigger reveal) or reconnection
+          const isNewAssignment = !playerState.character && playerData.character;
+          const wasInLobby = playerState.inLobby;
+          
           playerState.character = playerData.character;
           playerState.connected = true;
           saveState();
           
-          showGameSection();
-          updateCharacterDisplay();
+          // If we were in lobby and now have a character, show the reveal
+          if (wasInLobby && isNewAssignment && !playerState.roleRevealed) {
+            showRoleReveal(playerData.character);
+          } else {
+            // Direct to game section (reconnection case)
+            playerState.inLobby = false;
+            showGameSection();
+            updateCharacterDisplay();
+          }
           updateConnectionStatus(true);
+        } else if (!playerData.status || playerData.status !== 'assigned') {
+          // Player is in lobby waiting for assignment
+          if (!playerState.inLobby && !playerState.character) {
+            clearTimeout(retryTimeout);
+            showLobbySection();
+          }
         }
       });
       
@@ -1072,7 +1390,7 @@
         }
         
         // Update phase
-        if (gameState.phase) {
+        if (gameState.phase && gameState.phase !== 'lobby') {
           updatePhase(gameState.phase, gameState.night || 0);
         }
         
@@ -1088,7 +1406,9 @@
       const connectedRef = db.ref(db.database, '.info/connected');
       firebaseConnectionUnsubscribe = db.onValue(connectedRef, (snapshot) => {
         const connected = snapshot.val();
-        updateConnectionStatus(connected === true && playerState.character !== null);
+        // Update connection status - show as connected if we're in lobby or have character
+        const isConnected = connected === true && (playerState.inLobby || playerState.character !== null);
+        updateConnectionStatus(isConnected);
       });
     }
 
@@ -1166,11 +1486,66 @@
 
     function showGameSection() {
       loginSection.style.display = 'none';
+      lobbySection.classList.remove('active');
       gameSection.classList.add('active');
       
       if (playerState.character) {
         updateCharacterDisplay();
       }
+    }
+
+    function showLobbySection() {
+      loginSection.style.display = 'none';
+      gameSection.classList.remove('active');
+      lobbySection.classList.add('active');
+      
+      // Update lobby display
+      if (lobbyPlayerName) {
+        lobbyPlayerName.textContent = `Welcome, ${playerState.playerName}!`;
+      }
+      
+      playerState.inLobby = true;
+      saveState();
+      updateConnectionStatus(true);
+    }
+
+    function showRoleReveal(character) {
+      if (!character) return;
+      
+      // Update reveal card content
+      if (revealCard) {
+        revealCard.className = `reveal-card ${character.team}`;
+      }
+      if (revealRoleName) {
+        revealRoleName.textContent = character.name;
+      }
+      if (revealTeam) {
+        revealTeam.textContent = character.team === 'good' ? '👼 Good Team' : '😈 Evil Team';
+        revealTeam.className = `reveal-team ${character.team}`;
+      }
+      if (revealAbility) {
+        revealAbility.textContent = character.power || character.short || 'Your role has special abilities. Listen to the narrator for instructions.';
+      }
+      
+      // Show the overlay
+      if (roleRevealOverlay) {
+        roleRevealOverlay.classList.add('active');
+      }
+    }
+
+    function completeRoleReveal() {
+      // Hide the reveal overlay
+      if (roleRevealOverlay) {
+        roleRevealOverlay.classList.remove('active');
+      }
+      
+      // Mark reveal as complete
+      playerState.roleRevealed = true;
+      playerState.inLobby = false;
+      saveState();
+      
+      // Show the game section
+      showGameSection();
     }
 
     function updateCharacterDisplay() {
@@ -1286,13 +1661,19 @@
       playerState.gamePlayerId = null;
       playerState.phase = 'setup';
       playerState.night = 0;
+      playerState.inLobby = false;
+      playerState.roleRevealed = false;
       saveState();
       
-      // Hide win overlay
+      // Hide win overlay and role reveal
       winOverlay.classList.remove('active');
+      if (roleRevealOverlay) {
+        roleRevealOverlay.classList.remove('active');
+      }
       
       // Go back to login
       gameSection.classList.remove('active');
+      lobbySection.classList.remove('active');
       loginSection.style.display = 'flex';
       joinBtn.disabled = false;
       joinBtn.textContent = 'Join Game';
