@@ -3183,11 +3183,34 @@
     }
 
     function broadcastThemeChange(theme) {
-      if (!projectorChannel) return;
-      projectorChannel.postMessage({
-        type: 'theme-change',
-        theme: theme
-      });
+      // Broadcast to projector
+      if (projectorChannel) {
+        projectorChannel.postMessage({
+          type: 'theme-change',
+          theme: theme
+        });
+      }
+      
+      // Broadcast to player devices via BroadcastChannel
+      if (playerChannel) {
+        playerChannel.postMessage({
+          type: 'theme-change',
+          theme: theme,
+          gameCode: state.gameCode
+        });
+      }
+      
+      // Broadcast to player devices via Firebase
+      if (window.firebaseDB && window.firebaseDB.initialized && state.gameCode) {
+        const db = window.firebaseDB;
+        const themeRef = db.ref(db.database, `games/${state.gameCode}/theme`);
+        db.set(themeRef, {
+          theme: theme,
+          timestamp: Date.now()
+        }).catch(error => {
+          console.warn('Failed to broadcast theme to Firebase:', error);
+        });
+      }
     }
 
     function broadcastVotingUpdate(active, phase, nominations) {
@@ -5249,7 +5272,9 @@
             if (state.timer.seconds === 10) {
               playTimerWarningSound();
             } else if (state.timer.seconds === 5) {
-              playTimerWarningSound();
+              playTimerUrgentSound();
+            } else if (state.timer.seconds <= 3 && state.timer.seconds > 0) {
+              playTimerFinalCountdown();
             } else if (state.timer.seconds === 0) {
               playTimerEndSound();
               state.timer.running = false;
@@ -5937,13 +5962,17 @@
           state.timer.remaining -= 1;
           renderTimer();
           broadcastTimerUpdate(state.timer.remaining, state.timer.running);
-          // Play warning sound at 30 seconds and when timer completes
+          // Play warning sounds at key moments
           if (state.timer.remaining === 30) {
             playTimerWarningSound();
-          }
-          if (state.timer.remaining === 0) {
+          } else if (state.timer.remaining === 10) {
             playTimerWarningSound();
-            setTimeout(() => playTimerWarningSound(), 300); // Double ding
+          } else if (state.timer.remaining === 5) {
+            playTimerUrgentSound();
+          } else if (state.timer.remaining <= 3 && state.timer.remaining > 0) {
+            playTimerFinalCountdown();
+          } else if (state.timer.remaining === 0) {
+            playTimerEndSound();
             alert("⏰ Timer complete! Time for a dramatic decision.");
           }
         }
@@ -6178,6 +6207,19 @@
     function playTimerWarningSound() {
       // Play a gentle "ding" sound
       playSound(800, 0.2, 'sine');
+    }
+
+    function playTimerUrgentSound() {
+      if (!state.sfxEnabled) return;
+      // More urgent beeping for final seconds
+      playSound(880, 0.25, 'square');
+    }
+
+    function playTimerFinalCountdown() {
+      if (!state.sfxEnabled) return;
+      // Dramatic final countdown pulse
+      playSound(1000, 0.3, 'sine');
+      setTimeout(() => playSound(500, 0.15, 'sine'), 100);
     }
 
     function playTimerEndSound() {

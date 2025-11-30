@@ -409,6 +409,66 @@
       color: var(--text-secondary);
     }
 
+    /* Voice/Accent Suggestion */
+    .voice-suggestion {
+      background: linear-gradient(135deg, rgba(244, 114, 182, 0.15), rgba(251, 113, 133, 0.1));
+      border: 2px solid rgba(244, 114, 182, 0.3);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .voice-suggestion h5 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #f472b6;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .voice-suggestion-text {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .acting-tips {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .acting-tips-title {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .acting-tips-content {
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .acting-tip-item {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+
+    .acting-tip-item strong {
+      color: var(--accent-ui);
+      min-width: 50px;
+    }
+
     /* Night/Day Instructions */
     .instructions-section {
       background: rgba(30, 41, 59, 0.7);
@@ -2013,6 +2073,16 @@
           <h4>Your Ability</h4>
           <p id="character-ability-text">Loading character information...</p>
         </div>
+        
+        <!-- Voice/Accent Suggestion -->
+        <div class="voice-suggestion" id="voice-suggestion" style="display: none;">
+          <h5>🎭 Your Character Voice</h5>
+          <div class="voice-suggestion-text" id="voice-suggestion-text"></div>
+          <div class="acting-tips" id="acting-tips">
+            <div class="acting-tips-title">Acting Tips</div>
+            <div class="acting-tips-content" id="acting-tips-content"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Night/Day Instructions -->
@@ -2384,6 +2454,15 @@
         const connected = snapshot.val();
         updateConnectionStatus(connected === true && playerState.character !== null);
       });
+      
+      // Listen for theme changes
+      const themeRef = db.ref(db.database, `games/${playerState.gameCode}/theme`);
+      db.onValue(themeRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.theme) {
+          applyTheme(data.theme);
+        }
+      });
     }
 
     function cleanupFirebaseListeners() {
@@ -2488,8 +2567,46 @@
       // Update ability text
       characterAbilityText.textContent = char.power || char.short || 'No ability description available.';
       
+      // Update voice/accent suggestion
+      updateVoiceSuggestion(char);
+      
       // Update instructions based on character
       updateInstructions(char);
+    }
+
+    function updateVoiceSuggestion(char) {
+      const voiceSection = document.getElementById('voice-suggestion');
+      const voiceText = document.getElementById('voice-suggestion-text');
+      const actingTips = document.getElementById('acting-tips-content');
+      
+      if (!voiceSection || !voiceText || !actingTips) return;
+      
+      // Check if character has acting info
+      if (char.actingA) {
+        voiceSection.style.display = 'block';
+        
+        // Set voice suggestion
+        voiceText.textContent = char.actingA.voice || 'Speak naturally in character!';
+        
+        // Set acting tips
+        let tipsHTML = '';
+        if (char.actingA.body) {
+          tipsHTML += `<div class="acting-tip-item"><strong>Body:</strong> ${char.actingA.body}</div>`;
+        }
+        if (char.actingA.face) {
+          tipsHTML += `<div class="acting-tip-item"><strong>Face:</strong> ${char.actingA.face}</div>`;
+        }
+        if (char.actingA.death) {
+          tipsHTML += `<div class="acting-tip-item"><strong>Death:</strong> ${char.actingA.death}</div>`;
+        }
+        
+        actingTips.innerHTML = tipsHTML;
+        
+        // Show acting tips section only if there are tips
+        document.getElementById('acting-tips').style.display = tipsHTML ? 'block' : 'none';
+      } else {
+        voiceSection.style.display = 'none';
+      }
     }
 
     function updateInstructions(char) {
