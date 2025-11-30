@@ -1669,6 +1669,9 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
     import { getDatabase, ref, set, onValue, remove, update, push, onDisconnect, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js';
 
+    // Firebase configuration - these credentials are safe to expose in client-side code.
+    // Security is managed through Firebase Realtime Database security rules.
+    // See: https://firebase.google.com/docs/projects/api-keys
     const firebaseConfig = {
       apiKey: "AIzaSyCfZEDGBi99t3u9GlS78ifRmDM4-eJSdYg",
       authDomain: "melodrama-game.firebaseapp.com",
