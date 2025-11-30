@@ -3641,115 +3641,92 @@
 
       const nightSteps = [];
       
-      // Night 1 Opening
+      // Night 1 Opening - Unified flowing script
       if (state.night === 1) {
+        // Get villain and accomplice names for the script
+        const villains = state.players.filter(p => p.type === "villain" && !p.eliminated).map(p => `${p.name} (${p.roleName})`).join(", ");
+        const accomplices = state.players.filter(p => p.type === "accomplice" && !p.eliminated).map(p => `${p.name} (${p.roleName})`).join(", ");
+        const hasVillains = hasType("villain");
+        const hasAccomplices = hasType("accomplice");
+        
+        // Build unified Night 1 opening script
+        let unifiedScript = theme.script.nightIntro;
+        
+        if (hasVillains && hasAccomplices) {
+          // Both villains and accomplices - wake together so accomplices can see villains
+          unifiedScript += `\n\nVillains and Accomplices [${villains}, ${accomplices}], please wake up now. ${theme.script.evilCall}\n\nAccomplices [${accomplices}], back to sleep.`;
+        } else if (hasVillains) {
+          // Only villains
+          unifiedScript += `\n\nVillains [${villains}], please wake up now. ${theme.script.evilCall}`;
+        } else if (hasAccomplices) {
+          // Only accomplices (rare edge case)
+          unifiedScript += `\n\nAccomplices [${accomplices}], please wake up now. ${theme.script.evilCall}\n\nAccomplices [${accomplices}], back to sleep.`;
+        }
+        
         nightSteps.push({
           title: "Night 1 Opening",
           phase: "night",
           blocks: [
-            { type: "say", text: theme.script.nightIntro },
-            { type: "narrator", text: "Remind students: silent acting only. Encourage over-the-top reactions when woken." },
-            { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall }
+            { type: "say", text: unifiedScript }
           ]
         });
         
-        // First Night Setup Actions - only on Night 1
-        // Accomplices meet Villains happens before Step 1 (per design brief)
-        if (hasType("accomplice")) {
-          nightSteps.push({
-            title: "Night 1: Accomplices Meet Villains",
-            phase: "night",
-            blocks: [
-              { type: "say", text: "Accomplices, lift your heads and find your villain allies." },
-              { type: "narrator", text: "Have villains give a subtle nod so accomplices know them." },
-              { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall },
-              { type: "say", text: "Accomplices, lower your heads. Villains, close your eyes." }
-            ]
-          });
-        }
         // NOTE: Champion sees Cursed, Twins Meet, and Loyal Companion meets Champion
         // are inserted at their correct positions later in the sequence (see below)
       } else {
-        // Subsequent nights opening
+        // Subsequent nights opening - unified script
+        const villains = state.players.filter(p => p.type === "villain" && !p.eliminated).map(p => `${p.name} (${p.roleName})`).join(", ");
+        const hasVillains = hasType("villain");
+        
+        let unifiedScript = theme.script.nightIntro;
+        
+        if (hasVillains) {
+          unifiedScript += `\n\nVillains [${villains}], please wake up now. ${theme.script.evilCall}`;
+        }
+        
         nightSteps.push({
           title: `Night ${state.night} Begins`,
           phase: "night",
           blocks: [
-            { type: "say", text: theme.script.nightIntro },
-            { type: "narrator", text: "Encourage players to hunch, clutch pearls, or otherwise act the part." },
-            { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall }
+            { type: "say", text: unifiedScript }
           ]
         });
       }
 
-      // Step 1: Villain-Type (all wake together) - Skip if no villains alive
+      // Step 1: Villain-Type - Villains choose their victim
       if (hasType("villain")) {
         const villains = state.players.filter(p => p.type === "villain" && !p.eliminated).map(p => `${p.name} (${p.roleName})`).join(", ");
+        
+        let villainScript = `Villains [${villains}], choose your victim now. Point silently to your target. Once you have agreed, close your eyes.`;
+        
         nightSteps.push({
           title: "Step 1: Villain-Type",
           phase: "night",
           blocks: [
-            { type: "say", text: "Villain team, open your eyes and choose your victim." },
-            { type: "narrator", text: "Watch their silent debate. Confirm their choice before moving on." },
-            { type: "reminder", text: "PERFORMANCE CUE: " + theme.script.evilCall },
-            { type: "info", text: `Villains alive: ${villains || "None"}` },
-            { type: "say", text: "Villain team, close your eyes." }
+            { type: "say", text: villainScript },
+            { type: "info", text: `Villains alive: ${villains || "None"}` }
           ]
         });
       }
 
-      // Step 2: Accomplice-Type - Call each accomplice individually with specific instructions
+      // Step 2: Accomplice-Type - Simplified thumb-out prompt for night powers
       const accomplicesWithAbilities = state.players.filter(p => 
         p.type === "accomplice" && !p.eliminated && p.abilityUsesRemaining !== 0
       );
       
       if (accomplicesWithAbilities.length > 0) {
+        const accompliceNames = accomplicesWithAbilities.map(p => `${p.name} (${p.roleName})`).join(", ");
+        
+        let accompliceScript = `Accomplices [${accompliceNames}], please wake up now. Please put your thumb out now if you would like to use your once-per-game power tonight.\n\nAccomplices, back to sleep.`;
+        
         nightSteps.push({
-          title: "Step 2: Accomplice-Type Introduction",
+          title: "Step 2: Accomplice-Type",
           phase: "night",
           blocks: [
-            { type: "narrator", text: "Now call each Accomplice individually. They wake alone, make their choice silently, then sleep." }
+            { type: "say", text: accompliceScript },
+            { type: "info", text: `Accomplices with powers: ${accompliceNames}` },
+            { type: "narrator", text: "For any accomplice who signals, perform their action: Right Hand (blocks night ability), Spy (reveals if target has night action), Manipulator (silences vote), Traitor (marks for revote), Informant (reveals role to villains)." }
           ]
-        });
-        
-        // Call each accomplice with specific instructions
-        accomplicesWithAbilities.forEach(player => {
-          const blocks = [];
-          
-          if (player.charId === 6) { // The Right Hand
-            blocks.push({ type: "say", text: `${player.name}, you are the Right Hand. Open your eyes.` });
-            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone whose night ability you want to block.' Wait for their silent point." });
-            blocks.push({ type: "reminder", text: `Record who ${player.name} blocked in the Action Tracker. This player's ability will not work tonight.` });
-            if (player.abilityUsesRemaining === 1) {
-              blocks.push({ type: "info", text: `IMPORTANT: This is ${player.name}'s LAST use of this ability.` });
-            }
-          } else if (player.charId === 7) { // The Spy
-            blocks.push({ type: "say", text: `${player.name}, you are the Spy. Open your eyes.` });
-            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. I'll tell you if they have a night action.' Wait for their point." });
-            blocks.push({ type: "narrator", text: "Check the chosen player's card. If they have hasNightAction=true, show thumbs UP. Otherwise thumbs DOWN." });
-            blocks.push({ type: "info", text: "Characters with night actions: Villains, Accomplices, Elders, and most Heroes (not Survivor)." });
-          } else if (player.charId === 8) { // The Manipulator
-            blocks.push({ type: "say", text: `${player.name}, you are the Manipulator. Open your eyes.` });
-            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. They will be silenced during tomorrow's vote.' Wait for their point." });
-            blocks.push({ type: "reminder", text: `Mark ${player.name}'s target - they CANNOT vote tomorrow. Announce this before the vote.` });
-          } else if (player.charId === 9) { // The Traitor
-            blocks.push({ type: "say", text: `${player.name}, you are the Traitor. Open your eyes.` });
-            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. If they're eliminated by vote tomorrow, you can force a revote.' Wait for their point." });
-            blocks.push({ type: "reminder", text: `Track ${player.name}'s marked player. If they're voted out tomorrow, the Traitor can trigger a revote.` });
-          } else if (player.charId === 10) { // The Informant
-            blocks.push({ type: "say", text: `${player.name}, you are the Informant. Open your eyes.` });
-            blocks.push({ type: "narrator", text: "Whisper: 'Point to someone. I'll reveal their exact role to the evil team.' Wait for their point." });
-            blocks.push({ type: "narrator", text: "Wake the villains briefly. Whisper the chosen player's role name. Then send everyone back to sleep." });
-            blocks.push({ type: "reminder", text: "This is a powerful information reveal. Make sure all villains hear it clearly." });
-          }
-          
-          blocks.push({ type: "say", text: `${player.name}, close your eyes and sleep.` });
-          
-          nightSteps.push({
-            title: `Step 2: ${player.roleName}`,
-            phase: "night",
-            blocks: blocks
-          });
         });
       }
 
