@@ -590,6 +590,52 @@
       to { transform: rotate(360deg); }
     }
   </style>
+  <!-- Firebase SDK for cross-device communication -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
+    import { getDatabase, ref, set, onValue, remove, update, push, onDisconnect } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js';
+
+    // Firebase configuration - these credentials are safe to expose in client-side code.
+    // Security is managed through Firebase Realtime Database security rules.
+    // See: https://firebase.google.com/docs/projects/api-keys
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfZEDGBi99t3u9GlS78ifRmDM4-eJSdYg",
+      authDomain: "melodrama-game.firebaseapp.com",
+      projectId: "melodrama-game",
+      storageBucket: "melodrama-game.firebasestorage.app",
+      messagingSenderId: "656912364218",
+      appId: "1:656912364218:web:7a9b44d4f3e9e89c550883",
+      measurementId: "G-0S4D9SFEFH",
+      databaseURL: "https://melodrama-game-default-rtdb.firebaseio.com"
+    };
+
+    // Initialize Firebase
+    let firebaseApp = null;
+    let database = null;
+    let firebaseInitialized = false;
+
+    try {
+      firebaseApp = initializeApp(firebaseConfig);
+      database = getDatabase(firebaseApp);
+      firebaseInitialized = true;
+      console.log('Firebase initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize Firebase:', error);
+    }
+
+    // Expose Firebase functions to global scope for use in main script
+    window.firebaseDB = {
+      initialized: firebaseInitialized,
+      database: database,
+      ref: ref,
+      set: set,
+      onValue: onValue,
+      remove: remove,
+      update: update,
+      push: push,
+      onDisconnect: onDisconnect
+    };
+  </script>
 </head>
 <body>
   <!-- Win notification overlay -->
@@ -696,16 +742,22 @@
   </main>
 
   <script>
-    // BroadcastChannel for communication
+    // BroadcastChannel for same-device fallback communication
     const CHANNEL_NAME = 'melodrama-player-channel';
     let channel = null;
     let retryTimeout = null;
+    
+    // Firebase listeners for cleanup
+    let firebasePlayerUnsubscribe = null;
+    let firebaseGameStateUnsubscribe = null;
+    let firebaseConnectionUnsubscribe = null;
 
     // Player state
     const playerState = {
       gameCode: null,
       playerName: null,
-      playerId: null,
+      playerId: null,  // Unique Firebase player ID
+      gamePlayerId: null, // ID from the game's player list
       character: null,
       phase: 'setup',
       night: 0,
@@ -754,13 +806,21 @@
       leaveBtn.addEventListener('click', handleLeave);
       notesTextarea.addEventListener('input', saveNotes);
       
-      // Set up BroadcastChannel
+      // Set up BroadcastChannel for same-device fallback
       initBroadcastChannel();
       
-      // If we have a saved game code and character, rejoin
-      if (playerState.gameCode && playerState.character) {
+      // Check Firebase availability
+      if (window.firebaseDB && window.firebaseDB.initialized) {
+        console.log('Firebase available for cross-device communication');
+      } else {
+        console.warn('Firebase not available - using BroadcastChannel only (same-device)');
+      }
+      
+      // If we have a saved game code and character, try to reconnect
+      if (playerState.gameCode && playerState.character && playerState.playerId) {
         showGameSection();
-        requestStateUpdate();
+        // Try to reconnect via Firebase
+        setupFirebaseListeners();
       }
     }
 
@@ -821,20 +881,31 @@
           channel = new BroadcastChannel(CHANNEL_NAME);
           
           channel.onmessage = (event) => {
-            handleMessage(event.data);
+            handleBroadcastMessage(event.data);
           };
 
           channel.onmessageerror = (error) => {
             console.error('BroadcastChannel message error:', error);
           };
 
-          console.log('BroadcastChannel initialized');
+          console.log('BroadcastChannel initialized (same-device fallback)');
         } catch (error) {
           console.error('Failed to initialize BroadcastChannel:', error);
         }
       } else {
         console.warn('BroadcastChannel not supported');
       }
+    }
+
+    // Generate unique player ID for Firebase
+    function generatePlayerId() {
+      if (window.firebaseDB && window.firebaseDB.initialized) {
+        const db = window.firebaseDB;
+        const newRef = db.push(db.ref(db.database, 'temp'));
+        return newRef.key;
+      }
+      // Fallback: generate a random ID
+      return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
     function handleJoin() {
@@ -847,9 +918,71 @@
       
       playerState.gameCode = code;
       playerState.playerName = name;
+      
+      // Show waiting state
+      errorMessage.classList.remove('visible');
+      joinBtn.disabled = true;
+      joinBtn.textContent = 'Joining...';
+      
+      // Try Firebase first (cross-device), then fall back to BroadcastChannel
+      if (window.firebaseDB && window.firebaseDB.initialized) {
+        joinViaFirebase(code, name);
+      } else {
+        // Fallback to BroadcastChannel
+        joinViaBroadcastChannel(code, name);
+      }
+    }
+
+    function joinViaFirebase(code, name) {
+      const db = window.firebaseDB;
+      
+      // First, check if the game exists
+      const gameRef = db.ref(db.database, `games/${code}`);
+      
+      db.onValue(gameRef, (snapshot) => {
+        const gameData = snapshot.val();
+        
+        if (!gameData) {
+          // Game doesn't exist - try BroadcastChannel as fallback
+          console.log('Game not found in Firebase, trying BroadcastChannel...');
+          joinViaBroadcastChannel(code, name);
+          return;
+        }
+        
+        // Game exists! Generate a unique player ID and join
+        const playerId = generatePlayerId();
+        playerState.playerId = playerId;
+        saveState();
+        
+        // Write player info to Firebase
+        const playerRef = db.ref(db.database, `games/${code}/players/${playerId}`);
+        
+        db.set(playerRef, {
+          name: name,
+          joinedAt: Date.now()
+        }).then(() => {
+          console.log('Joined game via Firebase');
+          
+          // Set up disconnect cleanup
+          db.onDisconnect(playerRef).remove();
+          
+          // Set up listeners for character assignment and game state
+          setupFirebaseListeners();
+          
+        }).catch((error) => {
+          console.error('Failed to join via Firebase:', error);
+          showError('Failed to join game. Please try again.');
+          joinBtn.disabled = false;
+          joinBtn.textContent = 'Join Game';
+        });
+        
+      }, { onlyOnce: true });
+    }
+
+    function joinViaBroadcastChannel(code, name) {
       saveState();
       
-      // Send join request
+      // Send join request via BroadcastChannel
       if (channel) {
         channel.postMessage({
           type: 'player-join',
@@ -857,11 +990,6 @@
           playerName: name
         });
       }
-      
-      // Show waiting state
-      errorMessage.classList.remove('visible');
-      joinBtn.disabled = true;
-      joinBtn.textContent = 'Joining...';
       
       // Set timeout for response
       retryTimeout = setTimeout(() => {
@@ -871,8 +999,107 @@
       }, JOIN_TIMEOUT_MS);
     }
 
-    function handleMessage(data) {
-      console.log('Received message:', data);
+    function setupFirebaseListeners() {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !playerState.gameCode || !playerState.playerId) {
+        return;
+      }
+      
+      const db = window.firebaseDB;
+      
+      // Clean up any existing listeners
+      cleanupFirebaseListeners();
+      
+      // Listen for character assignment on this player's node
+      const playerRef = db.ref(db.database, `games/${playerState.gameCode}/players/${playerState.playerId}`);
+      firebasePlayerUnsubscribe = db.onValue(playerRef, (snapshot) => {
+        const playerData = snapshot.val();
+        
+        if (!playerData) {
+          // Player was removed (game reset)
+          handleGameReset();
+          return;
+        }
+        
+        if (playerData.status === 'rejected') {
+          // Join was rejected
+          clearTimeout(retryTimeout);
+          showError(playerData.reason || 'Unable to join game.');
+          joinBtn.disabled = false;
+          joinBtn.textContent = 'Join Game';
+          cleanupFirebaseListeners();
+          return;
+        }
+        
+        if (playerData.status === 'assigned' && playerData.character) {
+          // Character was assigned!
+          clearTimeout(retryTimeout);
+          playerState.gamePlayerId = playerData.gamePlayerId;
+          playerState.character = playerData.character;
+          playerState.connected = true;
+          saveState();
+          
+          showGameSection();
+          updateCharacterDisplay();
+          updateConnectionStatus(true);
+        }
+      });
+      
+      // Listen for game state changes
+      const gameStateRef = db.ref(db.database, `games/${playerState.gameCode}/gameState`);
+      firebaseGameStateUnsubscribe = db.onValue(gameStateRef, (snapshot) => {
+        const gameState = snapshot.val();
+        
+        if (!gameState) {
+          // Game was deleted
+          handleGameReset();
+          return;
+        }
+        
+        if (gameState.reset) {
+          // Game was reset
+          handleGameReset();
+          return;
+        }
+        
+        // Update phase
+        if (gameState.phase) {
+          updatePhase(gameState.phase, gameState.night || 0);
+        }
+        
+        // Check for win
+        if (gameState.winTeam) {
+          showWinNotification(gameState.winTeam, gameState.night || 0);
+        }
+        
+        updateConnectionStatus(true);
+      });
+      
+      // Listen for connection state
+      const connectedRef = db.ref(db.database, '.info/connected');
+      firebaseConnectionUnsubscribe = db.onValue(connectedRef, (snapshot) => {
+        const connected = snapshot.val();
+        updateConnectionStatus(connected === true && playerState.character !== null);
+      });
+    }
+
+    function cleanupFirebaseListeners() {
+      if (firebasePlayerUnsubscribe) {
+        firebasePlayerUnsubscribe();
+        firebasePlayerUnsubscribe = null;
+      }
+      if (firebaseGameStateUnsubscribe) {
+        firebaseGameStateUnsubscribe();
+        firebaseGameStateUnsubscribe = null;
+      }
+      if (firebaseConnectionUnsubscribe) {
+        firebaseConnectionUnsubscribe();
+        firebaseConnectionUnsubscribe = null;
+      }
+    }
+
+    // Handle BroadcastChannel messages (same-device fallback)
+    function handleBroadcastMessage(data) {
+      console.log('Received BroadcastChannel message:', data);
       
       // Check if this message is for our game code
       if (data.gameCode && data.gameCode !== playerState.gameCode) {
@@ -915,7 +1142,8 @@
     }
 
     function handlePlayerAssigned(data) {
-      playerState.playerId = data.playerId;
+      playerState.playerId = data.playerId || generatePlayerId();
+      playerState.gamePlayerId = data.playerId;
       playerState.character = data.character;
       playerState.connected = true;
       saveState();
@@ -1039,9 +1267,13 @@
       // Stop connection check
       stopConnectionCheck();
       
+      // Clean up Firebase listeners
+      cleanupFirebaseListeners();
+      
       // Clear character assignment but keep notes
       playerState.character = null;
       playerState.playerId = null;
+      playerState.gamePlayerId = null;
       playerState.phase = 'setup';
       playerState.night = 0;
       saveState();
@@ -1058,13 +1290,22 @@
 
     function handleLeave() {
       if (confirm('Are you sure you want to leave the game?')) {
-        // Notify narrator
+        // Remove from Firebase if connected
+        if (window.firebaseDB && window.firebaseDB.initialized && playerState.gameCode && playerState.playerId) {
+          const db = window.firebaseDB;
+          const playerRef = db.ref(db.database, `games/${playerState.gameCode}/players/${playerState.playerId}`);
+          db.remove(playerRef).catch((error) => {
+            console.warn('Failed to remove player from Firebase:', error);
+          });
+        }
+        
+        // Notify via BroadcastChannel (for same-device)
         if (channel) {
           channel.postMessage({
             type: 'player-leave',
             gameCode: playerState.gameCode,
             playerName: playerState.playerName,
-            playerId: playerState.playerId
+            playerId: playerState.gamePlayerId
           });
         }
         
@@ -1073,6 +1314,7 @@
     }
 
     function requestStateUpdate() {
+      // Via BroadcastChannel
       if (channel && playerState.gameCode) {
         channel.postMessage({
           type: 'player-request-state',
@@ -1108,7 +1350,7 @@
       }
     }
 
-    // Start periodic connection check
+    // Start periodic connection check (for BroadcastChannel fallback)
     function startConnectionCheck() {
       if (connectionCheckInterval) return; // Already running
       connectionCheckInterval = setInterval(() => {
@@ -1132,6 +1374,7 @@
     // Cleanup on unload
     window.addEventListener('beforeunload', () => {
       stopConnectionCheck();
+      cleanupFirebaseListeners();
       if (channel) {
         channel.close();
       }

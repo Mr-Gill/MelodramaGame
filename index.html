@@ -1664,6 +1664,53 @@
       }
     }
   </style>
+  <!-- Firebase SDK for cross-device player communication -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
+    import { getDatabase, ref, set, onValue, remove, update, push, onDisconnect, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js';
+
+    // Firebase configuration - these credentials are safe to expose in client-side code.
+    // Security is managed through Firebase Realtime Database security rules.
+    // See: https://firebase.google.com/docs/projects/api-keys
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfZEDGBi99t3u9GlS78ifRmDM4-eJSdYg",
+      authDomain: "melodrama-game.firebaseapp.com",
+      projectId: "melodrama-game",
+      storageBucket: "melodrama-game.firebasestorage.app",
+      messagingSenderId: "656912364218",
+      appId: "1:656912364218:web:7a9b44d4f3e9e89c550883",
+      measurementId: "G-0S4D9SFEFH",
+      databaseURL: "https://melodrama-game-default-rtdb.firebaseio.com"
+    };
+
+    // Initialize Firebase
+    let firebaseApp = null;
+    let database = null;
+    let firebaseInitialized = false;
+
+    try {
+      firebaseApp = initializeApp(firebaseConfig);
+      database = getDatabase(firebaseApp);
+      firebaseInitialized = true;
+      console.log('Firebase initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize Firebase:', error);
+    }
+
+    // Expose Firebase functions to global scope for use in main script
+    window.firebaseDB = {
+      initialized: firebaseInitialized,
+      database: database,
+      ref: ref,
+      set: set,
+      onValue: onValue,
+      remove: remove,
+      update: update,
+      push: push,
+      onDisconnect: onDisconnect,
+      serverTimestamp: serverTimestamp
+    };
+  </script>
 </head>
 <body>
   <header>
@@ -2602,9 +2649,13 @@
     let projectorChannel = null;
     const CHANNEL_NAME = 'melodrama-narrator-projector';
 
-    // BroadcastChannel for player device synchronization
+    // Firebase-based player device synchronization (for cross-device communication)
+    // BroadcastChannel kept only for backward compatibility on same-device
     let playerChannel = null;
     const PLAYER_CHANNEL_NAME = 'melodrama-player-channel';
+    
+    // Track Firebase listeners for cleanup
+    let firebasePlayersUnsubscribe = null;
 
     function initProjectorChannel() {
       if ('BroadcastChannel' in window) {
@@ -2643,6 +2694,7 @@
     }
 
     function initPlayerChannel() {
+      // Initialize BroadcastChannel for same-device backward compatibility
       if ('BroadcastChannel' in window) {
         try {
           playerChannel = new BroadcastChannel(PLAYER_CHANNEL_NAME);
@@ -2651,13 +2703,215 @@
             handlePlayerMessage(event.data);
           };
 
-          console.log('Player BroadcastChannel initialized');
+          console.log('Player BroadcastChannel initialized (same-device fallback)');
         } catch (error) {
           console.error('Failed to initialize player channel:', error);
         }
       }
+      
+      // Firebase is initialized in the module script - we check for it here
+      if (window.firebaseDB && window.firebaseDB.initialized) {
+        console.log('Firebase available for cross-device player communication');
+      } else {
+        console.warn('Firebase not available - cross-device player communication disabled');
+      }
     }
 
+    // Create Firebase game session when game starts
+    function createFirebaseGameSession() {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) {
+        console.log('Firebase not available for game session creation');
+        return;
+      }
+      
+      const db = window.firebaseDB;
+      const gameRef = db.ref(db.database, `games/${state.gameCode}`);
+      
+      // Create game session with initial state
+      const gameData = {
+        gameState: {
+          phase: state.phase,
+          night: state.night,
+          theme: state.theme,
+          winTeam: null
+        },
+        players: {},
+        createdAt: Date.now()
+      };
+      
+      db.set(gameRef, gameData)
+        .then(() => {
+          console.log(`Firebase game session created: ${state.gameCode}`);
+          // Listen for player joins
+          setupFirebasePlayersListener();
+        })
+        .catch((error) => {
+          console.error('Failed to create Firebase game session:', error);
+        });
+    }
+
+    // Listen for players joining via Firebase
+    function setupFirebasePlayersListener() {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) {
+        return;
+      }
+      
+      const db = window.firebaseDB;
+      const playersRef = db.ref(db.database, `games/${state.gameCode}/players`);
+      
+      // Clean up any existing listener
+      if (firebasePlayersUnsubscribe) {
+        firebasePlayersUnsubscribe();
+      }
+      
+      firebasePlayersUnsubscribe = db.onValue(playersRef, (snapshot) => {
+        const playersData = snapshot.val();
+        if (!playersData) return;
+        
+        // Check for new players that need character assignment
+        Object.entries(playersData).forEach(([playerId, playerData]) => {
+          if (playerData.name && !playerData.character) {
+            // Player is waiting for character assignment
+            handleFirebasePlayerJoin(playerId, playerData);
+          }
+        });
+      });
+    }
+
+    // Handle player join from Firebase
+    function handleFirebasePlayerJoin(playerId, playerData) {
+      // Check if game has started
+      if (state.phase === 'setup' || state.players.length === 0) {
+        updateFirebasePlayerStatus(playerId, {
+          status: 'rejected',
+          reason: 'Game has not started yet. Please wait for the narrator.'
+        });
+        return;
+      }
+
+      // Find the player by name
+      const player = state.players.find(p => 
+        p.name.toLowerCase().trim() === playerData.name.toLowerCase().trim()
+      );
+
+      if (!player) {
+        updateFirebasePlayerStatus(playerId, {
+          status: 'rejected',
+          reason: 'Player name not found. Check with your narrator that your name is entered correctly.'
+        });
+        return;
+      }
+
+      // Get full character data
+      const character = CHARACTERS.find(c => c.id === player.charId);
+      
+      // Update player with character assignment
+      const characterData = character ? {
+        id: character.id,
+        name: character.name,
+        team: character.team,
+        type: character.type,
+        typeLabel: character.typeLabel || character.type,
+        power: character.power,
+        short: character.short,
+        nightB: character.nightB,
+        dayB: character.dayB
+      } : null;
+      
+      updateFirebasePlayerStatus(playerId, {
+        status: 'assigned',
+        gamePlayerId: player.id,
+        character: characterData
+      });
+
+      console.log(`Firebase player joined: ${playerData.name} as ${character ? character.name : 'Unknown'}`);
+    }
+
+    // Update player status in Firebase
+    function updateFirebasePlayerStatus(playerId, data) {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) {
+        return;
+      }
+      
+      const db = window.firebaseDB;
+      const playerRef = db.ref(db.database, `games/${state.gameCode}/players/${playerId}`);
+      
+      db.update(playerRef, data)
+        .catch((error) => {
+          console.error('Failed to update player status:', error);
+        });
+    }
+
+    // Update game state in Firebase
+    function updateFirebaseGameState() {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) {
+        return;
+      }
+      
+      const db = window.firebaseDB;
+      const gameStateRef = db.ref(db.database, `games/${state.gameCode}/gameState`);
+      
+      db.update(gameStateRef, {
+        phase: state.phase,
+        night: state.night,
+        theme: state.theme
+      }).catch((error) => {
+        console.error('Failed to update Firebase game state:', error);
+      });
+    }
+
+    // Broadcast win to Firebase
+    function updateFirebaseWin(winTeam) {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) {
+        return;
+      }
+      
+      const db = window.firebaseDB;
+      const gameStateRef = db.ref(db.database, `games/${state.gameCode}/gameState`);
+      
+      db.update(gameStateRef, {
+        winTeam: winTeam,
+        night: state.night
+      }).catch((error) => {
+        console.error('Failed to update Firebase win state:', error);
+      });
+    }
+
+    // Clean up Firebase game session
+    function cleanupFirebaseGameSession() {
+      if (!window.firebaseDB || !window.firebaseDB.initialized || !state.gameCode) {
+        return;
+      }
+      
+      // Clean up listener
+      if (firebasePlayersUnsubscribe) {
+        firebasePlayersUnsubscribe();
+        firebasePlayersUnsubscribe = null;
+      }
+      
+      const db = window.firebaseDB;
+      const gameRef = db.ref(db.database, `games/${state.gameCode}`);
+      
+      // First update to notify players of reset, then remove
+      db.update(db.ref(db.database, `games/${state.gameCode}/gameState`), {
+        reset: true
+      }).then(() => {
+        // Give players a moment to receive the reset notification
+        setTimeout(() => {
+          db.remove(gameRef)
+            .then(() => {
+              console.log(`Firebase game session cleaned up: ${state.gameCode}`);
+            })
+            .catch((error) => {
+              console.error('Failed to cleanup Firebase game session:', error);
+            });
+        }, 1000);
+      }).catch((error) => {
+        console.error('Failed to notify reset:', error);
+      });
+    }
+
+    // Legacy BroadcastChannel handlers (for same-device compatibility)
     function handlePlayerMessage(data) {
       // Only handle messages for our game code
       if (data.gameCode && data.gameCode !== state.gameCode) {
@@ -2680,23 +2934,27 @@
     function handlePlayerJoin(data) {
       // Check if game code matches
       if (data.gameCode !== state.gameCode) {
-        playerChannel.postMessage({
-          type: 'join-rejected',
-          gameCode: data.gameCode,
-          playerName: data.playerName,
-          reason: 'Invalid game code'
-        });
+        if (playerChannel) {
+          playerChannel.postMessage({
+            type: 'join-rejected',
+            gameCode: data.gameCode,
+            playerName: data.playerName,
+            reason: 'Invalid game code'
+          });
+        }
         return;
       }
 
       // Check if game has started
       if (state.phase === 'setup' || state.players.length === 0) {
-        playerChannel.postMessage({
-          type: 'join-rejected',
-          gameCode: data.gameCode,
-          playerName: data.playerName,
-          reason: 'Game has not started yet. Please wait for the narrator.'
-        });
+        if (playerChannel) {
+          playerChannel.postMessage({
+            type: 'join-rejected',
+            gameCode: data.gameCode,
+            playerName: data.playerName,
+            reason: 'Game has not started yet. Please wait for the narrator.'
+          });
+        }
         return;
       }
 
@@ -2706,41 +2964,45 @@
       );
 
       if (!player) {
-        playerChannel.postMessage({
-          type: 'join-rejected',
-          gameCode: data.gameCode,
-          playerName: data.playerName,
-          reason: 'Player name not found. Check with your narrator that your name is entered correctly.'
-        });
+        if (playerChannel) {
+          playerChannel.postMessage({
+            type: 'join-rejected',
+            gameCode: data.gameCode,
+            playerName: data.playerName,
+            reason: 'Player name not found. Check with your narrator that your name is entered correctly.'
+          });
+        }
         return;
       }
 
       // Get full character data
       const character = CHARACTERS.find(c => c.id === player.charId);
       
-      // Send player assignment
-      playerChannel.postMessage({
-        type: 'player-assigned',
-        gameCode: state.gameCode,
-        playerName: data.playerName,
-        playerId: player.id,
-        character: character ? {
-          id: character.id,
-          name: character.name,
-          team: character.team,
-          type: character.type,
-          typeLabel: character.typeLabel || character.type,
-          power: character.power,
-          short: character.short,
-          nightB: character.nightB,
-          dayB: character.dayB
-        } : null
-      });
+      // Send player assignment via BroadcastChannel
+      if (playerChannel) {
+        playerChannel.postMessage({
+          type: 'player-assigned',
+          gameCode: state.gameCode,
+          playerName: data.playerName,
+          playerId: player.id,
+          character: character ? {
+            id: character.id,
+            name: character.name,
+            team: character.team,
+            type: character.type,
+            typeLabel: character.typeLabel || character.type,
+            power: character.power,
+            short: character.short,
+            nightB: character.nightB,
+            dayB: character.dayB
+          } : null
+        });
+      }
 
       // Also send current game state
       setTimeout(() => sendStateToPlayer(data.playerName), 100);
 
-      console.log(`Player joined: ${data.playerName} as ${character ? character.name : 'Unknown'}`);
+      console.log(`Player joined (BroadcastChannel): ${data.playerName} as ${character ? character.name : 'Unknown'}`);
     }
 
     function handlePlayerLeave(data) {
@@ -2760,19 +3022,33 @@
     }
 
     function broadcastToPlayers(message) {
-      if (!playerChannel || !state.gameCode) return;
-      playerChannel.postMessage({
-        ...message,
-        gameCode: state.gameCode
-      });
+      // Broadcast via BroadcastChannel (same-device)
+      if (playerChannel && state.gameCode) {
+        playerChannel.postMessage({
+          ...message,
+          gameCode: state.gameCode
+        });
+      }
+      
+      // Also update Firebase game state for cross-device
+      if (message.type === 'phase-change') {
+        updateFirebaseGameState();
+      } else if (message.type === 'WIN') {
+        updateFirebaseWin(message.team);
+      }
     }
 
     function broadcastGameResetToPlayers() {
-      if (!playerChannel) return;
-      playerChannel.postMessage({
-        type: 'game-reset',
-        gameCode: state.gameCode
-      });
+      // Broadcast via BroadcastChannel (same-device)
+      if (playerChannel) {
+        playerChannel.postMessage({
+          type: 'game-reset',
+          gameCode: state.gameCode
+        });
+      }
+      
+      // Clean up Firebase session
+      cleanupFirebaseGameSession();
     }
 
     // Helper function to calculate player counts
@@ -5424,6 +5700,8 @@
       updateQuickRefAbilities();
       // Update game code display
       renderGameCode();
+      // Create Firebase game session for cross-device player communication
+      createFirebaseGameSession();
     }
 
     function renderDownloadLink() {
