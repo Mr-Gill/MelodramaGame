@@ -589,6 +589,373 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* Game Tips Section */
+    .game-tips-section {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(124, 58, 237, 0.1));
+      border: 2px solid rgba(56, 189, 248, 0.3);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .game-tips-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      color: var(--accent-ui);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .tip-card {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 1.25rem;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      animation: tipFade 0.5s ease-out;
+    }
+
+    @keyframes tipFade {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .tip-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent-ui);
+      margin-bottom: 0.5rem;
+    }
+
+    .tip-text {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .tip-category {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.75rem;
+    }
+
+    .tip-category.strategy { 
+      background: rgba(34, 197, 94, 0.2); 
+      color: #86efac; 
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    .tip-category.acting { 
+      background: rgba(244, 114, 182, 0.2); 
+      color: #f9a8d4; 
+      border: 1px solid rgba(244, 114, 182, 0.4);
+    }
+    .tip-category.rules { 
+      background: rgba(56, 189, 248, 0.2); 
+      color: #7dd3fc; 
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+    .tip-category.fun { 
+      background: rgba(250, 204, 21, 0.2); 
+      color: #fde047; 
+      border: 1px solid rgba(250, 204, 21, 0.4);
+    }
+
+    .tip-navigation {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tip-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(148, 163, 184, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tip-dot.active {
+      background: var(--accent-ui);
+      transform: scale(1.3);
+    }
+
+    .tip-dot:hover {
+      background: rgba(148, 163, 184, 0.7);
+    }
+
+    /* Voting Section */
+    .voting-section {
+      background: linear-gradient(135deg, rgba(244, 114, 182, 0.1), rgba(239, 68, 68, 0.1));
+      border: 2px solid rgba(244, 114, 182, 0.4);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+
+    .voting-section.active {
+      display: block;
+      animation: voteAppear 0.3s ease-out;
+    }
+
+    @keyframes voteAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .voting-section h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.2rem;
+      color: var(--accent-evil);
+      text-align: center;
+    }
+
+    .voting-instruction {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .vote-options {
+      display: grid;
+      gap: 0.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .vote-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .vote-option:hover {
+      border-color: rgba(244, 114, 182, 0.5);
+      background: rgba(244, 114, 182, 0.1);
+    }
+
+    .vote-option.selected {
+      border-color: var(--accent-evil);
+      background: rgba(244, 114, 182, 0.2);
+    }
+
+    .vote-option-name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .vote-option-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid rgba(148, 163, 184, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .vote-option.selected .vote-option-check {
+      background: var(--accent-evil);
+      border-color: var(--accent-evil);
+      color: white;
+    }
+
+    .submit-vote-btn {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, rgba(244, 114, 182, 0.8), rgba(239, 68, 68, 0.9));
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .submit-vote-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(244, 114, 182, 0.4);
+    }
+
+    .submit-vote-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .vote-submitted {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--accent-good);
+      font-size: 1.1rem;
+    }
+
+    /* Dice Roll Section */
+    .dice-roll-section {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(56, 189, 248, 0.1));
+      border: 2px solid rgba(34, 197, 94, 0.4);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      display: none;
+    }
+
+    .dice-roll-section.active {
+      display: block;
+      animation: diceAppear 0.3s ease-out;
+    }
+
+    @keyframes diceAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .dice-roll-section h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.2rem;
+      color: var(--accent-good);
+    }
+
+    .dice-roll-section .dice-info {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .roll-dice-btn {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(56, 189, 248, 0.9));
+      border: none;
+      border-radius: 12px;
+      color: #0f172a;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .roll-dice-btn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+    }
+
+    .roll-dice-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .dice-result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .dice-result.active {
+      display: block;
+      animation: resultAppear 0.5s ease-out;
+    }
+
+    @keyframes resultAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .dice-face {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+      animation: diceRoll 0.5s ease-out;
+    }
+
+    @keyframes diceRoll {
+      0%, 20%, 40%, 60%, 80% {
+        transform: rotate(0deg) scale(1);
+      }
+      10%, 30%, 50%, 70%, 90% {
+        transform: rotate(180deg) scale(1.2);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+    .dice-result.success {
+      background: rgba(34, 197, 94, 0.2);
+      border: 2px solid rgba(34, 197, 94, 0.5);
+    }
+
+    .dice-result.failure {
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid rgba(239, 68, 68, 0.5);
+    }
+
+    .dice-result-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .dice-result.success .dice-result-text {
+      color: #86efac;
+    }
+
+    .dice-result.failure .dice-result-text {
+      color: #fca5a5;
+    }
+
+    .dice-result-description {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
   </style>
   <!-- Firebase SDK for cross-device communication -->
   <script type="module">
@@ -689,6 +1056,17 @@
           Invalid game code. Please check with your narrator.
         </div>
       </div>
+      
+      <!-- Game Tips Section (shown while waiting to join) -->
+      <div class="game-tips-section" id="login-tips">
+        <h3>💡 Game Tips</h3>
+        <div class="tip-card" id="login-tip-card">
+          <div class="tip-title" id="login-tip-title">Loading tip...</div>
+          <div class="tip-text" id="login-tip-text">Get ready to play!</div>
+          <span class="tip-category strategy" id="login-tip-category">Tip</span>
+        </div>
+        <div class="tip-navigation" id="login-tip-nav"></div>
+      </div>
     </section>
 
     <!-- Game Section (shown after joining) -->
@@ -696,6 +1074,31 @@
       <!-- Phase Indicator -->
       <div class="phase-indicator night" id="phase-indicator">
         <div class="phase-label" id="phase-label">Waiting for game...</div>
+      </div>
+
+      <!-- Voting Section (shown when voting is active in laptop mode) -->
+      <div class="voting-section" id="voting-section">
+        <h3>🗳️ Cast Your Vote</h3>
+        <div class="voting-instruction" id="voting-instruction">Select the player you want to eliminate</div>
+        <div class="vote-options" id="vote-options">
+          <!-- Vote options will be populated dynamically -->
+        </div>
+        <button class="submit-vote-btn" id="submit-vote-btn" disabled>Submit Vote</button>
+        <div class="vote-submitted hidden" id="vote-submitted">
+          ✅ Your vote has been submitted!
+        </div>
+      </div>
+
+      <!-- Dice Roll Section (shown for Sidekick-type characters) -->
+      <div class="dice-roll-section" id="dice-roll-section">
+        <h3>🎲 Sidekick Power</h3>
+        <div class="dice-info" id="dice-info">Roll the dice to use your special ability!</div>
+        <button class="roll-dice-btn" id="roll-dice-btn">🎲 Roll Dice</button>
+        <div class="dice-result" id="dice-result">
+          <div class="dice-face" id="dice-face">⚀</div>
+          <div class="dice-result-text" id="dice-result-text">Result</div>
+          <div class="dice-result-description" id="dice-result-description">Description</div>
+        </div>
       </div>
 
       <!-- Character Card -->
@@ -1367,6 +1770,449 @@
         connectionCheckInterval = null;
       }
     }
+
+    // ===== GAME TIPS SYSTEM =====
+    const GAME_TIPS = [
+      {
+        title: "Stay in Character",
+        text: "The more dramatic your performance, the more fun everyone has! Don't be afraid to overact.",
+        category: "acting"
+      },
+      {
+        title: "Trust Your Instincts",
+        text: "If someone seems too helpful or too quiet, there might be a reason. Pay attention to behavior changes.",
+        category: "strategy"
+      },
+      {
+        title: "Take Notes",
+        text: "Write down who accused whom, who defended whom, and any suspicious behavior. Notes help you spot patterns.",
+        category: "strategy"
+      },
+      {
+        title: "The Power of Silence",
+        text: "Sometimes saying nothing is the best strategy. Let others reveal themselves through their accusations.",
+        category: "strategy"
+      },
+      {
+        title: "Dramatic Deaths",
+        text: "When you're eliminated, give a memorable death scene! Point at someone, gasp dramatically, or deliver a final monologue.",
+        category: "acting"
+      },
+      {
+        title: "Night Phase Rules",
+        text: "Keep your eyes CLOSED during night unless the narrator calls your role. Peeking ruins the mystery!",
+        category: "rules"
+      },
+      {
+        title: "Day Phase Discussion",
+        text: "During the day, discuss openly but remember - evil players will lie to survive. Question everything!",
+        category: "rules"
+      },
+      {
+        title: "Claim Strategically",
+        text: "You can claim to be any role, but be careful - if the real player is alive, they might call you out!",
+        category: "strategy"
+      },
+      {
+        title: "Evil Team Coordination",
+        text: "Evil players know each other. They might subtly defend or redirect suspicion from teammates.",
+        category: "strategy"
+      },
+      {
+        title: "Watch the Reactions",
+        text: "When someone is eliminated, watch how others react. Genuine surprise vs. fake surprise can be revealing.",
+        category: "strategy"
+      },
+      {
+        title: "Have Fun!",
+        text: "Win or lose, the goal is entertainment! Embrace the drama, enjoy the twists, and celebrate great performances.",
+        category: "fun"
+      },
+      {
+        title: "The Art of Misdirection",
+        text: "Point suspicion elsewhere subtly. Too aggressive makes you a target; too quiet makes you suspicious.",
+        category: "strategy"
+      },
+      {
+        title: "Character Voice",
+        text: "Try giving your character a unique voice, accent, or speech pattern. It makes the game more immersive!",
+        category: "acting"
+      },
+      {
+        title: "Vote Carefully",
+        text: "Your vote matters! Consider the evidence carefully, but also trust your gut feeling about who's lying.",
+        category: "rules"
+      },
+      {
+        title: "The Final Showdown",
+        text: "When it's down to the last few players, every word and gesture matters. This is where champions are made!",
+        category: "fun"
+      }
+    ];
+
+    let currentTipIndex = 0;
+    let tipRotationInterval = null;
+
+    function initGameTips() {
+      renderTip(0);
+      renderTipNavigation();
+      startTipRotation();
+    }
+
+    function renderTip(index) {
+      const tip = GAME_TIPS[index];
+      const titleEl = document.getElementById('login-tip-title');
+      const textEl = document.getElementById('login-tip-text');
+      const categoryEl = document.getElementById('login-tip-category');
+      const cardEl = document.getElementById('login-tip-card');
+      
+      if (!titleEl || !tip) return;
+      
+      // Trigger animation
+      cardEl.style.animation = 'none';
+      cardEl.offsetHeight; // Force reflow
+      cardEl.style.animation = 'tipFade 0.5s ease-out';
+      
+      titleEl.textContent = tip.title;
+      textEl.textContent = tip.text;
+      categoryEl.textContent = tip.category.charAt(0).toUpperCase() + tip.category.slice(1);
+      categoryEl.className = `tip-category ${tip.category}`;
+      
+      currentTipIndex = index;
+      updateTipNavigation();
+    }
+
+    function renderTipNavigation() {
+      const navEl = document.getElementById('login-tip-nav');
+      if (!navEl) return;
+      
+      navEl.innerHTML = '';
+      GAME_TIPS.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.className = `tip-dot ${index === currentTipIndex ? 'active' : ''}`;
+        dot.onclick = () => {
+          renderTip(index);
+          restartTipRotation();
+        };
+        navEl.appendChild(dot);
+      });
+    }
+
+    function updateTipNavigation() {
+      const dots = document.querySelectorAll('#login-tip-nav .tip-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentTipIndex);
+      });
+    }
+
+    function startTipRotation() {
+      tipRotationInterval = setInterval(() => {
+        const nextIndex = (currentTipIndex + 1) % GAME_TIPS.length;
+        renderTip(nextIndex);
+      }, 8000); // Rotate every 8 seconds
+    }
+
+    function restartTipRotation() {
+      if (tipRotationInterval) {
+        clearInterval(tipRotationInterval);
+      }
+      startTipRotation();
+    }
+
+    function stopTipRotation() {
+      if (tipRotationInterval) {
+        clearInterval(tipRotationInterval);
+        tipRotationInterval = null;
+      }
+    }
+
+    // ===== VOTING SYSTEM =====
+    const votingState = {
+      active: false,
+      selectedPlayer: null,
+      submitted: false,
+      players: []
+    };
+
+    // Voting DOM elements (initialized in initVoting)
+    let votingSection = null;
+    let voteOptions = null;
+    let submitVoteBtn = null;
+    let voteSubmitted = null;
+
+    function initVoting() {
+      votingSection = document.getElementById('voting-section');
+      voteOptions = document.getElementById('vote-options');
+      submitVoteBtn = document.getElementById('submit-vote-btn');
+      voteSubmitted = document.getElementById('vote-submitted');
+      
+      if (submitVoteBtn) {
+        submitVoteBtn.addEventListener('click', handleVoteSubmit);
+      }
+    }
+
+    function showVoting(players) {
+      if (!votingSection || !voteOptions) return;
+      
+      votingState.active = true;
+      votingState.players = players;
+      votingState.selectedPlayer = null;
+      votingState.submitted = false;
+      
+      // Render vote options
+      voteOptions.innerHTML = '';
+      players.forEach(player => {
+        if (player.name === playerState.playerName) return; // Can't vote for yourself
+        
+        const option = document.createElement('div');
+        option.className = 'vote-option';
+        option.innerHTML = `
+          <span class="vote-option-name">${escapeHtml(player.name)}</span>
+          <span class="vote-option-check"></span>
+        `;
+        option.onclick = () => selectVoteOption(player.id, option);
+        voteOptions.appendChild(option);
+      });
+      
+      votingSection.classList.add('active');
+      submitVoteBtn.disabled = true;
+      submitVoteBtn.classList.remove('hidden');
+      voteSubmitted.classList.add('hidden');
+    }
+
+    function selectVoteOption(playerId, optionEl) {
+      if (votingState.submitted) return;
+      
+      // Clear previous selection
+      document.querySelectorAll('.vote-option').forEach(el => {
+        el.classList.remove('selected');
+      });
+      
+      // Select new option
+      optionEl.classList.add('selected');
+      optionEl.querySelector('.vote-option-check').textContent = '✓';
+      votingState.selectedPlayer = playerId;
+      submitVoteBtn.disabled = false;
+    }
+
+    function handleVoteSubmit() {
+      if (!votingState.selectedPlayer || votingState.submitted) return;
+      
+      votingState.submitted = true;
+      submitVoteBtn.disabled = true;
+      
+      // Send vote to Firebase
+      if (window.firebaseDB && window.firebaseDB.initialized && playerState.gameCode && playerState.playerId) {
+        const db = window.firebaseDB;
+        const voteRef = db.ref(db.database, `games/${playerState.gameCode}/votes/${playerState.playerId}`);
+        db.set(voteRef, {
+          votedFor: votingState.selectedPlayer,
+          voterName: playerState.playerName,
+          timestamp: Date.now()
+        }).then(() => {
+          console.log('Vote submitted successfully');
+        }).catch((error) => {
+          console.error('Failed to submit vote:', error);
+        });
+      }
+      
+      // Send via BroadcastChannel as well
+      if (channel) {
+        channel.postMessage({
+          type: 'player-vote',
+          gameCode: playerState.gameCode,
+          playerName: playerState.playerName,
+          playerId: playerState.gamePlayerId,
+          votedFor: votingState.selectedPlayer
+        });
+      }
+      
+      // Show confirmation
+      submitVoteBtn.classList.add('hidden');
+      voteSubmitted.classList.remove('hidden');
+    }
+
+    function hideVoting() {
+      if (votingSection) {
+        votingSection.classList.remove('active');
+      }
+      votingState.active = false;
+    }
+
+    // ===== DICE ROLL SYSTEM =====
+    const diceState = {
+      available: false,
+      used: false,
+      lastResult: null
+    };
+
+    const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+    let diceRollSection = null;
+    let rollDiceBtn = null;
+    let diceResult = null;
+    let diceFace = null;
+    let diceResultText = null;
+    let diceResultDescription = null;
+    let diceInfo = null;
+
+    function initDiceRoll() {
+      diceRollSection = document.getElementById('dice-roll-section');
+      rollDiceBtn = document.getElementById('roll-dice-btn');
+      diceResult = document.getElementById('dice-result');
+      diceFace = document.getElementById('dice-face');
+      diceResultText = document.getElementById('dice-result-text');
+      diceResultDescription = document.getElementById('dice-result-description');
+      diceInfo = document.getElementById('dice-info');
+      
+      if (rollDiceBtn) {
+        rollDiceBtn.addEventListener('click', handleDiceRoll);
+      }
+    }
+
+    function showDiceRoll(characterType, characterName) {
+      if (!diceRollSection || characterType !== 'sidekick') return;
+      
+      diceState.available = true;
+      diceState.used = false;
+      
+      // Set info text based on character
+      if (diceInfo) {
+        diceInfo.textContent = `As ${characterName}, roll 4-6 to succeed, 1-3 to fail!`;
+      }
+      
+      diceRollSection.classList.add('active');
+      rollDiceBtn.disabled = false;
+      diceResult.classList.remove('active', 'success', 'failure');
+    }
+
+    function hideDiceRoll() {
+      if (diceRollSection) {
+        diceRollSection.classList.remove('active');
+      }
+      diceState.available = false;
+    }
+
+    function handleDiceRoll() {
+      if (!diceState.available || diceState.used) return;
+      
+      diceState.used = true;
+      rollDiceBtn.disabled = true;
+      
+      // Animate dice roll
+      let rollCount = 0;
+      const rollAnimation = setInterval(() => {
+        diceFace.textContent = DICE_FACES[Math.floor(Math.random() * 6)];
+        rollCount++;
+        
+        if (rollCount >= 10) {
+          clearInterval(rollAnimation);
+          
+          // Final result
+          const result = Math.floor(Math.random() * 6) + 1;
+          diceFace.textContent = DICE_FACES[result - 1];
+          diceState.lastResult = result;
+          
+          // Determine success/failure
+          const success = result >= 4;
+          
+          diceResult.classList.add('active');
+          diceResult.classList.add(success ? 'success' : 'failure');
+          
+          if (success) {
+            diceResultText.textContent = `🎉 Success! You rolled a ${result}!`;
+            diceResultDescription.textContent = 'Your power activates! Announce your action to the narrator.';
+          } else {
+            diceResultText.textContent = `💥 Failed! You rolled a ${result}!`;
+            diceResultDescription.textContent = 'Your power misfires! Tell the narrator what happened.';
+          }
+          
+          // Send result to Firebase
+          if (window.firebaseDB && window.firebaseDB.initialized && playerState.gameCode && playerState.playerId) {
+            const db = window.firebaseDB;
+            const diceRef = db.ref(db.database, `games/${playerState.gameCode}/diceRolls/${playerState.playerId}`);
+            db.set(diceRef, {
+              playerName: playerState.playerName,
+              result: result,
+              success: success,
+              timestamp: Date.now()
+            });
+          }
+          
+          // Send via BroadcastChannel
+          if (channel) {
+            channel.postMessage({
+              type: 'player-dice-roll',
+              gameCode: playerState.gameCode,
+              playerName: playerState.playerName,
+              playerId: playerState.gamePlayerId,
+              result: result,
+              success: success
+            });
+          }
+        }
+      }, 100);
+    }
+
+    // Utility function to escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Update handleBroadcastMessage to handle voting and dice roll messages
+    const originalHandleBroadcastMessage = handleBroadcastMessage;
+    handleBroadcastMessage = function(data) {
+      // Handle voting messages
+      if (data.type === 'voting-start' && data.gameCode === playerState.gameCode) {
+        showVoting(data.players);
+        return;
+      }
+      
+      if (data.type === 'voting-end' && data.gameCode === playerState.gameCode) {
+        hideVoting();
+        return;
+      }
+      
+      if (data.type === 'dice-roll-available' && data.gameCode === playerState.gameCode) {
+        if (playerState.character && playerState.character.type === 'sidekick') {
+          showDiceRoll('sidekick', playerState.character.name);
+        }
+        return;
+      }
+      
+      // Call original handler
+      if (typeof originalHandleBroadcastMessage === 'function') {
+        originalHandleBroadcastMessage(data);
+      }
+    };
+
+    // Modify init to include new features
+    const originalInit = init;
+    init = function() {
+      // Call original init
+      originalInit();
+      
+      // Initialize new features
+      initGameTips();
+      initVoting();
+      initDiceRoll();
+    };
+
+    // Modify showGameSection to show dice roll for sidekicks
+    const originalShowGameSection = showGameSection;
+    showGameSection = function() {
+      originalShowGameSection();
+      
+      // Stop tip rotation when game starts
+      stopTipRotation();
+      
+      // Show dice roll for sidekicks
+      if (playerState.character && playerState.character.type === 'sidekick') {
+        showDiceRoll('sidekick', playerState.character.name);
+      }
+    };
 
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', init);

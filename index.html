@@ -3203,6 +3203,67 @@
         phase: phase,
         nominations: nominationNames
       });
+      
+      // Also broadcast to players for laptop mode voting
+      broadcastVotingToPlayers(active, phase, nominations);
+    }
+
+    // Broadcast voting phase to players (laptop mode)
+    function broadcastVotingToPlayers(active, phase, nominations) {
+      if (!playerChannel || !state.gameCode) return;
+      
+      // Get list of alive players that can be voted for
+      const votablePlayers = state.players
+        .filter(p => !p.eliminated)
+        .map(p => ({
+          id: p.id,
+          name: p.name
+        }));
+      
+      playerChannel.postMessage({
+        type: active ? 'voting-start' : 'voting-end',
+        gameCode: state.gameCode,
+        phase: phase,
+        nominations: nominations || [],
+        players: votablePlayers
+      });
+      
+      // Also update Firebase for cross-device
+      if (window.firebaseDB && window.firebaseDB.initialized) {
+        const db = window.firebaseDB;
+        const votingRef = db.ref(db.database, `games/${state.gameCode}/voting`);
+        db.update(votingRef, {
+          active: active,
+          phase: phase,
+          nominations: nominations || [],
+          players: votablePlayers,
+          timestamp: Date.now()
+        }).catch(error => {
+          console.warn('Failed to update voting state in Firebase:', error);
+        });
+      }
+    }
+
+    // Broadcast dice roll availability to sidekick players
+    function broadcastDiceRollAvailable() {
+      if (!playerChannel || !state.gameCode) return;
+      
+      playerChannel.postMessage({
+        type: 'dice-roll-available',
+        gameCode: state.gameCode
+      });
+      
+      // Also update Firebase for cross-device
+      if (window.firebaseDB && window.firebaseDB.initialized) {
+        const db = window.firebaseDB;
+        const diceRef = db.ref(db.database, `games/${state.gameCode}/diceRollActive`);
+        db.set(diceRef, {
+          active: true,
+          timestamp: Date.now()
+        }).catch(error => {
+          console.warn('Failed to update dice roll state in Firebase:', error);
+        });
+      }
     }
 
     function broadcastRosterUpdate() {
@@ -4586,6 +4647,25 @@
           }
         }
         
+        // Play character type-specific atmospheric sound when entering a new step
+        // Detect the character type from the step title (e.g., "Step 1: Villain-Type")
+        if (step.title && state.sfxEnabled) {
+          const stepTitleLower = step.title.toLowerCase();
+          if (stepTitleLower.includes('villain') && !stepTitleLower.includes('introduction')) {
+            playVillainPhaseSound();
+          } else if (stepTitleLower.includes('accomplice') && !stepTitleLower.includes('introduction')) {
+            playAccomplicePhaseSound();
+          } else if (stepTitleLower.includes('elder') && !stepTitleLower.includes('introduction')) {
+            playElderPhaseSound();
+          } else if (stepTitleLower.includes('hero') && !stepTitleLower.includes('introduction')) {
+            playHeroPhaseSound();
+          } else if (stepTitleLower.includes('sidekick') && !stepTitleLower.includes('introduction')) {
+            playSidekickPhaseSound();
+          } else if (stepTitleLower.includes('damsel') || stepTitleLower.includes('twin') || stepTitleLower.includes('cursed')) {
+            playDamselPhaseSound();
+          }
+        }
+        
         step.blocks.forEach(block => {
           const div = document.createElement("div");
           div.className = `script-block block-${block.type}`;
@@ -5943,6 +6023,86 @@
       // Shield-like chime
       playSound(700, 0.15, 'sine');
       setTimeout(() => playSound(880, 0.2, 'sine'), 150);
+    }
+
+    // ===== PHASE-SPECIFIC ATMOSPHERIC SOUNDS =====
+    
+    // Nefarious sound for villain phase
+    function playVillainPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Sinister low rumble with dissonance
+      playSound(110, 0.4, 'sawtooth');
+      setTimeout(() => playSound(116, 0.3, 'sawtooth'), 200); // Slight dissonance
+      setTimeout(() => playSound(82, 0.5, 'sawtooth'), 400);
+    }
+
+    // Mysterious sound for accomplice phase
+    function playAccomplicePhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Sneaky, quiet tension
+      playSound(220, 0.2, 'sine');
+      setTimeout(() => playSound(277, 0.15, 'sine'), 150);
+      setTimeout(() => playSound(220, 0.3, 'sine'), 300);
+    }
+
+    // Wise/mystical sound for elder phase
+    function playElderPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Ethereal, wise tones
+      playSound(440, 0.2, 'sine');
+      setTimeout(() => playSound(554, 0.2, 'sine'), 200);
+      setTimeout(() => playSound(659, 0.25, 'sine'), 400);
+    }
+
+    // Heroic sound for hero phase
+    function playHeroPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Bold, uplifting tones
+      playSound(330, 0.15, 'sine');
+      setTimeout(() => playSound(392, 0.15, 'sine'), 100);
+      setTimeout(() => playSound(494, 0.2, 'sine'), 200);
+      setTimeout(() => playSound(659, 0.25, 'sine'), 350);
+    }
+
+    // Playful sound for sidekick phase
+    function playSidekickPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Quirky, bouncy tones
+      playSound(523, 0.1, 'square');
+      setTimeout(() => playSound(659, 0.1, 'square'), 100);
+      setTimeout(() => playSound(523, 0.15, 'square'), 200);
+    }
+
+    // Dramatic tension sound for damsel phase
+    function playDamselPhaseSound() {
+      if (!state.sfxEnabled) return;
+      // Dramatic, suspenseful
+      playSound(329, 0.3, 'sine');
+      setTimeout(() => playSound(311, 0.3, 'sine'), 300);
+    }
+
+    // Function to play phase-specific sound based on current script step
+    function playPhaseSound(phaseType) {
+      switch(phaseType) {
+        case 'villain':
+          playVillainPhaseSound();
+          break;
+        case 'accomplice':
+          playAccomplicePhaseSound();
+          break;
+        case 'elder':
+          playElderPhaseSound();
+          break;
+        case 'hero':
+          playHeroPhaseSound();
+          break;
+        case 'sidekick':
+          playSidekickPhaseSound();
+          break;
+        case 'damsel':
+          playDamselPhaseSound();
+          break;
+      }
     }
 
     // Win Condition Functions
