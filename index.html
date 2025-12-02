@@ -4812,7 +4812,7 @@
             { type: "narrator", text: "Option A (Physical): 'Point at who you want to eliminate on 3... 1, 2, 3, POINT!'" },
             { type: "narrator", text: "Option B (Laptop Mode): Players vote on their devices" },
             { type: "narrator", text: "Count votes for each player. Record the top 2 nominees below." },
-            { type: "reminder", text: "Remember: Corrupted Authority's vote counts as TWO!" }
+            { type: "reminder", text: "Remember: Corrupted Authority's vote counts as TWO!" },
             { type: "say", text: `${theme.script.accusationPrompt || "The floor is yours! Who do you suspect?"}\n\n${theme.script.discussionPrompt || "Encourage dramatic accusations!"}` },
             { type: "narrator", text: "**ACCUSATION RULES:**\n\n• Players take turns making accusations\n• Each accusation requires a **seconder** to be valid\n• At 30 seconds, announce **'Final accusations!'**\n\n**Watch for:** The Innocent can reveal once to prove their innocence!" }
           ],
@@ -4828,7 +4828,7 @@
             { type: "narrator", text: "First nominee gets 20 seconds to defend themselves." },
             { type: "narrator", text: "Second nominee gets 20 seconds to defend themselves." },
             { type: "narrator", text: "NO ONE ELSE may speak during defenses!" },
-            { type: "reminder", text: "Use the timer for each defense speech." }
+            { type: "reminder", text: "Use the timer for each defense speech." },
             { type: "say", text: "**The accused shall speak in their defense!**\n\nEach nominated player gets **30 seconds** to defend themselves.\n\n**No interruptions** during defense speeches." }
           ],
           showDefenseTracker: true
@@ -4843,7 +4843,7 @@
             { type: "narrator", text: "Between the top 2 nominees only - who will be eliminated?" },
             { type: "narrator", text: "Physical: 'Close eyes. Raise hand for [Name 1]... Now for [Name 2]... Eyes open!'" },
             { type: "narrator", text: "Laptop Mode: Players submit final votes on devices" },
-            { type: "narrator", text: "Count the final votes and announce the result dramatically!" }
+            { type: "narrator", text: "Count the final votes and announce the result dramatically!" },
             { type: "say", text: theme.script.vote },
             { type: "narrator", text: "**VOTE PROCEDURE:**\n\n1. \"All players **close your eyes** and put your hands down\"\n2. \"On my count, raise your hand to vote for [nominee]\"\n3. Count: \"1... 2... 3... **VOTE!**\" (players raise hands)\n4. Count the votes quickly\n5. \"Hands down. Eyes open.\" and announce the count\n6. Repeat for each nominated player" }
           ],
